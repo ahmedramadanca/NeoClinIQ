@@ -2,859 +2,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="google-site-verification"
-        content="gm8e9KCf98WbOzEAdhmvc8hPtMk-j-OLIcSxwNOqEKs">
+<meta name="google-site-verification"
+content="gm8e9KCf98WbOzEAdhmvc8hPtMk-j-OLIcSxwNOqEKs">
 
-  <title>NeoClinIQ | Canadian Pharmacy Education &amp; PEBC Exam Preparation</title>
+<title>NeoClinIQ | PEBC MCQ, OSCE & Clinical Education</title>
 
-  <meta name="description"
-        content="NeoClinIQ offers Canadian pharmacy education for IPGs: visual clinical therapeutics, PEBC MCQ and OSCE preparation, mentorship, and clinical learning resources.">
+<meta name="description"
+content="NeoClinIQ provides Canadian pharmacy education, PEBC MCQ and OSCE subscriptions, visual clinical therapeutics, mentorship and a 12-volume clinical review book series.">
 
-  <meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="index,follow,max-image-preview:large">
 
-  <link rel="canonical"
-        href="https://neocliniq.maplecanadaramadan.ca/">
+<link rel="canonical"
+href="https://neocliniq.maplecanadaramadan.ca/">
 
-  <meta property="og:type" content="website">
-  <meta property="og:title"
-        content="NeoClinIQ | Canadian Pharmacy Education &amp; PEBC Preparation">
-  <meta property="og:description"
-        content="Learn clinically. Think visually. Explore Canadian pharmacy education, PEBC MCQ and OSCE preparation, mentorship and clinical resources for IPGs.">
-  <meta property="og:url"
-        content="https://neocliniq.maplecanadaramadan.ca/">
+<meta property="og:type" content="website">
+<meta property="og:title"
+content="NeoClinIQ | Canadian Pharmacy Education">
+<meta property="og:description"
+content="Think Like a Pharmacist. Explore visual clinical education, PEBC MCQ and OSCE preparation, mentorship and books.">
+<meta property="og:url"
+content="https://neocliniq.maplecanadaramadan.ca/">
 
-  <meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
 
-  <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"EducationalOrganization",
+ "@id":"https://neocliniq.maplecanadaramadan.ca/#organization",
+ "name":"NeoClinIQ",
+ "url":"https://neocliniq.maplecanadaramadan.ca/",
+ "description":"Canadian visual clinical education and PEBC examination preparation resources.",
+ "email":"neocliniq@maplecanadaramadan.ca",
+ "founder":{
+   "@type":"Person",
+   "name":"Ahmed Ramadan"
+ },
+ "parentOrganization":{
+   "@type":"Organization",
+   "name":"Maple Canada Ramadan",
+   "url":"https://maplecanadaramadan.ca/"
+ },
+ "sameAs":[
+   "https://www.linkedin.com/company/neocliniq/",
+   "https://www.amazon.ca/dp/B0HKJ7NJF9"
+ ],
+ "knowsAbout":[
+   "Canadian pharmacy education",
+   "PEBC MCQ preparation",
+   "PEBC OSCE preparation",
+   "Clinical therapeutics",
+   "International pharmacy graduates",
+   "Visual clinical learning"
+ ]
+}
+</script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "@id": "https://neocliniq.maplecanadaramadan.ca/#organization",
-    "name": "NeoClinIQ",
-    "url": "https://neocliniq.maplecanadaramadan.ca/",
-    "description": "Canadian visual clinical education initiative offering structured pharmacy learning resources for international pharmacy graduates and healthcare professionals.",
-    "email": "neocliniq@maplecanadaramadan.ca",
-    "parentOrganization": {
-      "@type": "Organization",
-      "name": "Maple Canada Ramadan",
-      "url": "https://maplecanadaramadan.ca/"
-    },
-    "knowsAbout": [
-      "Canadian pharmacy education",
-      "Clinical therapeutics",
-      "PEBC MCQ and OSCE preparation",
-      "International pharmacy graduates",
-      "Clinical reasoning",
-      "Visual clinical learning"
-    ]
-  }
-  </script>
-
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
-
-    section[id] {
-      scroll-margin-top: 85px;
-    }
-
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #fff;
-      color: #102e46;
-      padding: 12px;
-      z-index: 100;
-    }
-
-    .skip-link:focus {
-      left: 12px;
-    }
-
-    .neo-extra {
-      padding: 68px 0;
-    }
-
-    .neo-extra:nth-of-type(even) {
-      background: #f3f7fa;
-    }
-
-    .neo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 20px;
-      margin-top: 28px;
-    }
-
-    .neo-panel {
-      background: #fff;
-      border: 1px solid #dce7ee;
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: 0 5px 20px rgba(15, 43, 65, .05);
-    }
-
-    .neo-panel h3 {
-      margin-top: 0;
-      color: #153d53;
-    }
-
-    .neo-panel p {
-      line-height: 1.7;
-    }
-
-    .neo-kicker {
-      font-size: .78rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: #087f86;
-    }
-
-    .neo-link {
-      display: inline-block;
-      margin-top: 8px;
-      color: #086f77;
-      font-weight: 700;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .neo-muted {
-      color: #506574;
-    }
-
-    .neo-list {
-      padding-left: 22px;
-      line-height: 1.9;
-    }
-
-    .neo-note {
-      border-left: 4px solid #0a8588;
-      background: #eef8f7;
-      padding: 17px 21px;
-      border-radius: 6px;
-      margin-top: 24px;
-    }
-
-    .neo-callout {
-      background: #12384e;
-      color: #fff;
-      border-radius: 18px;
-      padding: 32px;
-      margin-top: 32px;
-    }
-
-    .neo-callout h3,
-    .neo-callout p {
-      color: #fff;
-    }
-
-    .neo-callout a {
-      color: #b5f1e9;
-    }
-
-    .neo-footer-note {
-      font-size: .88rem;
-      line-height: 1.6;
-      max-width: 850px;
-      margin: 20px auto 0;
-      color: #60717b;
-    }
-
-    @media (max-width: 650px) {
-      .neo-extra {
-        padding: 46px 0;
-      }
-
-      .neo-panel {
-        padding: 20px;
-      }
-    }
-  </style>
+<style>
+:root{
+ --navy:#0b2340;
+ --teal:#087f83;
+ --gold:#e5b75b;
+ --light:#f3f7fa;
+ --text:#24394c;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;
+ font-family:Arial,Helvetica,sans-serif;
+ color:var(--text);
+ background:white;
+ line-height:1.7;
+}
+a{color:var(--teal)}
+img{max-width:100%;height:auto}
+.container{
+ width:min(1120px,92%);
+ margin:auto;
+}
+header{
+ background:var(--navy);
+ color:white;
+ position:sticky;
+ top:0;
+ z-index:10;
+}
+header .container{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:18px;
+ padding:17px 0;
+}
+.logo{
+ font-size:26px;
+ font-weight:800;
+ color:white;
+ text-decoration:none;
+}
+nav{
+ display:flex;
+ flex-wrap:wrap;
+ gap:17px;
+}
+nav a{
+ color:white;
+ font-size:14px;
+ text-decoration:none;
+}
+nav a:hover{text-decoration:underline}
+section{padding:75px 0;scroll-margin-top:90px}
+section:nth-of-type(even){background:var(--light)}
+.hero{
+ background:linear-gradient(135deg,#091d38,#12526a);
+ color:white;
+ padding:105px 0;
+}
+.hero h1{
+ font-size:clamp(36px,5vw,62px);
+ line-height:1.13;
+ max-width:850px;
+ margin:12px 0 20px;
+}
+.hero p{
+ font-size:19px;
+ max-width:760px;
+}
+.kicker{
+ text-transform:uppercase;
+ letter-spacing:2px;
+ font-weight:bold;
+ font-size:12px;
+ color:var(--teal);
+}
+.hero .kicker{color:var(--gold)}
+h2{
+ font-size:clamp(27px,3.2vw,39px);
+ line-height:1.25;
+ color:var(--navy);
+ margin:10px 0 22px;
+}
+h3{color:var(--navy);line-height:1.3}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
+ gap:22px;
+ margin-top:30px;
+}
+.card{
+ background:white;
+ border:1px solid #dce5eb;
+ border-radius:17px;
+ padding:28px;
+ box-shadow:0 5px 22px #102f4610;
+}
+.card h3{margin-top:0}
+.button{
+ display:inline-block;
+ background:var(--teal);
+ color:white;
+ padding:13px 23px;
+ border-radius:9px;
+ text-decoration:none;
+ font-weight:bold;
+ margin:7px 8px 7px 0;
+}
+.button:hover{background:#075f64}
+.button.gold{
+ background:var(--gold);
+ color:var(--navy);
+}
+.button.outline{
+ background:transparent;
+ color:inherit;
+ border:1px solid currentColor;
+}
+.price{
+ font-size:44px;
+ color:var(--navy);
+ font-weight:800;
+ line-height:1.3;
+}
+.price span{
+ font-size:15px;
+ font-weight:normal;
+}
+.image-feature{
+ display:block;
+ max-width:650px;
+ margin:28px auto;
+ border-radius:18px;
+ box-shadow:0 12px 40px #102b4630;
+}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:15px;
+ text-align:center;
+ margin-top:35px;
+}
+.stats strong{
+ display:block;
+ font-size:38px;
+ color:var(--teal);
+}
+.note{
+ background:#eaf6f5;
+ border-left:4px solid var(--teal);
+ padding:18px 22px;
+ margin-top:30px;
+ border-radius:6px;
+}
+.bio{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:35px;
+ align-items:center;
+}
+.links{
+ display:flex;
+ flex-wrap:wrap;
+ gap:12px;
+}
+footer{
+ background:var(--navy);
+ color:white;
+ padding:38px 0;
+ text-align:center;
+}
+footer a{color:#b3e8e6}
+footer p{margin:7px 0}
+.small{font-size:13px}
+@media(max-width:750px){
+ header .container{flex-direction:column}
+ nav{justify-content:center;gap:11px}
+ section{padding:48px 0}
+ .hero{padding:65px 0}
+ .bio{grid-template-columns:1fr}
+ .stats{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
 
-<a class="skip-link" href="#main-content">
-  Skip to content
-</a>
-
-<header class="header">
-  <div class="container nav">
-
-    <a href="/" class="logo" aria-label="NeoClinIQ home">
-      NeoClinIQ
-    </a>
-
-    <nav aria-label="Main navigation">
-      <a href="#about">About</a>
-      <a href="#learning">Learning</a>
-      <a href="#resources">Resources</a>
-      <a href="#mentorship">Mentorship</a>
-      <a href="#contact">Contact</a>
-    </nav>
-
-  </div>
+<header>
+ <div class="container">
+  <a class="logo" href="/">NeoClinIQ</a>
+  <nav aria-label="Main navigation">
+   <a href="#about">About</a>
+   <a href="#programs">Programs</a>
+   <a href="#clinical">Clinical</a>
+   <a href="#books">Books</a>
+   <a href="#founder">Founder</a>
+   <a href="#connect">Connect</a>
+  </nav>
+ </div>
 </header>
 
-<main id="main-content">
+<main>
 
-  <!-- HERO -->
+<section class="hero">
+ <div class="container">
+  <p class="kicker">Canadian Pharmacy Education</p>
 
-  <section class="hero">
-    <div class="container hero-grid">
+  <h1>Think Like a Pharmacist.<br>
+  Learn Visually. Prepare Confidently.</h1>
 
-      <div class="hero-content">
+  <p>
+   NeoClinIQ is a Canadian visual clinical education
+   initiative supporting international pharmacy graduates
+   through clinical therapeutics, PEBC MCQ and OSCE
+   preparation, mentorship and educational publications.
+  </p>
 
-        <p class="eyebrow">
-          CANADIAN PHARMACY EDUCATION • VISUAL CLINICAL LEARNING
-        </p>
+  <a class="button gold" href="#programs">
+   Explore Subscriptions
+  </a>
 
-        <h1>
-          Think clinically.<br>
-          Learn visually.
-        </h1>
+  <a class="button outline" href="#books">
+   Explore Our Books
+  </a>
+ </div>
+</section>
 
-        <p class="hero-text">
-          NeoClinIQ helps international pharmacy graduates
-          (IPGs) and healthcare learners navigate clinical
-          therapeutics, Canadian pharmacy practice and PEBC
-          MCQ and OSCE preparation through structured,
-          visually focused education.
-        </p>
+<section id="about">
+ <div class="container">
+  <p class="kicker">About NeoClinIQ</p>
+  <h2>Clinical education, reimagined visually</h2>
 
-        <div class="buttons">
+  <p>
+   NeoClinIQ connects therapeutic knowledge with
+   practical clinical reasoning and visual education.
+   Our mission is to help pharmacy learners develop
+   structured approaches to patient assessment,
+   therapeutic decision-making and professional
+   communication.
+  </p>
 
-          <a href="#learning" class="button primary">
-            Explore learning resources
-          </a>
+  <div class="stats">
+   <div><strong>14</strong>Clinical Modules</div>
+   <div><strong>160+</strong>Clinical Chapters</div>
+   <div><strong>200+</strong>Hours of Education</div>
+  </div>
+ </div>
+</section>
 
-          <a href="#contact" class="button secondary">
-            Contact NeoClinIQ
-          </a>
+<section id="programs">
+ <div class="container">
+  <p class="kicker">Subscription Programs</p>
+  <h2>PEBC MCQ & OSCE Preparation</h2>
 
-        </div>
-      </div>
+  <p>
+   Explore NeoClinIQ's structured preparation
+   subscriptions for internationally educated
+   pharmacists pursuing Canadian certification.
+  </p>
 
-      <div class="hero-card">
+  <div class="grid">
 
-        <p class="card-label">NEOCLINIQ</p>
-
-        <h2>
-          Clinical knowledge.<br>
-          Made clearer.
-        </h2>
-
-        <p>
-          Clinical modules, visual summaries, case-based
-          reasoning and guided examination preparation—all
-          organized around the needs of pharmacy learners.
-        </p>
-
-      </div>
-
+   <article class="card">
+    <h3>PEBC MCQ Subscription</h3>
+    <div class="price">
+     $1,500 <span>CAD</span>
     </div>
-  </section>
+    <p>
+     Clinical therapeutics review, case-based learning,
+     practice questions and visual educational resources.
+    </p>
+    <a class="button"
+       href="https://payhip.com/b/1un8s"
+       target="_blank"
+       rel="noopener noreferrer">
+     Explore MCQ Resources
+    </a>
+    <p class="small">
+     Confirm subscription availability and checkout
+     details before purchasing.
+    </p>
+   </article>
 
-  <!-- ABOUT -->
-
-  <section id="about" class="section">
-    <div class="container narrow">
-
-      <p class="eyebrow">ABOUT NEOCLINIQ</p>
-
-      <h2>
-        A visual approach to Canadian clinical education
-      </h2>
-
-      <p class="large-text">
-        NeoClinIQ is a Canadian healthcare education initiative
-        designed to make complex pharmacy topics easier to
-        understand, review and apply.
-      </p>
-
-      <p>
-        Our resources support internationally educated
-        pharmacists, pharmacy learners and healthcare
-        professionals through structured clinical review,
-        therapeutic decision-making and practical
-        communication skills.
-      </p>
-
-      <p>
-        NeoClinIQ is an initiative of
-        <a href="https://maplecanadaramadan.ca/">
-          Maple Canada Ramadan
-        </a>.
-      </p>
-
+   <article class="card">
+    <h3>PEBC OSCE Subscription</h3>
+    <div class="price">
+     $1,800 <span>CAD</span>
     </div>
-  </section>
-
-  <!-- LEARNING PATHWAYS -->
-
-  <section id="learning" class="section light">
-    <div class="container">
-
-      <p class="eyebrow">LEARNING PATHWAYS</p>
-
-      <h2>Choose your clinical learning focus</h2>
-
-      <div class="cards">
-
-        <article class="card">
-          <span class="number">01</span>
-
-          <h3>Clinical Therapeutics</h3>
-
-          <p>
-            System-based clinical chapters covering disease
-            assessment, medication selection, monitoring,
-            safety and patient-centred care.
-          </p>
-        </article>
-
-        <article class="card">
-          <span class="number">02</span>
-
-          <h3>Visual Learning</h3>
-
-          <p>
-            Infographics, concise clinical summaries and
-            structured presentations designed to make
-            important concepts easier to review.
-          </p>
-        </article>
-
-        <article class="card">
-          <span class="number">03</span>
-
-          <h3>PEBC MCQ Preparation</h3>
-
-          <p>
-            Knowledge review, applied therapeutic reasoning
-            and case-based questions to support preparation
-            for the pharmacist qualifying MCQ examination.
-          </p>
-        </article>
-
-        <article class="card">
-          <span class="number">04</span>
-
-          <h3>PEBC OSCE Preparation</h3>
-
-          <p>
-            Patient counselling, prescription assessment,
-            communication, clinical decision-making and
-            station-style practice.
-          </p>
-        </article>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- RESOURCES -->
-
-  <section id="resources" class="section">
-    <div class="container narrow">
-
-      <p class="eyebrow">NEOCLINIQ RESOURCES</p>
-
-      <h2>
-        Comprehensive clinical review, organized for learners
-      </h2>
-
-      <p class="large-text">
-        NeoClinIQ brings together therapeutic learning
-        resources, presentations, visual summaries and
-        structured review materials.
-      </p>
-
-      <div class="stats">
-
-        <div>
-          <strong>14</strong>
-          <span>Clinical Modules</span>
-        </div>
-
-        <div>
-          <strong>160+</strong>
-          <span>Clinical Chapters</span>
-        </div>
-
-        <div>
-          <strong>200+</strong>
-          <span>Hours of Education</span>
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- MCQ -->
-
-  <section id="mcq" class="neo-extra">
-    <div class="container">
-
-      <p class="neo-kicker">
-        PEBC QUALIFYING EXAMINATION — PART I
-      </p>
-
-      <h2>
-        MCQ preparation grounded in clinical reasoning
-      </h2>
-
-      <p>
-        NeoClinIQ's MCQ learning approach connects
-        therapeutic knowledge with patient cases,
-        evidence-based medication choices and the
-        practical application of pharmacy concepts.
-      </p>
-
-      <div class="neo-grid">
-
-        <article class="neo-panel">
-          <h3>Therapeutics review</h3>
-          <p>
-            Structured chapters across major clinical
-            systems, from infectious diseases and
-            cardiovascular care to endocrinology and
-            mental health.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Applied questions</h3>
-          <p>
-            Practice clinical decision-making through
-            MCQ-style review, case interpretation and
-            answer discussion.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Visual reinforcement</h3>
-          <p>
-            Use infographics and concise summaries to
-            reinforce key concepts and revisit challenging
-            subjects.
-          </p>
-        </article>
-
-      </div>
-
-      <p class="neo-note">
-        For current exam requirements, blueprints and sample
-        questions, consult the
-        <a href="https://pebc.ca/">
-          official PEBC website
-        </a>.
-      </p>
-
-    </div>
-  </section>
-
-  <!-- OSCE -->
-
-  <section id="osce" class="neo-extra">
-    <div class="container">
-
-      <p class="neo-kicker">
-        PEBC QUALIFYING EXAMINATION — PART II
-      </p>
-
-      <h2>
-        OSCE preparation for patient-centred practice
-      </h2>
-
-      <p>
-        Build confidence in clinical encounters by connecting
-        knowledge with assessment, communication, safety and
-        clear recommendations.
-      </p>
-
-      <div class="neo-grid">
-
-        <article class="neo-panel">
-          <h3>Patient assessment</h3>
-          <p>
-            Gather relevant information, identify drug
-            therapy problems and prioritize patient needs.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Counselling and communication</h3>
-          <p>
-            Practice explaining treatments, checking
-            understanding and communicating with patients
-            and healthcare professionals.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Station-style practice</h3>
-          <p>
-            Develop a structured approach to time-limited
-            clinical scenarios, therapeutic decisions and
-            professional interactions.
-          </p>
-        </article>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- CLINICAL MODULES -->
-
-  <section id="modules" class="neo-extra">
-    <div class="container">
-
-      <p class="neo-kicker">CLINICAL CURRICULUM</p>
-
-      <h2>Explore major therapeutic areas</h2>
-
-      <p>
-        NeoClinIQ's educational content spans major clinical
-        systems. The examples below illustrate the breadth
-        of its therapeutic review.
-      </p>
-
-      <div class="neo-grid">
-
-        <article class="neo-panel">
-          <h3>Infectious diseases</h3>
-          <p>
-            Antimicrobial therapy, infection assessment
-            and treatment decisions.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Cardiovascular care</h3>
-          <p>
-            Hypertension, heart failure, anticoagulation
-            and coronary syndromes.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Endocrinology</h3>
-          <p>
-            Diabetes, thyroid disorders and medication
-            monitoring.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Neurology and psychiatry</h3>
-          <p>
-            Common neurologic and mental health conditions
-            and treatment considerations.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Respiratory and gastrointestinal care</h3>
-          <p>
-            Therapeutic management across common respiratory
-            and gastrointestinal disorders.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Other clinical systems</h3>
-          <p>
-            Genitourinary, musculoskeletal, oncology,
-            dermatology and ophthalmology topics.
-          </p>
-        </article>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- MENTORSHIP -->
-
-  <section id="mentorship" class="neo-extra">
-    <div class="container">
-
-      <p class="neo-kicker">GUIDED LEARNING</p>
-
-      <h2>Live mentorship and structured study</h2>
-
-      <p>
-        NeoClinIQ's mentorship offering brings together
-        guided clinical review, visual resources, practice
-        questions and live learning sessions.
-      </p>
-
-      <p>
-        Program schedules, enrolment availability and current
-        inclusions should be confirmed directly with the team.
-      </p>
-
-      <div class="neo-grid">
-
-        <article class="neo-panel">
-          <h3>Structured roadmap</h3>
-          <p>
-            A sequenced approach to therapeutic systems,
-            review priorities and examination skills.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Live clinical discussions</h3>
-          <p>
-            Interactive review of difficult concepts,
-            patient cases and common examination challenges.
-          </p>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Review and reinforcement</h3>
-          <p>
-            Visual summaries, presentations and question-based
-            learning to revisit key topics.
-          </p>
-        </article>
-
-      </div>
-
-      <div class="neo-callout">
-
-        <h3>Interested in mentorship?</h3>
-
-        <p>
-          Ask about the current cohort, learning schedule,
-          access to materials and enrolment details.
-        </p>
-
-        <p>
-          <a href="mailto:neocliniq@maplecanadaramadan.ca?subject=NeoClinIQ%20Mentorship%20Enquiry">
-            Contact the NeoClinIQ team
-          </a>
-        </p>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- BOOKS -->
-
-  <section id="books" class="neo-extra">
-    <div class="container">
-
-      <p class="neo-kicker">PUBLICATIONS</p>
-
-      <h2>NeoClinIQ clinical therapeutics book series</h2>
-
-      <p>
-        Explore the NeoClinIQ 12-volume series covering major
-        therapeutic areas, designed to complement structured
-        clinical review and visual learning.
-      </p>
-
-      <ul class="neo-list">
-
-        <li>
-          Infectious diseases and cardiovascular therapeutics
-        </li>
-
-        <li>
-          Gastrointestinal and genitourinary therapeutics
-        </li>
-
-        <li>
-          Neurology, psychiatry and musculoskeletal care
-        </li>
-
-        <li>
-          Endocrinology, oncology and supportive care
-        </li>
-
-        <li>
-          Dermatology, respiratory care and ophthalmology
-        </li>
-
-      </ul>
-
-      <p class="neo-muted">
-        For book availability and purchasing information,
-        contact NeoClinIQ for current publication links.
-      </p>
-
-    </div>
-  </section>
-
-  <!-- IPG RESOURCES -->
-
-  <section id="ipg" class="neo-extra">
-    <div class="container">
-
-      <p class="neo-kicker">
-        INTERNATIONAL PHARMACY GRADUATES
-      </p>
-
-      <h2>
-        Navigate Canadian pharmacy preparation with
-        reliable sources
-      </h2>
-
-      <p>
-        IPGs should use current information from official
-        regulators and examination bodies when planning
-        certification and registration.
-      </p>
-
-      <p>
-        Educational resources can support learning but
-        do not replace regulatory requirements.
-      </p>
-
-      <div class="neo-grid">
-
-        <article class="neo-panel">
-          <h3>PEBC</h3>
-
-          <p>
-            Certification pathways, examination blueprints
-            and candidate resources.
-          </p>
-
-          <a class="neo-link" href="https://pebc.ca/">
-            Visit PEBC
-          </a>
-        </article>
-
-        <article class="neo-panel">
-          <h3>NAPRA</h3>
-
-          <p>
-            National information about pharmacy regulation
-            and professional practice.
-          </p>
-
-          <a class="neo-link" href="https://www.napra.ca/">
-            Visit NAPRA
-          </a>
-        </article>
-
-        <article class="neo-panel">
-          <h3>Ontario College of Pharmacists</h3>
-
-          <p>
-            Ontario registration requirements and
-            professional practice standards.
-          </p>
-
-          <a class="neo-link" href="https://www.ocpinfo.com/">
-            Visit OCP
-          </a>
-        </article>
-
-      </div>
-
-    </div>
-  </section>
-
-  <!-- OUR APPROACH -->
-
-  <section class="statement">
-    <div class="container narrow">
-
-      <p class="eyebrow">OUR APPROACH</p>
-
-      <h2>
-        Complex clinical knowledge should be easier to navigate.
-      </h2>
-
-      <p>
-        NeoClinIQ combines structured organization,
-        visual communication and clinically focused
-        education to help learners develop a clearer
-        understanding of therapeutics.
-      </p>
-
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-
-  <section id="contact" class="section">
-    <div class="container narrow">
-
-      <p class="eyebrow">CONTACT</p>
-
-      <h2>Connect with NeoClinIQ</h2>
-
-      <p class="large-text">
-        For education, mentorship, collaboration,
-        partnerships and professional enquiries:
-      </p>
-
-      <p class="contact-email">
-        <a href="mailto:neocliniq@maplecanadaramadan.ca">
-          neocliniq@maplecanadaramadan.ca
-        </a>
-      </p>
-
-      <p>
-        NeoClinIQ is an initiative of
-        <a href="https://maplecanadaramadan.ca/">
-          Maple Canada Ramadan
-        </a>.
-      </p>
-
-      <p class="neo-note">
-        NeoClinIQ is an independent educational initiative.
-        It is not affiliated with or endorsed by the Pharmacy
-        Examining Board of Canada (PEBC). Educational
-        information is not a substitute for official examination
-        requirements, professional judgment or individualized
-        patient care.
-      </p>
-
-    </div>
-  </section>
+    <p>
+     Patient assessment, counselling, communication,
+     clinical decision-making and station-style practice.
+    </p>
+    <a class="button"
+       href="mailto:neocliniq@maplecanadaramadan.ca?subject=OSCE%20Subscription">
+     Enquire About OSCE
+    </a>
+   </article>
+
+  </div>
+
+  <p class="note">
+   NeoClinIQ is an independent educational initiative
+   and is not endorsed by the Pharmacy Examining Board
+   of Canada. Subscription details should be confirmed
+   before enrolment.
+  </p>
+ </div>
+</section>
+
+<section id="clinical">
+ <div class="container">
+  <p class="kicker">Clinical Learning</p>
+  <h2>Comprehensive Clinical Therapeutics</h2>
+
+  <div class="grid">
+
+   <article class="card">
+    <h3>Infectious Diseases</h3>
+    <p>Antimicrobial therapy and infection management.</p>
+   </article>
+
+   <article class="card">
+    <h3>Cardiovascular</h3>
+    <p>Heart failure, hypertension and anticoagulation.</p>
+   </article>
+
+   <article class="card">
+    <h3>Endocrinology</h3>
+    <p>Diabetes and endocrine disorders.</p>
+   </article>
+
+   <article class="card">
+    <h3>Neurology & Psychiatry</h3>
+    <p>Neurological and mental health therapeutics.</p>
+   </article>
+
+   <article class="card">
+    <h3>Respiratory & Gastrointestinal</h3>
+    <p>System-based therapeutic review.</p>
+   </article>
+
+   <article class="card">
+    <h3>Additional Clinical Systems</h3>
+    <p>
+     Genitourinary, musculoskeletal, oncology,
+     dermatology and ophthalmology.
+    </p>
+   </article>
+
+  </div>
+ </div>
+</section>
+
+<section id="mentorship">
+ <div class="container">
+  <p class="kicker">Guided Education</p>
+  <h2>NeoClinIQ Mentorship</h2>
+
+  <p>
+   Structured learning, live clinical discussions,
+   visual summaries and question-based review designed
+   to support pharmacy learners.
+  </p>
+
+  <a class="button"
+     href="mailto:neocliniq@maplecanadaramadan.ca?subject=Mentorship%20Enquiry">
+   Ask About Mentorship
+  </a>
+ </div>
+</section>
+
+<section id="books">
+ <div class="container">
+
+  <p class="kicker">Published on Amazon</p>
+
+  <h2>NeoClinIQ Clinical Review Series</h2>
+
+  <p>
+   Discover the complete 12-volume visual clinical
+   review collection covering major therapeutic
+   systems and supporting pharmacy education.
+  </p>
+
+  <a href="https://www.amazon.ca/dp/B0HKJ7NJF9?binding=paperback&amp;ref=dbs_dp_sirpi"
+     target="_blank"
+     rel="noopener noreferrer">
+
+   <img
+    class="image-feature"
+    src="neocliniq-amazon-series.jpg"
+    alt="NeoClinIQ 12-volume Clinical Review Series promotional image featuring the founder and published books"
+    loading="lazy">
+  </a>
+
+  <div style="text-align:center">
+   <a class="button"
+      href="https://www.amazon.ca/dp/B0HKJ7NJF9?binding=paperback&amp;ref=dbs_dp_sirpi"
+      target="_blank"
+      rel="noopener noreferrer">
+    Explore the Series on Amazon Canada
+   </a>
+  </div>
+
+ </div>
+</section>
+
+<section id="founder">
+ <div class="container">
+
+  <p class="kicker">Leadership & Educational Vision</p>
+
+  <h2>Meet the Founder — Ahmed Ramadan, MBA</h2>
+
+  <div class="bio">
+
+   <div>
+    <h3>Pharmacy Education, Clinical Practice & Leadership</h3>
+
+    <p>
+     Ahmed Ramadan is an internationally trained
+     pharmacy professional, healthcare educator
+     and founder of NeoClinIQ.
+    </p>
+
+    <p>
+     His professional background combines pharmacy
+     education, clinical practice experience,
+     pharmaceutical business development and
+     healthcare leadership.
+    </p>
+
+    <p>
+     A graduate of the University of Toronto's
+     International Pharmacy Graduate program,
+     he served as a class representative and
+     was selected as an IPG Alumni Ambassador.
+    </p>
+
+    <p>
+     Through NeoClinIQ, he develops structured,
+     visually focused educational resources
+     designed to make clinical therapeutics
+     more accessible to pharmacy learners.
+    </p>
+   </div>
+
+   <div class="card">
+    <h3>Professional Highlights</h3>
+    <p>University of Toronto IPG Program</p>
+    <p>IPG Alumni Ambassador</p>
+    <p>Pharmacy Education & Clinical Learning</p>
+    <p>Healthcare Business Leadership</p>
+    <p>Founder of NeoClinIQ</p>
+    <p>Author of the NeoClinIQ Clinical Review Series</p>
+   </div>
+
+  </div>
+ </div>
+</section>
+
+<section id="resources">
+ <div class="container">
+  <p class="kicker">Canadian IPG Resources</p>
+  <h2>Official Canadian Pharmacy Resources</h2>
+
+  <div class="grid">
+
+   <article class="card">
+    <h3>PEBC</h3>
+    <p>Certification and examination information.</p>
+    <a href="https://pebc.ca/" target="_blank"
+       rel="noopener noreferrer">
+     Official PEBC Website
+    </a>
+   </article>
+
+   <article class="card">
+    <h3>Ontario College of Pharmacists</h3>
+    <p>Ontario registration and practice standards.</p>
+    <a href="https://www.ocpinfo.com/" target="_blank"
+       rel="noopener noreferrer">
+     Official OCP Website
+    </a>
+   </article>
+
+   <article class="card">
+    <h3>NAPRA</h3>
+    <p>National pharmacy regulatory information.</p>
+    <a href="https://www.napra.ca/" target="_blank"
+       rel="noopener noreferrer">
+     Official NAPRA Website
+    </a>
+   </article>
+
+  </div>
+ </div>
+</section>
+
+<section id="connect">
+ <div class="container">
+
+  <p class="kicker">NeoClinIQ Ecosystem</p>
+  <h2>Learn. Subscribe. Connect.</h2>
+
+  <p>
+   Access our publications, digital learning resources,
+   professional community and latest updates.
+  </p>
+
+  <div class="links">
+
+   <a class="button"
+      href="https://www.amazon.ca/dp/B0HKJ7NJF9?binding=paperback&amp;ref=dbs_dp_sirpi"
+      target="_blank" rel="noopener noreferrer">
+    Amazon Books
+   </a>
+
+   <a class="button"
+      href="https://payhip.com/b/1un8s"
+      target="_blank" rel="noopener noreferrer">
+    Payhip
+   </a>
+
+   <a class="button"
+      href="https://chat.whatsapp.com/Cd8srzNHUjM7nWu7yt4l5L?mode=gi_t"
+      target="_blank" rel="noopener noreferrer">
+    WhatsApp Community
+   </a>
+
+   <a class="button"
+      href="https://www.linkedin.com/company/neocliniq/"
+      target="_blank" rel="noopener noreferrer">
+    LinkedIn
+   </a>
+
+   <a class="button"
+      href="mailto:neocliniq@maplecanadaramadan.ca">
+    Email NeoClinIQ
+   </a>
+
+  </div>
+
+  <p>
+   The NeoClinIQ iOS app is in development.
+   A public App Store download link will be added
+   when the app is available.
+  </p>
+
+ </div>
+</section>
 
 </main>
 
 <footer>
-  <div class="container footer-content">
+ <div class="container">
 
-    <div>
-      <strong>NeoClinIQ</strong>
-      <p>Visual Clinical Education</p>
-    </div>
+  <h3 style="color:white">NeoClinIQ</h3>
+  <p>Think Like a Pharmacist</p>
 
-    <div class="footer-company">
+  <p>
+   An initiative of
+   <a href="https://maplecanadaramadan.ca/">
+    Maple Canada Ramadan
+   </a>
+  </p>
 
-      <p>An initiative of Maple Canada Ramadan</p>
+  <p>
+   <a href="mailto:neocliniq@maplecanadaramadan.ca">
+    neocliniq@maplecanadaramadan.ca
+   </a>
+  </p>
 
-      <p>
-        &copy; 2026 15095271 Canada Inc., operating as
-        Maple Canada Ramadan. All rights reserved.
-      </p>
+  <p class="small">
+   NeoClinIQ is an independent educational initiative
+   and is not affiliated with or endorsed by PEBC.
+   Content is for education and does not replace
+   professional judgment or individualized patient care.
+  </p>
 
-    </div>
+  <p class="small">
+   &copy; 2026 15095271 Canada Inc.,
+   operating as Maple Canada Ramadan.
+   All rights reserved.
+  </p>
 
-  </div>
+ </div>
 </footer>
 
 </body>
