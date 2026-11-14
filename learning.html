@@ -29,7 +29,7 @@ import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
 const CONFIG=Object.freeze({
  SUPABASE_URL:"https://uxnqoglkqptnslsdowxn.supabase.co",
  SUPABASE_PUBLISHABLE_KEY:"sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA",
- ENTITLEMENTS_ENDPOINT:"",
+ ENTITLEMENTS_ENDPOINT:"https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/website-get-entitlements",
  CHECKOUT_ENDPOINT:"https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/website-create-checkout",
  LIVE_CHECKOUT_ENABLED:false
 });
@@ -48,7 +48,7 @@ function render(){
  $("auth-status").textContent=!ready?"Authentication awaits the public Supabase publishable key.":session?"Signed in securely.":"Sign in or create an account.";
  for(const p of ["mcq","osce"]){
   const e=entitlements?.[p],el=$(p+"-access");
-  if(!entitlements){el.textContent="Access cannot be verified until the secure entitlement endpoint is configured.";el.className="status warn"}
+  if(!entitlements){el.textContent="Checking your program access…";el.className="status warn"}
   else if(isActive(e)){el.textContent="Active until "+date(e.expires_at)+(e.extension_used?" · Extension used":" · Extension available");el.className="status"}
   else{el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"");el.className="status warn"}
   const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements);
