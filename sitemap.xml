@@ -1,6 +1,8 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://neocliniq.maplecanadaramadan.ca/</loc>
-  </url>
+  <url><loc>https://neocliniq.maplecanadaramadan.ca/</loc></url>
+  <url><loc>https://neocliniq.maplecanadaramadan.ca/pebc-mcq.html</loc></url>
+  <url><loc>https://neocliniq.maplecanadaramadan.ca/pebc-osce.html</loc></url>
+  <url><loc>https://neocliniq.maplecanadaramadan.ca/mentorship.html</loc></url>
+  <url><loc>https://neocliniq.maplecanadaramadan.ca/faq.html</loc></url>
 </urlset>
