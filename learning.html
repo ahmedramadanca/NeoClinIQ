@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#082e50">
+<title>NeoClinIQ | Learning Portal</title><link rel="icon" href="/neocliniq-logo.jpeg">
+<style>
+:root{--navy:#082e50;--teal:#078d92;--ink:#24445b;--line:#dce9ef;--pale:#f5fafc}
+*{box-sizing:border-box}body{margin:0;background:var(--pale);color:var(--ink);font:16px/1.6 Arial,sans-serif}a{color:var(--teal)}header{background:white;border-bottom:1px solid var(--line)}.wrap{max-width:1080px;margin:auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.logo{width:160px}.hero{background:linear-gradient(110deg,#082e50,#117e8b);color:white;padding:34px 0}.hero h1{font-size:clamp(30px,4vw,46px);margin:0}.hero p{margin:5px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:20px;box-shadow:0 8px 24px #082e500c}h2{color:var(--navy);margin:0 0 10px}.price{font-size:30px;font-weight:800;color:var(--navy)}.price small{font-size:14px;font-weight:400}.muted{color:#61798b}.status{border-left:4px solid var(--teal);background:#eaf7f4;padding:13px 17px;border-radius:6px;margin:18px 0}.warn{border-left-color:#ba812a;background:#fff6e6}.error{border-left-color:#b74444;background:#fff0f0}.btn{border:0;border-radius:9px;padding:12px 17px;background:var(--teal);color:white;font:700 14px Arial;cursor:pointer}.btn:disabled{background:#dce7eb;color:#5c7180;cursor:not-allowed}.secondary{background:#e9f4f7;color:var(--navy)}.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.fields{display:grid;gap:12px}.fields label{font-weight:700}.fields input{display:block;width:100%;margin-top:5px;padding:12px;border:1px solid #bdcfd9;border-radius:8px;font-size:16px}.hidden{display:none!important}.detail{border-top:1px solid var(--line);padding:12px 0}footer{text-align:center;padding:30px;color:#61798b}@media(max-width:700px){.grid{grid-template-columns:1fr}.panel{padding:20px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><a href="/"><img class="logo" src="/neocliniq-logo.jpeg" alt="NeoClinIQ homepage"></a><nav><a href="/">Home</a> · <a href="/#programs">Programs</a> · <a href="/support/">Support</a></nav></div></header>
+<section class="hero"><div class="wrap"><h1>NeoClinIQ Learning Portal</h1><p>MCQ and OSCE learning access, in one secure account.</p></div></section>
+<main class="wrap">
+<div id="notice" class="status warn" role="status" aria-live="polite">Live purchases are disabled until final payment validation.</div>
+<section class="panel"><h2>Your account</h2><p id="auth-status" class="muted">Checking configuration…</p>
+<form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button></div></form>
+<div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p><button class="btn secondary" type="button" id="signout">Sign out</button></div>
+</section>
+<div class="grid">
+<section class="panel"><h2>PEBC MCQ</h2><div class="price">C$1,500 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$750.</p><div id="mcq-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="mcq-initial" class="btn" disabled>Purchase MCQ</button><button id="mcq-extension" class="btn secondary" disabled>Extend MCQ</button></div></section>
+<section class="panel"><h2>PEBC OSCE</h2><div class="price">C$1,800 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$900.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
+</div>
+<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> Four calendar months of access.</div><div class="detail"><strong>Extension:</strong> One discounted four-month extension per active cycle.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
+</main><footer>© <span id="year"></span> NeoClinIQ · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></footer>
+<script type="module">
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
+const CONFIG=Object.freeze({
+ SUPABASE_URL:"https://uxnqoglkqptnslsdowxn.supabase.co",
+ SUPABASE_PUBLISHABLE_KEY:"REPLACE_WITH_PUBLIC_SUPABASE_KEY",
+ ENTITLEMENTS_ENDPOINT:"",
+ CHECKOUT_ENDPOINT:"https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/website-create-checkout",
+ LIVE_CHECKOUT_ENABLED:false
+});
+const $=id=>document.getElementById(id);
+const ready=CONFIG.SUPABASE_PUBLISHABLE_KEY!=="REPLACE_WITH_PUBLIC_SUPABASE_KEY";
+const client=ready?createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY):null;
+let session=null,entitlements=null;
+$("year").textContent=new Date().getFullYear();
+function notice(s,type="warn"){$("notice").textContent=s;$("notice").className="status "+type}
+function isActive(e){return !!(e?.active&&e.expires_at&&new Date(e.expires_at).getTime()>Date.now())}
+function date(s){return new Intl.DateTimeFormat("en-CA",{dateStyle:"long",timeZone:"America/Toronto"}).format(new Date(s))}
+function render(){
+ $("auth-form").classList.toggle("hidden",!ready||!!session);
+ $("signed-in").classList.toggle("hidden",!session);
+ $("user-email").textContent=session?.user?.email||"";
+ $("auth-status").textContent=!ready?"Authentication awaits the public Supabase publishable key.":session?"Signed in securely.":"Sign in or create an account.";
+ for(const p of ["mcq","osce"]){
+  const e=entitlements?.[p],el=$(p+"-access");
+  if(!entitlements){el.textContent="Access cannot be verified until the secure entitlement endpoint is configured.";el.className="status warn"}
+  else if(isActive(e)){el.textContent="Active until "+date(e.expires_at)+(e.extension_used?" · Extension used":" · Extension available");el.className="status"}
+  else{el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"");el.className="status warn"}
+  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements);
+  $(p+"-initial").disabled=!(canBuy&&!isActive(e));
+  $(p+"-extension").disabled=!(canBuy&&isActive(e)&&e.extension_used===false);
+ }
+}
+async function loadAccess(){
+ entitlements=null;render();
+ if(!session||!CONFIG.ENTITLEMENTS_ENDPOINT)return;
+ try{
+  const res=await fetch(CONFIG.ENTITLEMENTS_ENDPOINT,{headers:{Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},cache:"no-store"});
+  if(!res.ok)throw Error("Unable to load access");
+  const data=await res.json();
+  if(!data||typeof data!=="object"||!("mcq" in data)||!("osce" in data))throw Error("Invalid access response");
+  entitlements=data;render();
+ }catch(e){console.error(e);notice("Unable to verify access. Please contact support.","error")}
+}
+$("auth-form").addEventListener("submit",async e=>{
+ e.preventDefault();if(!client)return;
+ const {error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+ notice(error?error.message:"Signed in successfully.",error?"error":"");
+ if(!error)$("password").value="";
+});
+$("signup").addEventListener("click",async()=>{
+ if(!client)return;
+ const email=$("email").value.trim(),password=$("password").value;
+ if(!email||!password){notice("Enter an email and password.");return}
+ const {error}=await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+"/learning.html"}});
+ notice(error?error.message:"Account request submitted. Check your email for confirmation.",error?"error":"");
+});
+$("reset").addEventListener("click",async()=>{
+ if(!client)return;const email=$("email").value.trim();
+ if(!email){notice("Enter your email address.");return}
+ const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+"/learning.html"});
+ notice(error?error.message:"If an account exists, reset instructions will be emailed.",error?"error":"");
+});
+$("signout").addEventListener("click",async()=>{if(client)await client.auth.signOut()});
+async function checkout(program,purchase_type){
+ if(!CONFIG.LIVE_CHECKOUT_ENABLED||!session||!entitlements)return;
+ try{
+  const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({program,purchase_type})});
+  const data=await r.json();if(!r.ok)throw Error(data.error||"Checkout unavailable");
+  const url=data.url||data.checkout_url;
+  if(typeof url!=="string"||!url.startsWith("https://checkout.stripe.com/"))throw Error("Invalid checkout destination");
+  location.assign(url);
+ }catch(e){notice(String(e.message||e),"error")}
+}
+for(const p of ["mcq","osce"])for(const t of ["initial","extension"])$(p+"-"+t).addEventListener("click",()=>checkout(p,t));
+if(client){
+ client.auth.onAuthStateChange((_event,next)=>{session=next;entitlements=null;render();setTimeout(()=>{if(next)loadAccess()},0)});
+ const {data,error}=await client.auth.getSession();if(error)notice("Could not restore session.","error");
+ session=data?.session||null;render();if(session)await loadAccess();
+}else{notice("Portal preview is available; authentication and live purchases are not yet enabled.");render()}
+if(new URLSearchParams(location.search).has("session_id")){notice("Checkout returned. Access is confirmed only after server-side payment verification.");history.replaceState(null,"",location.pathname)}
+</script></body></html>
