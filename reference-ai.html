@@ -51,7 +51,10 @@ function renderMarkdown(markdown){
      if(part.startsWith("**")&&part.endsWith("**")){const strong=document.createElement("strong");strong.textContent=part.slice(2,-2);parent.append(strong);}
      else{parent.append(document.createTextNode(part));}}
  };
- for(const line of markdown.split(/\r?\n/)){
+ const cleaned=markdown.replace(/\\([#*[\]])/g,"$1")
+   .replace(/[ \t]+(#{2,3}\s)/g,"\n\n$1")
+   .replace(/([^\n])(\s{2,})(?=(?:\d+\.\s|[-*]\s))/g,"$1\n");
+ for(const line of cleaned.split(/\r?\n/)){
    const t=line.trim();if(!t){container=null;continue;}
    const header=t.match(/^(#{1,3})\s+(.+)$/);
    if(header){const h=document.createElement(header[1].length===1?"h2":"h3");appendFormatted(h,header[2]);root.append(h);container=null;continue;}
