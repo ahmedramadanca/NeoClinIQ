@@ -63,7 +63,7 @@ function renderGlobalSearch(){
  const results=$("global-results");results.replaceChildren();
  if(!catalogue){$("global-search-status").textContent="Course catalogue unavailable. Chapter browsing remains available.";return}
  if(!q){$("global-search-status").textContent="Search all "+catalogue.chapters.length+" chapters and "+catalogue.assets.length+" published resources.";return}
- const words=q.split(/\\s+/).filter(Boolean);
+ const words=q.split(/\s+/).filter(Boolean);
  const chapterHits=catalogue.chapters.filter(c=>words.every(w=>(c.title+" "+c.module+" "+c.number).toLocaleLowerCase().includes(w)));
  const assetHits=catalogue.assets.filter(a=>words.every(w=>{const c=catalogue.chapters[a.chapter_number-1];return (a.title+" "+(c?.title||"")+" "+(c?.module||"")).toLocaleLowerCase().includes(w)}));
  const hits=[...chapterHits.map(c=>({type:"Chapter",title:c.title,subtitle:c.module+" · Chapter "+c.number,chapter:c.number})),...assetHits.map(a=>({type:a.kind==="video"?"Video":"PDF / infographic",title:a.title,subtitle:(catalogue.chapters[a.chapter_number-1]?.title||"Chapter")+" · Chapter "+a.chapter_number,chapter:a.chapter_number,asset:a}))].slice(0,80);
