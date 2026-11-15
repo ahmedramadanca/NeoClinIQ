@@ -46,17 +46,17 @@ function renderMarkdown(markdown){
  const root=el("answer");root.replaceChildren();root.style.whiteSpace="normal";
  let container=null;
  const appendFormatted=(parent,line)=>{
-   const re=/(\\*\\*[^*]+\\*\\*|\\[[0-9]{1,2}\\])/g;
+   const re=/(\*\*[^*]+\*\*|\[[0-9]{1,2}\])/g;
    for(const part of line.split(re)){if(!part)continue;
      if(part.startsWith("**")&&part.endsWith("**")){const strong=document.createElement("strong");strong.textContent=part.slice(2,-2);parent.append(strong);}
      else{parent.append(document.createTextNode(part));}}
  };
- for(const line of markdown.split(/\\r?\\n/)){
+ for(const line of markdown.split(/\r?\n/)){
    const t=line.trim();if(!t){container=null;continue;}
-   const header=t.match(/^(#{1,3})\\s+(.+)$/);
+   const header=t.match(/^(#{1,3})\s+(.+)$/);
    if(header){const h=document.createElement(header[1].length===1?"h2":"h3");appendFormatted(h,header[2]);root.append(h);container=null;continue;}
-   const bullet=t.match(/^([-*]|\\d+\\.)\\s+(.+)$/);
-   if(bullet){const tag=/^\\d/.test(bullet[1])?"ol":"ul";if(!container||container.tagName.toLowerCase()!==tag){container=document.createElement(tag);root.append(container);}
+   const bullet=t.match(/^([-*]|\d+\.)\s+(.+)$/);
+   if(bullet){const tag=/^\d/.test(bullet[1])?"ol":"ul";if(!container||container.tagName.toLowerCase()!==tag){container=document.createElement(tag);root.append(container);}
      const li=document.createElement("li");appendFormatted(li,bullet[2]);container.append(li);continue;}
    const p=document.createElement("p");appendFormatted(p,t);root.append(p);container=null;
  }
