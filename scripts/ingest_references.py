@@ -37,7 +37,7 @@ def pending():
     while True:
         batch=db("GET","original_reference_documents",params={
           "select":"id,drive_file_id,title,mime_type",
-          "indexing_status":"eq.pending","order":"created_at.asc",
+          "indexing_status":"eq.pending","order":"created_at.asc,id.asc",
           "limit":100,"offset":offset}).json()
         if not batch: return
         yield from batch
@@ -89,9 +89,14 @@ def main():
     p.add_argument("--limit",type=int,default=0,help="0 means all pending")
     args=p.parse_args()
     docs=list(pending())
+    docs=list({doc["id"]:doc for doc in docs}.values())
     if args.limit: docs=docs[:args.limit]
     print(f"Processing {len(docs)} pending documents with {args.workers} workers",flush=True)
+    failures=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
         for i,(ident,status) in enumerate(pool.map(process,docs),1):
             print(f"{i}/{len(docs)} {ident}: {status}",flush=True)
+            if not status.startswith("indexed "): failures.append((ident,status))
+    print(f"Processed {len(docs)}; failures {len(failures)}",flush=True)
+    if failures: sys.exit(1)
 if __name__=="__main__": main()
