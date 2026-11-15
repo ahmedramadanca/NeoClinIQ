@@ -14,6 +14,7 @@ button{background:#0d6f82;color:white;border:0;border-radius:9px;padding:12px 20
 button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173d54}#status{min-height:25px}#answer{white-space:pre-wrap;line-height:1.65;overflow-wrap:anywhere}
 .source{padding:10px 14px;margin:9px 0;border-left:3px solid #0b8991;background:#f4fafb;border-radius:5px}
 [hidden]{display:none!important}
+.table-scroll{overflow-x:auto;max-width:100%;margin:18px 0}.clinical-table{border-collapse:collapse;width:100%;min-width:550px;font-size:14px}.clinical-table th,.clinical-table td{border:1px solid #cbdde5;padding:10px 12px;text-align:left;vertical-align:top;line-height:1.45}.clinical-table th{background:#e8f2f6;color:#143e56}.clinical-table tr:nth-child(even) td{background:#f7fbfd}#answer h2{margin-top:26px}#answer p{margin:9px 0}#answer li{margin:7px 0}
 </style></head><body><main class="shell">
 <header><a href="./">← NeoClinIQ</a><button id="signout" class="secondary" hidden>Sign out</button></header>
 <h1>Private Original-Reference Assistant</h1>
@@ -44,24 +45,49 @@ catch(err){setMessage(err.message||"Unable to sign in.");}finally{el("login-butt
 el("signout").addEventListener("click",async()=>{await sb.auth.signOut();el("answer").textContent="";el("citations").replaceChildren();await refresh();});
 function renderMarkdown(markdown){
  const root=el("answer");root.replaceChildren();root.style.whiteSpace="normal";
- let container=null;
- const appendFormatted=(parent,line)=>{
-   const re=/(\*\*[^*]+\*\*|\[[0-9]{1,2}\])/g;
-   for(const part of line.split(re)){if(!part)continue;
-     if(part.startsWith("**")&&part.endsWith("**")){const strong=document.createElement("strong");strong.textContent=part.slice(2,-2);parent.append(strong);}
-     else{parent.append(document.createTextNode(part));}}
+ const addInline=(node,txt)=>{
+   const parts=txt.split(/(\*\*[^*]+\*\*|\[[0-9]{1,2}\])/g);
+   for(const part of parts){
+     if(!part)continue;
+     if(part.startsWith("**")&&part.endsWith("**")){
+       const strong=document.createElement("strong");strong.textContent=part.slice(2,-2);node.append(strong);
+     }else node.append(document.createTextNode(part));
+   }
  };
- const cleaned=markdown.replace(/\\([#*[\]])/g,"$1")
-   .replace(/[ \t]+(#{2,3}\s)/g,"\n\n$1")
-   .replace(/([^\n])(\s{2,})(?=(?:\d+\.\s|[-*]\s))/g,"$1\n");
- for(const line of cleaned.split(/\r?\n/)){
-   const t=line.trim();if(!t){container=null;continue;}
-   const header=t.match(/^(#{1,3})\s+(.+)$/);
-   if(header){const h=document.createElement(header[1].length===1?"h2":"h3");appendFormatted(h,header[2]);root.append(h);container=null;continue;}
-   const bullet=t.match(/^([-*]|\d+\.)\s+(.+)$/);
-   if(bullet){const tag=/^\d/.test(bullet[1])?"ol":"ul";if(!container||container.tagName.toLowerCase()!==tag){container=document.createElement(tag);root.append(container);}
-     const li=document.createElement("li");appendFormatted(li,bullet[2]);container.append(li);continue;}
-   const p=document.createElement("p");appendFormatted(p,t);root.append(p);container=null;
+ const normalized=String(markdown).replace(/\\([#*[\]])/g,"$1")
+   .replace(/[ \t]+(#{2,3}\s)/g,"\n\n$1");
+ const lines=normalized.split(/\r?\n/);
+ let list=null;
+ for(let i=0;i<lines.length;i++){
+   const t=lines[i].trim();
+   if(!t){list=null;continue;}
+   if(t==="---"){root.append(document.createElement("hr"));list=null;continue;}
+   if(t.startsWith("|")&&i+1<lines.length && /^\|?[\s:|-]+\|?$/.test(lines[i+1].trim())){
+     const table=document.createElement("table");table.className="clinical-table";
+     const parseRow=line=>line.trim().replace(/^\||\|$/g,"").split("|").map(s=>s.trim());
+     const headings=parseRow(t), thead=document.createElement("thead"), headrow=document.createElement("tr");
+     for(const h of headings){const th=document.createElement("th");addInline(th,h);headrow.append(th);}
+     thead.append(headrow);table.append(thead);
+     const tbody=document.createElement("tbody");i++;
+     while(i+1<lines.length&&lines[i+1].trim().startsWith("|")){
+       const row=document.createElement("tr");
+       for(const cell of parseRow(lines[++i])){const td=document.createElement("td");addInline(td,cell);row.append(td);}
+       tbody.append(row);
+     }
+     table.append(tbody);
+     const frame=document.createElement("div");frame.className="table-scroll";frame.append(table);root.append(frame);list=null;continue;
+   }
+   const heading=t.match(/^(#{1,4})\s+(.+)$/);
+   if(heading){
+     const h=document.createElement(heading[1].length<3?"h2":"h3");addInline(h,heading[2]);root.append(h);list=null;continue;
+   }
+   const item=t.match(/^([-*]|\d+\.)\s+(.+)$/);
+   if(item){
+     const tag=/^\d/.test(item[1])?"ol":"ul";
+     if(!list||list.tagName.toLowerCase()!==tag){list=document.createElement(tag);root.append(list);}
+     const li=document.createElement("li");addInline(li,item[2]);list.append(li);continue;
+   }
+   const p=document.createElement("p");addInline(p,t);root.append(p);list=null;
  }
 }
 
