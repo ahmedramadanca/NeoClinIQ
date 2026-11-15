@@ -16,7 +16,7 @@ export default function NeoClinIQSIScreen({ supabase }: { supabase: Parameters<t
   };
   return <ScrollView contentContainerStyle={{ padding: 22, gap: 12 }}>
     <Text style={{fontSize: 25, fontWeight:"700", color:"#103d63"}}>NeoClinIQ SI — Super Intelligence</Text>
-    <Text>Source-grounded Canadian pharmacy study answers. Up to 45 clinical questions per hour for subscribed learners. Original reference PDFs remain private.</Text>
+    <Text>Source-grounded Canadian pharmacy study answers. Original reference PDFs remain private.</Text>
     <TextInput value={question} onChangeText={setQuestion} placeholder="Enter a clinical education question"
       multiline maxLength={3000} accessibilityLabel="Clinical education question"
       style={{ minHeight:130, borderWidth:1, borderColor:"#aac5cc", borderRadius:10, padding:14, textAlignVertical:"top" }} />
