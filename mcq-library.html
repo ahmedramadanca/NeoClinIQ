@@ -65,7 +65,7 @@ function renderGlobalSearch(){
  const q=$("global-search").value.trim().toLocaleLowerCase(),results=$("global-results");results.replaceChildren();
  if(!q){$("global-search-status").textContent=catalogue?"Search "+catalogue.chapters.length+" chapters and PDF contents.":"Loading course catalogue…";return}
  if(!catalogue){$("global-search-status").textContent="Loading catalogue…";return}
- const words=q.split(/\\s+/).filter(Boolean);
+ const words=q.split(/\s+/).filter(Boolean);
  const chapterHits=catalogue.chapters.filter(c=>words.every(w=>(c.title+" "+c.module+" "+c.number).toLocaleLowerCase().includes(w)));
  const assetHits=catalogue.assets.filter(a=>words.every(w=>{const c=catalogue.chapters[a.chapter_number-1];return (a.title+" "+(c?.title||"")+" "+(c?.module||"")).toLocaleLowerCase().includes(w)}));
  const addHit=(title,subtitle,type,click)=>{const b=document.createElement("button");b.type="button";b.className="global-hit";const left=document.createElement("span"),strong=document.createElement("strong"),sub=document.createElement("small"),tag=document.createElement("span");strong.textContent=title;sub.textContent=subtitle;tag.className="hit-type";tag.textContent=type;left.append(strong,sub);b.append(left,tag);b.addEventListener("click",()=>click(b));results.append(b)};
