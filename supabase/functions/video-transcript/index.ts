@@ -8,7 +8,7 @@ Deno.serve(async req=>{
  if(req.method==="OPTIONS")return new Response(null,{headers:cors});
  if(req.method!=="POST")return json({error:"Method not allowed"},405);
  try{
-  const jwt=req.headers.get("authorization")?.replace(/^Bearer\\s+/i,"");
+  const jwt=req.headers.get("authorization")?.replace(/^Bearer\s+/i,"");
   if(!jwt)return json({error:"Authentication required"},401);
   const url=Deno.env.get("SUPABASE_URL"),anon=Deno.env.get("SUPABASE_ANON_KEY"),service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),key=Deno.env.get("OPENAI_API_KEY");
   if(!url||!anon||!service||!key)return json({error:"Transcription service is not configured"},503);
@@ -21,20 +21,20 @@ Deno.serve(async req=>{
   const {data:entitlement,error:entError}=await admin.from("program_entitlements").select("active,expires_at").eq("user_id",user.id).eq("program","mcq").eq("active",true).maybeSingle();
   if(entError||!entitlement||entitlement.expires_at&&new Date(entitlement.expires_at).getTime()<=Date.now())return json({error:"MCQ access required"},403);
   // Reuse the existing access function to validate ownership and issue a short-lived signed media URL.
-  const access=await fetch(url+"/functions/v1/learning-access",{method:"POST",headers:{"Authorization":"Bearer "+jwt,"apikey":anon,"Content-Type":"application/json"},body:JSON.stringify({action:"get_media_url",assetId})});
+  const access=await fetch(url+"/functions/v1/learning-access",{method:"POST",headers:{"Authorization":"Bearer "+jwt,"apikey":anon,"Content-Type":"application/json"},body:JSON.stringify({action:"get_media_url",assetId,program:"mcq"})});
   if(!access.ok)return json({error:"Media access denied"},403);
   const media=await access.json();
   const source=media.url;
   if(typeof source!=="string"||!source.startsWith("https://"))return json({error:"No video URL"},404);
   // Only fetch trusted Google Drive / Supabase storage URLs. Never accept arbitrary client URLs.
   const parsed=new URL(source);
-  const trusted=parsed.hostname==="drive.google.com"||parsed.hostname==="www.googleapis.com"||parsed.hostname==="uxnqoglkqptnslsdowxn.supabase.co"||parsed.hostname.endsWith(".googleusercontent.com");
+  const trusted=parsed.hostname===new URL(url).hostname && parsed.pathname==="/functions/v1/learning-access" && parsed.searchParams.get("action")==="stream" && parsed.searchParams.get("assetId")===assetId && parsed.searchParams.get("scope")==="mcq";
   if(!trusted)return json({error:"Unsupported media host"},422);
-  const mediaResponse=await fetch(source,{redirect:"follow"});
+  const mediaResponse=await fetch(source,{redirect:"error"});
   if(!mediaResponse.ok)return json({error:"Media download failed"},502);
   const length=Number(mediaResponse.headers.get("content-length")||0);
   if(length>24*1024*1024)return json({error:"Video exceeds transcription upload limit; extract/compress audio first"},413);
-  const bytes=await mediaResponse.arrayBuffer();
+  if(!mediaResponse.body)return json({error:"Empty media stream"},502);const reader=mediaResponse.body.getReader();const parts:Uint8Array[]=[];let total=0;while(true){const {done,value}=await reader.read();if(done)break;total+=value.byteLength;if(total>24*1024*1024){await reader.cancel();return json({error:"Video exceeds transcription upload limit; extract/compress audio first"},413)}parts.push(value)}const bytes=new Uint8Array(total);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.byteLength}
   if(bytes.byteLength>24*1024*1024)return json({error:"Video exceeds transcription upload limit; extract/compress audio first"},413);
   const form=new FormData();
   form.append("file",new File([bytes],"lesson.mp4",{type:mediaResponse.headers.get("content-type")||"video/mp4"}));
