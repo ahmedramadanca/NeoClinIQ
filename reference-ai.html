@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>NeoClinIQ | Private Original-Reference Assistant</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#163c55;background:#f5fafc}*{box-sizing:border-box}
+body{margin:0}.shell{max-width:860px;margin:36px auto;padding:0 20px}header{display:flex;justify-content:space-between;align-items:center;gap:15px}a{color:#087e89}
+.card{background:white;padding:25px;border:1px solid #dce9ed;border-radius:18px;margin-top:22px;box-shadow:0 8px 25px #0e36500d}
+h1{font-size:clamp(25px,4vw,36px);margin:14px 0}.muted{color:#576f7c}label{display:block;margin:12px 0 5px;font-weight:650}
+input,textarea{width:100%;font:inherit;padding:12px;border:1px solid #a7bec8;border-radius:9px}textarea{min-height:135px;resize:vertical}
+button{background:#0d6f82;color:white;border:0;border-radius:9px;padding:12px 20px;font:inherit;font-weight:700;cursor:pointer;margin-top:12px}
+button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173d54}#status{min-height:25px}#answer{white-space:pre-wrap;line-height:1.65;overflow-wrap:anywhere}
+.source{padding:10px 14px;margin:9px 0;border-left:3px solid #0b8991;background:#f4fafb;border-radius:5px}
+[hidden]{display:none!important}
+</style></head><body><main class="shell">
+<header><a href="./">← NeoClinIQ</a><button id="signout" class="secondary" hidden>Sign out</button></header>
+<h1>Private Original-Reference Assistant</h1>
+<p class="muted">Administrator-only research tool. Answers use indexed clinical reference text, without providing access to original PDFs. Educational use only; verify clinical decisions independently.</p>
+<section class="card" id="login">
+<h2>Sign in</h2><p class="muted">Use your authorized NeoClinIQ administrator account. Access is enforced by Supabase, not this webpage.</p>
+<form id="login-form"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required>
+<label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
+<button id="login-button" type="submit">Sign in</button></form></section>
+<section class="card" id="research" hidden>
+<h2>Ask an original-reference question</h2>
+<form id="question-form"><label for="question">Clinical education question</label><textarea id="question" minlength="8" maxlength="3000" placeholder="Explain clinical considerations in chronic kidney disease using the indexed sources" required></textarea>
+<button id="ask-button" type="submit">Find evidence and answer</button></form>
+<p id="status" role="status" aria-live="polite"></p>
+<article id="answer" aria-live="polite"></article><div id="citations"></div>
+<p class="muted">Citations identify documents and indexed passage numbers; they are not download links. The original documents stay in restricted Google Drive storage.</p></section>
+<p id="message" role="alert"></p>
+</main>
+<script type="module">
+import {createClient} from "https://esm.sh/@supabase/supabase-js@2.49.8";
+const sb=createClient("https://uxnqoglkqptnslsdowxn.supabase.co","sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA",{auth:{persistSession:true,autoRefreshToken:true}});
+const el=id=>document.getElementById(id);
+const setMessage=(text)=>{el("message").textContent=text;};
+async function refresh(){const {data:{session}}=await sb.auth.getSession();el("login").hidden=!!session;el("research").hidden=!session;el("signout").hidden=!session;return session;}
+el("login-form").addEventListener("submit",async e=>{e.preventDefault();el("login-button").disabled=true;setMessage("");
+try{const {error}=await sb.auth.signInWithPassword({email:el("email").value,password:el("password").value});if(error)throw error;el("password").value="";await refresh();}
+catch(err){setMessage(err.message||"Unable to sign in.");}finally{el("login-button").disabled=false;}});
+el("signout").addEventListener("click",async()=>{await sb.auth.signOut();el("answer").textContent="";el("citations").replaceChildren();await refresh();});
+el("question-form").addEventListener("submit",async e=>{e.preventDefault();const question=el("question").value.trim();if(question.length<8)return;
+el("ask-button").disabled=true;el("status").textContent="Searching secured sources…";el("answer").textContent="";el("citations").replaceChildren();
+try{const {data:{session}}=await sb.auth.getSession();if(!session)throw new Error("Session expired; sign in again.");
+const r=await fetch("https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/original-reference-pilot",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:"sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA"},body:JSON.stringify({question})});
+const data=await r.json();if(!r.ok)throw new Error(data.error||"Search unavailable");
+el("answer").textContent=data.answer||"No answer returned.";
+for(const c of data.citations||[]){const item=document.createElement("div");item.className="source";item.textContent="["+c.ref+"] "+c.title+" — "+(c.collection||"Original reference")+" — indexed passage "+c.passageNumber;el("citations").append(item);}
+el("status").textContent=data.insufficient_evidence?"Insufficient source evidence":"Answer generated from indexed references";
+}catch(err){el("status").textContent="";setMessage(err.message||"Unable to search references");}finally{el("ask-button").disabled=false;}});
+sb.auth.onAuthStateChange(()=>{void refresh();});void refresh();
+</script></body></html>
