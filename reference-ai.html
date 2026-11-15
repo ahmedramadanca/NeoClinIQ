@@ -2,8 +2,8 @@
 <html lang="en-CA">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
-<title>NeoClinIQ | Private Original-Reference Assistant</title>
+<meta name="robots" content="noindex,nofollow"><meta name="description" content="NeoClinIQ SI — Super Intelligence: private Canadian pharmacy clinical learning with citations and up to 45 questions per hour."><meta name="referrer" content="no-referrer">
+<title>NeoClinIQ SI | Super Intelligence</title>
 <style>
 :root{font-family:system-ui,-apple-system,sans-serif;color:#163c55;background:#f5fafc}*{box-sizing:border-box}
 body{margin:0}.shell{max-width:860px;margin:36px auto;padding:0 20px}header{display:flex;justify-content:space-between;align-items:center;gap:15px}a{color:#087e89}
@@ -17,20 +17,20 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173
 .table-scroll{overflow-x:auto;max-width:100%;margin:18px 0}.clinical-table{border-collapse:collapse;width:100%;min-width:550px;font-size:14px}.clinical-table th,.clinical-table td{border:1px solid #cbdde5;padding:10px 12px;text-align:left;vertical-align:top;line-height:1.45}.clinical-table th{background:#e8f2f6;color:#143e56}.clinical-table tr:nth-child(even) td{background:#f7fbfd}#answer h2{margin-top:26px}#answer p{margin:9px 0}#answer li{margin:7px 0}
 </style></head><body><main class="shell">
 <header><a href="./">← NeoClinIQ</a><button id="signout" class="secondary" hidden>Sign out</button></header>
-<h1>Private Original-Reference Assistant</h1>
-<p class="muted">Private clinical education research tool for authorized members. Answers use indexed clinical reference text, without providing access to original PDFs. Educational use only; verify clinical decisions independently.</p>
+<h1>NeoClinIQ SI — Super Intelligence</h1>
+<p class="muted">NeoClinIQ SI is the private, source-grounded clinical learning assistant for authorized members. Answers use indexed clinical reference text, without providing access to original PDFs. Educational use only; verify clinical decisions independently.</p>
 <section class="card" id="login">
 <h2>Sign in</h2><p class="muted">Use your authorized NeoClinIQ account with an active subscription or administrator access. Access is enforced by Supabase, not this webpage.</p>
 <form id="login-form"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required>
 <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
 <button id="login-button" type="submit">Sign in</button></form></section>
 <section class="card" id="research" hidden>
-<h2>Ask an original-reference question</h2>
+<h2>Ask NeoClinIQ SI</h2><p class="muted">Up to <strong>45 clinical questions per hour</strong> for subscribed learners. Your questions are answered using indexed reference passages with source citations.</p>
 <form id="question-form"><label for="question">Clinical education question</label><textarea id="question" minlength="8" maxlength="3000" placeholder="Explain clinical considerations in chronic kidney disease using the indexed sources" required></textarea>
-<button id="ask-button" type="submit">Find evidence and answer</button></form>
+<button id="ask-button" type="submit">Ask NeoClinIQ SI</button></form>
 <p id="status" role="status" aria-live="polite"></p>
 <article id="answer" aria-live="polite"></article><div id="citations"></div>
-<p class="muted">Citations identify documents and indexed passage numbers; they are not download links. The original documents stay in restricted Google Drive storage.</p></section>
+<p class="muted">Citations identify documents and indexed passage numbers; they are not download links. The original documents stay in restricted Google Drive storage. NeoClinIQ SI does not provide PDF downloads.</p></section>
 <p id="message" role="alert"></p>
 </main>
 <script type="module">
@@ -92,7 +92,7 @@ function renderMarkdown(markdown){
 }
 
 el("question-form").addEventListener("submit",async e=>{e.preventDefault();const question=el("question").value.trim();if(question.length<8)return;
-el("ask-button").disabled=true;el("status").textContent="Searching secured sources…";el("answer").textContent="";el("citations").replaceChildren();
+el("ask-button").disabled=true;el("status").textContent="NeoClinIQ SI is searching your private reference library…";el("answer").textContent="";el("citations").replaceChildren();
 try{const {data:{session}}=await sb.auth.getSession();if(!session)throw new Error("Session expired; sign in again.");
 const r=await fetch("https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/original-reference-assistant",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:"sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA"},body:JSON.stringify({question})});
 const data=await r.json();if(!r.ok)throw new Error(data.error||"Search unavailable");
