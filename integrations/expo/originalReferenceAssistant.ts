@@ -1,8 +1,9 @@
 /**
- * NeoClinIQ original reference assistant integration for Expo/React Native.
+ * NeoClinIQ SI — Super Intelligence integration for Expo/React Native.
  * Pass the existing authenticated Supabase client from the app.
  * Never embed service_role keys, PDF links, or Google OAuth credentials in clients.
- * Requires a valid Supabase session and an active MCQ entitlement (or admin claim).
+ * Requires a valid Supabase session and a valid program entitlement (or admin claim).
+ * Subscriber allowance: 45 questions per UTC hour; administrators with trusted claims are exempt.
  */
 export type ReferenceCitation = {
   ref: number;
