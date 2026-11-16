@@ -773,6 +773,25 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 @media(max-width:1080px){.interactive-reference-nav{gap:8px;padding:0 2%}.interactive-brand{width:16%}.interactive-reference-nav nav{gap:7px}.interactive-reference-nav nav>a,.interactive-reference-nav summary{font-size:10px}.interactive-reference-nav .nav-main-cta{padding:9px 10px}}
 @media(max-width:760px){.interactive-reference-nav{display:none}.reference-mobile-header{display:flex}}
 
+
+/* Remove duplicated screenshot header while retaining the exact supplied art below it. */
+.reference-stage{aspect-ratio:1672/866;overflow:visible}
+.reference-stage .reference-art{position:relative;width:100%;height:auto;aspect-ratio:auto;margin-top:-4.485%;display:block;clip-path:inset(0 0 0 0)}
+.reference-stage{overflow:hidden}
+.interactive-reference-nav{height:8.85%;min-height:65px}
+.reference-brand-crop{display:block;width:min(19vw,300px);height:clamp(43px,4.5vw,73px);background-image:url('/launch-reference.jpg');background-repeat:no-repeat;background-size:585% auto;background-position:2.5% 0%;border-radius:4px}
+.interactive-brand{width:21%;max-width:310px}
+.reference-hotspots{pointer-events:none}
+.reference-hotspots .ref-link{pointer-events:auto}
+.ref-cta-platform{top:43.5%;height:8.7%}.ref-cta-method{top:43.5%;height:8.7%}
+.ref-card-clinical,.ref-card-assessment,.ref-card-mentor,.ref-card-si{top:64%;height:25%}
+.interactive-reference-nav details .nav-dropdown{opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease}
+.interactive-reference-nav details[open] .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.interactive-reference-nav details summary{user-select:none}
+.interactive-reference-nav details summary:focus-visible{outline:2px solid #54f5dd;outline-offset:5px}
+@media(max-width:760px){.reference-stage{aspect-ratio:auto}.reference-stage .reference-art{width:155%;max-width:none;margin-top:-6.9%;transform:translateX(-10%)}.reference-mobile-header{z-index:30}}
+@media(prefers-reduced-motion:reduce){.interactive-reference-nav details .nav-dropdown{transition:none}}
+
 </style>
 </head>
 
@@ -781,7 +800,7 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 <header class="reference-mobile-header"><a href="#top" aria-label="NeoClinIQ home"><img src="neocliniq-logo.jpeg" alt="NeoClinIQ"></a><details><summary>☰ Menu</summary><nav aria-label="Mobile navigation"><a href="#top">The Platform</a><a href="#clinical">Clinical Library</a><a href="#programs">PEBC MCQ</a><a href="#osce-preview">PEBC OSCE · Coming soon</a><a href="#super-intelligence">SI · Super Intelligence</a><a href="#mentorship">Mentorship</a><a href="#about">About</a><a href="/learning.html">Sign In</a><a href="#platform-features">Explore NeoClinIQ</a><a href="#app-film">App Film</a><a href="#founder">Founder</a><a href="#resources">Official Resources</a><a href="#connect">Contact &amp; Community</a></nav></details></header>
 <main id="top">
 <section class="reference-stage" aria-label="NeoClinIQ launch experience">
-<header class="interactive-reference-nav"><a class="interactive-brand" href="#top"><img src="/neocliniq-logo.jpeg" alt="NeoClinIQ home"></a><nav aria-label="Primary website menu">
+<header class="interactive-reference-nav"><a class="interactive-brand" href="#top" aria-label="NeoClinIQ home"><span class="reference-brand-crop" role="img" aria-label="NeoClinIQ Think Like a Pharmacist original logo"></span></a><nav aria-label="Primary website menu">
 <details><summary>⌂ The Platform</summary><div class="nav-dropdown"><a href="#platform-features">Platform overview</a><a href="#app-film">Discover the Method</a><a href="#books">Clinical book series</a><a href="#super-intelligence">SI · Super Intelligence</a></div></details>
 <details><summary>▣ Clinical Library</summary><div class="nav-dropdown"><a href="#clinical">Clinical library</a><a href="#books">12-volume series</a><a href="#resources">Official resources</a></div></details>
 <details><summary>◎ PEBC MCQ</summary><div class="nav-dropdown"><a href="#programs">MCQ preparation</a><a href="/learning.html">Student portal / Sign In</a><a href="#osce-preview">PEBC OSCE · Coming soon</a></div></details>
@@ -1395,5 +1414,20 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
   </div>
 </footer>
 
+<script>
+(function(){
+const menu=document.querySelector('.interactive-reference-nav');
+if(!menu)return;
+const dropdowns=[...menu.querySelectorAll('details')];
+dropdowns.forEach(item=>{
+ item.addEventListener('toggle',()=>{if(item.open)dropdowns.forEach(other=>{if(other!==item)other.open=false;});});
+ item.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{item.open=false;}));
+});
+document.addEventListener('pointerdown',event=>{if(!menu.contains(event.target))dropdowns.forEach(item=>item.open=false);});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){dropdowns.forEach(item=>item.open=false);}});
+const mobile=document.querySelector('.reference-mobile-header details');
+if(mobile){mobile.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{mobile.open=false;}));document.addEventListener('pointerdown',event=>{if(!mobile.contains(event.target))mobile.open=false;});}
+})();
+</script>
 </body>
 </html>
