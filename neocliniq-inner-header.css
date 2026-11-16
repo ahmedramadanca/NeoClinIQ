@@ -1,0 +1,13 @@
+/* Shared NeoClinIQ inner-page masthead. Original brand logo preserved. */
+.nc-site-header{position:relative;z-index:90;background:#fff!important;border-bottom:1px solid #dce9ef!important;box-shadow:0 4px 20px #082e5010;color:#082e50!important;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;padding:0!important;min-height:0!important}
+.nc-site-header *{box-sizing:border-box}
+.nc-site-header .nc-head-inner{max-width:1240px;margin:auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+.nc-site-header .nc-brand{display:inline-flex;align-items:center;flex-shrink:0;text-decoration:none!important;background:none!important;border:0!important;padding:0!important}
+.nc-site-header .nc-brand img{display:block;width:auto!important;height:64px!important;max-width:min(240px,55vw)!important;object-fit:contain}
+.nc-site-header .nc-links{display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:wrap;background:none!important;border:0!important;padding:0!important;width:auto!important}
+.nc-site-header .nc-links a{display:inline-flex;align-items:center;min-height:38px;padding:8px 11px;border-radius:9px;color:#123c55!important;background:transparent!important;text-decoration:none!important;font-size:13px!important;font-weight:650!important;line-height:1.3!important;white-space:nowrap}
+.nc-site-header .nc-links a:hover,.nc-site-header .nc-links a[aria-current="page"]{background:#e8f6f6!important;color:#087d84!important}
+.nc-site-header .nc-links .nc-account{background:#087f89!important;color:white!important;padding:10px 15px}
+.nc-site-header .nc-links .nc-account:hover{background:#076971!important;color:white!important}
+.nc-site-header .nc-signout{margin-left:8px}
+@media(max-width:800px){.nc-site-header .nc-head-inner{padding:10px 16px;gap:9px}.nc-site-header .nc-brand img{height:52px!important}.nc-site-header .nc-links{width:100%!important;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px!important}.nc-site-header .nc-links a{font-size:12px!important;padding:8px 10px}}
