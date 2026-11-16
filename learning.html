@@ -13,7 +13,7 @@
 <header class="nc-site-header"><div class="nc-head-inner"><a class="nc-brand" href="/" aria-label="NeoClinIQ homepage"><img src="/neocliniq-logo.jpeg" alt="NeoClinIQ official logo — Think Like a Pharmacist"></a><nav class="nc-links" aria-label="NeoClinIQ navigation"><a href="/">Home</a><a href="/features.html">Features</a><a href="/pebc-mcq.html">MCQ Course</a><a href="/mcq-library.html">MCQ Library</a><a href="/reference-ai.html">NeoClinIQ SI</a><a href="/mentorship.html">Mentorship</a><a href="/learning.html" aria-current="page" class="nc-account">My Account</a></nav></div></header>
 <section class="hero"><div class="wrap"><h1>NeoClinIQ Learning Portal</h1><p>MCQ and OSCE learning access, in one secure account.</p></div></section>
 <main class="wrap">
-<div id="notice" class="status warn" role="status" aria-live="polite">Live purchases are disabled until final payment validation.</div>
+<div id="notice" class="status warn" role="status" aria-live="polite">MCQ enrollment is open. Sign in to purchase four months of website access.</div>
 <section class="panel"><h2>Your account</h2><p id="auth-status" class="muted">Checking configuration…</p>
 <form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button></div></form>
 <div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p><button class="btn secondary" type="button" id="signout">Sign out</button></div>
@@ -53,7 +53,7 @@ function render(){
   if(!entitlements){el.textContent="Checking your program access…";el.className="status warn"}
   else if(isActive(e)){el.textContent="Active until "+date(e.expires_at)+(e.extension_used?" · Extension used":" · Extension available");el.className="status"}
   else{const grace=p==="mcq"&&canExtend(p,e);el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"")+(grace?" · Discounted extension available until "+date(new Date(new Date(e.expires_at).getTime()+42*86400000).toISOString()):"");el.className="status warn"}
-  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements);
+  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&p==="mcq"&&session&&entitlements);
   $(p+"-initial").disabled=!(canBuy&&!isActive(e));
   $(p+"-extension").disabled=!(canBuy&&canExtend(p,e));
  }
@@ -90,7 +90,7 @@ $("reset").addEventListener("click",async()=>{
 });
 $("signout").addEventListener("click",async()=>{if(client)await client.auth.signOut()});
 async function checkout(program,purchase_type){
- if(!CONFIG.LIVE_CHECKOUT_ENABLED||!session||!entitlements)return;
+ if(!CONFIG.LIVE_CHECKOUT_ENABLED||program!=="mcq"||!session||!entitlements)return;
  try{
   const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({program,purchaseType:purchase_type})});
   const data=await r.json();if(!r.ok)throw Error(data.error||"Checkout unavailable");
