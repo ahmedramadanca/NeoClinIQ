@@ -1,0 +1,18 @@
+{
+  "name": "NeoClinIQ MCQ Learning Library",
+  "short_name": "NeoClinIQ MCQ",
+  "id": "/mcq-library.html",
+  "start_url": "/mcq-library.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#082e50",
+  "theme_color": "#082e50",
+  "icons": [
+    {
+      "src": "/neocliniq-logo.jpeg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
