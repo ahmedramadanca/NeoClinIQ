@@ -19,11 +19,11 @@
 <div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p><button class="btn secondary" type="button" id="signout">Sign out</button></div>
 </section>
 <div class="grid">
-<section class="panel"><h2>PEBC MCQ</h2><div class="price">C$1,500 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$750.</p><div id="mcq-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="mcq-initial" class="btn" disabled>Purchase MCQ</button><button id="mcq-extension" class="btn secondary" disabled>Extend MCQ</button></div></section>
+<section class="panel"><h2>PEBC MCQ</h2><div class="price">C$1,500 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$750. You may extend before expiry or within 42 days afterward; the grace period does not include free access.</p><div id="mcq-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="mcq-initial" class="btn" disabled>Purchase MCQ</button><button id="mcq-extension" class="btn secondary" disabled>Extend MCQ</button></div></section>
 <section class="panel"><h2>PEBC OSCE</h2><div class="price">C$1,800 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$900.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
 </div>
 <section class="panel"><h2>MCQ learning resources</h2><p>Students with verified active MCQ access can use the dedicated library for videos, PDFs and infographics when the private resource service is configured.</p><a class="btn secondary" href="/mcq-library.html">Open MCQ resource library</a><p class="muted">Resource access requires an active MCQ entitlement. The library does not enable checkout or bypass payment validation.</p></section>
-<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> Four calendar months of access.</div><div class="detail"><strong>Extension:</strong> One discounted four-month extension per active cycle.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
+<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> Four calendar months of access.</div><div class="detail"><strong>MCQ extension:</strong> One discounted four-month extension per enrollment, purchasable before expiry or within 42 days afterward. Access stops at expiry unless renewed; an extension purchased after expiry provides four months from payment.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
 </main><footer>© <span id="year"></span> NeoClinIQ · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></footer>
 <script type="module">
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
@@ -41,6 +41,7 @@ let session=null,entitlements=null;
 $("year").textContent=new Date().getFullYear();
 function notice(s,type="warn"){$("notice").textContent=s;$("notice").className="status "+type}
 function isActive(e){return !!(e?.active&&e.expires_at&&new Date(e.expires_at).getTime()>Date.now())}
+function canExtend(program,e){if(!e?.active||e.extension_used!==false||!e.expires_at)return false;const expiry=new Date(e.expires_at).getTime();return Number.isFinite(expiry)&&(isActive(e)||(program==="mcq"&&Date.now()<=expiry+42*86400000))}
 function date(s){return new Intl.DateTimeFormat("en-CA",{dateStyle:"long",timeZone:"America/Toronto"}).format(new Date(s))}
 function render(){
  $("auth-form").classList.toggle("hidden",!ready||!!session);
@@ -51,10 +52,10 @@ function render(){
   const e=entitlements?.[p],el=$(p+"-access");
   if(!entitlements){el.textContent="Checking your program access…";el.className="status warn"}
   else if(isActive(e)){el.textContent="Active until "+date(e.expires_at)+(e.extension_used?" · Extension used":" · Extension available");el.className="status"}
-  else{el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"");el.className="status warn"}
+  else{const grace=p==="mcq"&&canExtend(p,e);el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"")+(grace?" · Discounted extension available until "+date(new Date(new Date(e.expires_at).getTime()+42*86400000).toISOString()):"");el.className="status warn"}
   const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements);
   $(p+"-initial").disabled=!(canBuy&&!isActive(e));
-  $(p+"-extension").disabled=!(canBuy&&isActive(e)&&e.extension_used===false);
+  $(p+"-extension").disabled=!(canBuy&&canExtend(p,e));
  }
 }
 async function loadAccess(){
@@ -91,7 +92,7 @@ $("signout").addEventListener("click",async()=>{if(client)await client.auth.sign
 async function checkout(program,purchase_type){
  if(!CONFIG.LIVE_CHECKOUT_ENABLED||!session||!entitlements)return;
  try{
-  const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({program,purchase_type})});
+  const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({program,purchaseType:purchase_type})});
   const data=await r.json();if(!r.ok)throw Error(data.error||"Checkout unavailable");
   const url=data.url||data.checkout_url;
   if(typeof url!=="string"||!url.startsWith("https://checkout.stripe.com/"))throw Error("Invalid checkout destination");
