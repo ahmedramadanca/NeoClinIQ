@@ -11,3 +11,10 @@
 .nc-site-header .nc-links .nc-account:hover{background:#076971!important;color:white!important}
 .nc-site-header .nc-signout{margin-left:8px}
 @media(max-width:800px){.nc-site-header .nc-head-inner{padding:10px 16px;gap:9px}.nc-site-header .nc-brand img{height:52px!important}.nc-site-header .nc-links{width:100%!important;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px!important}.nc-site-header .nc-links a{font-size:12px!important;padding:8px 10px}}
+
+/* Unified dark navy / teal masthead, matching the NeoClinIQ launch homepage. */
+.nc-site-header{background:linear-gradient(110deg,#041827,#0a354a)!important;border-bottom:1px solid #25c7b399!important;color:#e7fffb!important;box-shadow:0 8px 26px #041b2920!important}
+.nc-site-header .nc-links a{color:#e7fffb!important}
+.nc-site-header .nc-links a:hover,.nc-site-header .nc-links a[aria-current="page"]{background:#0c5763!important;color:#9af8e6!important}
+.nc-site-header .nc-links .nc-account{background:#078f87!important;color:#fff!important}
+.nc-site-header .nc-links .nc-account:hover{background:#0aa69c!important;color:#fff!important}
