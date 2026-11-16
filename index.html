@@ -821,6 +821,19 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 @media(max-width:1200px){.interactive-brand{width:clamp(190px,20vw,280px)!important}}
 @media(max-width:760px){section.reference-stage{padding:0!important}.reference-mobile-header{margin:0!important}}
 
+
+/* Complete tagline visibility and remove logo crop at header baseline */
+.interactive-reference-nav{height:clamp(92px,6.15vw,112px)!important;min-height:92px!important}
+.interactive-brand{align-self:stretch!important;display:flex!important;align-items:center!important;min-width:0}
+.reference-brand-crop{height:clamp(76px,5.6vw,102px)!important;background-size:500% auto!important;background-position:2.8% 0%!important;background-repeat:no-repeat!important}
+.interactive-reference-nav .nav-si-entry{display:inline-flex!important;align-items:center!important;gap:6px!important;color:#55f5da!important}
+.interactive-reference-nav .nav-si-entry img{display:block;width:31px;height:31px;object-fit:contain;border-radius:7px;box-shadow:0 0 8px #24e7ca44}
+.si-heading-with-icon{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+.si-heading-with-icon img{display:block;width:100px;height:100px;object-fit:contain;border-radius:20px;box-shadow:0 0 22px #18d4c63d}
+.si-heading-with-icon h2{margin:0}
+@media(max-width:1200px){.interactive-reference-nav .nav-si-entry img{width:26px;height:26px}.reference-brand-crop{background-size:500% auto!important}}
+@media(max-width:760px){.interactive-reference-nav{display:none!important}.si-heading-with-icon img{width:70px;height:70px}.si-heading-with-icon{gap:12px}}
+
 </style>
 </head>
 
@@ -835,7 +848,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 <details><summary>◎ PEBC MCQ</summary><div class="nav-dropdown"><a href="#programs">MCQ preparation</a><a href="/learning.html">Student portal / Sign In</a><a href="#osce-preview">PEBC OSCE · Coming soon</a></div></details>
 <details><summary>♧ Mentorship</summary><div class="nav-dropdown"><a href="#mentorship">Mentorship program</a><a href="#connect">Contact &amp; community</a></div></details>
 <details><summary>ⓘ About</summary><div class="nav-dropdown"><a href="#about">Our mission</a><a href="#founder">Founder</a><a href="#resources">Official resources</a><a href="#connect">Contact</a></div></details>
-<a class="nav-si-entry" href="/reference-ai.html">✦ SI</a><a class="nav-login" href="/learning.html">Sign In</a><a class="nav-main-cta" href="#platform-features">Explore NeoClinIQ →</a></nav></header>
+<a class="nav-si-entry" href="/reference-ai.html"><img src="/neocliniq-si-icon.png" alt="" width="31" height="31"> <span>SI</span></a><a class="nav-login" href="/learning.html">Sign In</a><a class="nav-main-cta" href="#platform-features">Explore NeoClinIQ →</a></nav></header>
 <div class="reference-art-window"><img class="reference-art" src="/launch-reference.jpg" alt="NeoClinIQ Canadian pharmacy education launch showcase with laptop, tablet, audio learning phone, MCQ practice, visual clinical library, mentorship, Ottawa skyline and Canadian flag" fetchpriority="high">
 <nav class="reference-hotspots" aria-label="NeoClinIQ launch artwork buttons">
 <a class="ref-link ref-platform" href="#platform-features" aria-label="The Platform"><span>The Platform</span></a>
@@ -850,7 +863,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 <a class="ref-link ref-card-clinical" href="#clinical" aria-label="Visual Clinical Library"><span>Visual Clinical Library</span></a>
 <a class="ref-link ref-card-assessment" href="#programs" aria-label="Practice and Assessment"><span>Practice and Assessment</span></a>
 <a class="ref-link ref-card-mentor" href="#mentorship" aria-label="Guided Mentorship"><span>Guided Mentorship</span></a>
-<a class="ref-link ref-card-si" href="#super-intelligence" aria-label="Clinical Intelligence and NeoClinIQ SI"><span>SI · Super Intelligence</span></a>
+<a class="ref-link ref-card-si" href="/reference-ai.html" aria-label="Open NeoClinIQ SI Super Intelligence"><span>SI · Super Intelligence</span></a>
 </nav></div>
 </section>
 <section class="reference-mobile-actions" aria-label="Explore NeoClinIQ"><div class="container"><a class="btn primary" href="#platform-features">Explore the Platform →</a><a class="btn outline" href="#app-film">▷ Discover the Method</a><a class="btn primary" href="#super-intelligence">✦ SI · Super Intelligence</a></div></section>
@@ -859,7 +872,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 <section id="super-intelligence" class="si-showcase" aria-labelledby="si-heading">
   <div class="container">
     <p class="eyebrow">NeoClinIQ Signature Innovation</p>
-    <h2 id="si-heading">SI <span style="color:#4aebd0">· Super Intelligence</span></h2>
+    <div class="si-heading-with-icon"><a href="/reference-ai.html" aria-label="Open NeoClinIQ SI"><img src="/neocliniq-si-icon.png" alt="NeoClinIQ SI icon" loading="lazy"></a><h2 id="si-heading">SI <span style="color:#4aebd0">· Super Intelligence</span></h2></div>
     <p class="lead">A distinctive, reference-grounded clinical learning experience designed to connect questions, explanations, and source-based reasoning in one NeoClinIQ environment.</p>
     <div class="si-grid">
       <div class="si-panel">
