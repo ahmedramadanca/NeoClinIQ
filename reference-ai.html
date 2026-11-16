@@ -14,6 +14,7 @@ button{background:#0d6f82;color:white;border:0;border-radius:9px;padding:12px 20
 button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173d54}#status{min-height:25px}#answer{white-space:pre-wrap;line-height:1.65;overflow-wrap:anywhere}
 .source{padding:10px 14px;margin:9px 0;border-left:3px solid #0b8991;background:#f4fafb;border-radius:5px}
 [hidden]{display:none!important}
+.voice-panel{background:linear-gradient(135deg,#083A63,#126B7B);color:#fff;border-radius:20px;padding:20px;margin:18px 0}.voice-panel h3{margin:0 0 8px;color:#fff}.voice-panel p{color:#D9EEF0;line-height:1.5}.voice-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.voice-controls button{margin-top:4px;background:#168F77}.voice-controls button.secondary{background:#E7F4F3;color:#083A63}.voice-controls button[aria-pressed=true]{background:#A93636}.voice-controls select{border-radius:9px;padding:10px;max-width:100%;background:white;color:#083A63}.voice-panel #voice-status{min-height:23px;font-size:13px}.voice-panel button:focus-visible{outline:3px solid #B5F0D9;outline-offset:3px}
 .table-scroll{overflow-x:auto;max-width:100%;margin:18px 0}.clinical-table{border-collapse:collapse;width:100%;min-width:550px;font-size:14px}.clinical-table th,.clinical-table td{border:1px solid #cbdde5;padding:10px 12px;text-align:left;vertical-align:top;line-height:1.45}.clinical-table th{background:#e8f2f6;color:#143e56}.clinical-table tr:nth-child(even) td{background:#f7fbfd}#answer h2{margin-top:26px}#answer p{margin:9px 0}#answer li{margin:7px 0}
 </style></head><body><main class="shell">
 <header><a href="./">← NeoClinIQ</a><button id="signout" class="secondary" hidden>Sign out</button></header>
@@ -26,7 +27,7 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173
 <button id="login-button" type="submit">Sign in</button></form></section>
 <section class="card" id="research" hidden>
 <h2>Ask NeoClinIQ SI</h2><p class="muted">Your clinical questions are answered using indexed reference passages with source citations.</p>
-<form id="question-form"><label for="question">Clinical education question</label><textarea id="question" minlength="8" maxlength="3000" placeholder="Explain clinical considerations in chronic kidney disease using the indexed sources" required></textarea>
+<section class="voice-panel" aria-label="SI Voice conversation"><h3>🎙 SI Voice — Clinical Learning Companion</h3><p>Speak a question, hear SI explain the answer, and continue the conversation. Voice input depends on browser support. Clinical responses remain grounded in NeoClinIQ references.</p><div class="voice-controls"><button type="button" id="voice-mic" aria-pressed="false">🎙 Start speaking</button><button type="button" id="voice-stop" class="secondary">■ Stop voice</button><label for="voice-language" style="margin:0;color:#fff">Language</label><select id="voice-language"><option value="en-CA">English (Canada)</option><option value="ar-EG">العربية (مصر)</option></select><label style="display:flex;align-items:center;gap:8px;margin:0;color:#fff"><input id="voice-autoplay" type="checkbox" checked style="width:auto"> Read answers aloud</label></div><p id="voice-status" role="status" aria-live="polite">Voice is off.</p></section><form id="question-form"><label for="question">Clinical education question</label><textarea id="question" minlength="8" maxlength="3000" placeholder="Explain clinical considerations in chronic kidney disease using the indexed sources" required></textarea>
 <button id="ask-button" type="submit">Ask NeoClinIQ SI</button></form>
 <p id="status" role="status" aria-live="polite"></p>
 <article id="answer" aria-live="polite"></article><div id="citations"></div>
@@ -91,6 +92,18 @@ function renderMarkdown(markdown){
  }
 }
 
+// Progressive enhancement: browser speech recognition and speech synthesis.
+// No API secrets or original reference files are exposed to the browser.
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+const voiceMic=el("voice-mic"),voiceStop=el("voice-stop"),voiceStatus=el("voice-status");
+let recognizer=null,voiceListening=false,voiceSubmitting=false;
+function stopVoice(){voiceListening=false;if(recognizer){try{recognizer.abort();}catch(_){}}if("speechSynthesis" in window)window.speechSynthesis.cancel();voiceMic.setAttribute("aria-pressed","false");voiceMic.textContent="🎙 Start speaking";voiceStatus.textContent="Voice stopped.";}
+function speakAnswer(text){if(!el("voice-autoplay").checked||!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const clean=String(text).replace(/\\[[0-9]{1,2}\\]/g,"").replace(/[#*|_]/g," ").slice(0,5500);const utterance=new SpeechSynthesisUtterance(clean);utterance.lang=el("voice-language").value;utterance.rate=0.96;utterance.onstart=()=>{voiceStatus.textContent="SI is speaking. Tap Stop voice to interrupt.";};utterance.onend=()=>{voiceStatus.textContent="Ready for your next question.";};utterance.onerror=()=>{voiceStatus.textContent="Audio playback was interrupted or unavailable.";};window.speechSynthesis.speak(utterance);}
+if(!SpeechRecognition){voiceMic.disabled=true;voiceStatus.textContent="Speech recognition is not supported in this browser. You can still type questions and use voice playback where supported.";}else{
+ voiceMic.addEventListener("click",()=>{if(voiceListening){stopVoice();return;}if("speechSynthesis" in window)window.speechSynthesis.cancel();recognizer=new SpeechRecognition();recognizer.lang=el("voice-language").value;recognizer.interimResults=true;recognizer.continuous=false;let transcript="";recognizer.onstart=()=>{voiceListening=true;voiceMic.setAttribute("aria-pressed","true");voiceMic.textContent="● Listening…";voiceStatus.textContent="Listening. Ask your clinical question.";};recognizer.onresult=event=>{transcript=Array.from(event.results).map(r=>r[0].transcript).join(" ");el("question").value=transcript;};recognizer.onerror=event=>{voiceStatus.textContent="Microphone: "+event.error+". Check browser microphone permissions.";};recognizer.onend=()=>{voiceListening=false;voiceMic.setAttribute("aria-pressed","false");voiceMic.textContent="🎙 Start speaking";if(transcript.trim().length>=8&&!voiceSubmitting){voiceSubmitting=true;voiceStatus.textContent="Searching clinical references…";el("question-form").requestSubmit();}else if(!transcript.trim())voiceStatus.textContent="No speech captured. Try again.";};try{recognizer.start();}catch(err){voiceStatus.textContent=err.message||"Unable to start microphone.";}});
+}
+voiceStop.addEventListener("click",stopVoice);
+el("signout").addEventListener("click",stopVoice);
 el("question-form").addEventListener("submit",async e=>{e.preventDefault();const question=el("question").value.trim();if(question.length<8)return;
 el("ask-button").disabled=true;el("status").textContent="NeoClinIQ SI is searching your private reference library…";el("answer").textContent="";el("citations").replaceChildren();
 try{const {data:{session}}=await sb.auth.getSession();if(!session)throw new Error("Session expired; sign in again.");
@@ -98,7 +111,7 @@ const r=await fetch("https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/origi
 const data=await r.json();if(!r.ok)throw new Error(data.error||"Search unavailable");
 renderMarkdown(data.answer||"No answer returned.");
 for(const c of data.citations||[]){const item=document.createElement("div");item.className="source";item.textContent="["+c.ref+"] "+c.title+" — "+(c.collection||"Original reference")+" — indexed passage "+c.passageNumber;el("citations").append(item);}
-el("status").textContent=data.insufficient_evidence?"Insufficient source evidence":"Answer generated from indexed references";
-}catch(err){el("status").textContent="";setMessage(err.message||"Unable to search references");}finally{el("ask-button").disabled=false;}});
+el("status").textContent=data.insufficient_evidence?"Insufficient source evidence":"Answer generated from indexed references";if(!data.insufficient_evidence)speakAnswer(data.answer||"");
+}catch(err){el("status").textContent="";setMessage(err.message||"Unable to search references");}finally{el("ask-button").disabled=false;voiceSubmitting=false;}});
 sb.auth.onAuthStateChange(()=>{void refresh();});void refresh();
 </script></body></html>
