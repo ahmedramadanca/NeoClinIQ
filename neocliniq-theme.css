@@ -1,0 +1,46 @@
+/* NeoClinIQ shared visual system — presentation only; 2026-11 */
+:root{--navy:#061e32;--teal:#0a9d99;--ink:#12374c;--line:#cde6e8;--pale:#f2fafb;--mint:#63f3d7}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at 90% 0%,#d9f7f0 0%,transparent 34%),linear-gradient(180deg,#eef8fb,#fbfdfe 50%,#edf8f8)!important;color:var(--ink)}
+body>header{background:linear-gradient(110deg,#041827,#0a354a)!important;border-bottom:1px solid #25c7b399!important;box-shadow:0 8px 26px #041b2920}
+body>header nav a,body>header .top nav a{color:#e7fffb!important;text-decoration:none}
+body>header nav a:hover,body>header nav a:focus-visible{color:#66f7df!important}
+body>header nav img,body>header .logo,body>header .top img{max-height:76px;object-fit:contain;border-radius:9px}
+.hero{background:radial-gradient(circle at 88% 23%,#1d9d9373,transparent 34%),linear-gradient(115deg,#041827,#073d52 57%,#087b78)!important;color:#fff!important;border-color:#20cbb5}
+.hero h1,.hero p,.hero .eyebrow{color:#fff}
+.hero .eyebrow{color:#9af8e6}
+.panel,.card,.module,.metric{border-color:#cce6e8!important;border-radius:18px!important;box-shadow:0 9px 30px #06324a0d;background:linear-gradient(155deg,#fff,#fbfefe)}
+h1,h2,h3{letter-spacing:-.02em}
+h2,h3{color:#07334c}
+a{transition:color .16s ease}
+.btn,.cta,button[type=submit]{border-radius:11px;transition:filter .2s,transform .2s}
+.btn:hover,.cta:hover,button[type=submit]:hover{filter:brightness(1.07)}
+input,select,textarea{border-radius:10px}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #3ee4d0!important;outline-offset:3px}
+footer{background:#051d30;color:#d2e9e9}
+footer a{color:#78eeda}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+/* SI assistant: matching page shell, title, voice and citations */
+body:has(.shell) .shell{max-width:1050px;margin:0 auto;padding:22px 22px 60px}
+body:has(.shell) .shell>header{background:linear-gradient(110deg,#041827,#0b3b50);margin:-22px -22px 26px;padding:16px max(22px,calc((100vw - 1050px)/2));border-bottom:1px solid #27c7b4;min-height:75px}
+body:has(.shell) .shell>header a{color:#aaf8e9;font-weight:800;text-decoration:none}
+body:has(.shell) .si-brand{background:linear-gradient(112deg,#061c31,#0b6470);border:1px solid #2ddac06b;border-radius:22px;padding:23px;margin:0 0 22px;box-shadow:0 13px 30px #06344b25}
+body:has(.shell) .si-brand h1{color:#fff}
+body:has(.shell) .si-brand-sub{color:#82f6e0}
+body:has(.shell) .si-brand img{box-shadow:0 0 25px #26e3cc5c}
+body:has(.shell) .voice-panel{background:linear-gradient(115deg,#061b30,#0b586b 70%,#087d76)!important;border:1px solid #36e4d081;box-shadow:0 12px 28px #06394b22}
+body:has(.shell) .voice-panel button:not([aria-pressed=true]){background:#078f87}
+body:has(.shell) .voice-panel button.secondary{background:#e4f8f3;color:#074353}
+body:has(.shell) #answer{line-height:1.75}
+body:has(.shell) .source{background:#eaf9f6;border-left-color:#09aa9e}
+body:has(.shell) button:not(.secondary){background:#087f89}
+body:has(.shell) button[aria-pressed=true]{background:#a93636}
+body:has(.shell) .card{background:#fff}
+/* Member portal */
+body:has(#notice) .hero{border-radius:0}
+body:has(#notice) .panel{border-top:3px solid #31cdbb}
+body:has(#notice) .btn:not(.secondary){background:linear-gradient(110deg,#087d88,#0ca58d)}
+/* Programme information pages */
+main>.hero{box-shadow:0 16px 32px #042c4018}
+main>.panel,main>.section .panel{border-top:3px solid #27c8b5}
+@media(max-width:600px){body:has(.shell) .shell>header{padding:13px 20px}body:has(.shell) .si-brand{padding:16px}body:has(.shell) .si-brand img{width:66px;height:66px}}
