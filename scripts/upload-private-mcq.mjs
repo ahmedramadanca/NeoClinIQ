@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 const [file, chapter] = process.argv.slice(2);
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!file || !/^\\d{1,3}$/.test(chapter ?? "")) {
+if (!file || !/^[0-9]{1,3}$/.test(chapter ?? "")) {
   console.error("Usage: SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/upload-private-mcq.mjs /path/to/authorized.pdf 20");
   process.exit(2);
 }
@@ -31,4 +31,8 @@ const upload = await fetch(`${base}/storage/v1/object/mcq-content/${objectPath}`
 });
 if (!upload.ok) throw new Error(`Upload failed (${upload.status}): ${(await upload.text()).slice(0,300)}`);
 console.log(JSON.stringify({ bucket: "mcq-content", objectPath, bytes: bytes.length, published: false }, null, 2));
-console.log("Verify anonymous denial separately using an unauthenticated request. Do not expose signed URLs.");
+const anonymous = await fetch(`${base}/storage/v1/object/mcq-content/${objectPath}`);
+if (anonymous.status !== 400 && anonymous.status !== 401 && anonymous.status !== 403 && anonymous.status !== 404) {
+  throw new Error(`SECURITY CHECK FAILED: anonymous request returned ${anonymous.status}`);
+}
+console.log(JSON.stringify({ anonymousAccessDenied: true, anonymousStatus: anonymous.status }));
