@@ -792,6 +792,25 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 @media(max-width:760px){.reference-stage{aspect-ratio:auto}.reference-stage .reference-art{width:155%;max-width:none;margin-top:-6.9%;transform:translateX(-10%)}.reference-mobile-header{z-index:30}}
 @media(prefers-reduced-motion:reduce){.interactive-reference-nav details .nav-dropdown{transition:none}}
 
+
+/* Pixel-aligned artwork crop: image header is physically clipped in a viewport, never overlapped. */
+.reference-stage{aspect-ratio:auto!important;overflow:visible!important;background:#041b2b}
+.interactive-reference-nav{position:relative!important;top:auto!important;left:auto!important;right:auto!important;height:clamp(72px,5.0vw,94px)!important;min-height:72px!important;z-index:100!important;overflow:visible!important}
+.reference-art-window{position:relative;width:100%;aspect-ratio:1672/863;overflow:hidden;line-height:0}
+.reference-stage .reference-art-window .reference-art{position:absolute!important;left:0!important;top:-9.05%!important;width:100%!important;height:auto!important;max-width:none!important;margin:0!important;transform:none!important;display:block!important;aspect-ratio:auto!important;clip-path:none!important}
+.reference-art-window .reference-hotspots{position:absolute;inset:0;z-index:2}
+.interactive-reference-nav .nav-dropdown{top:100%!important;left:-10px!important;margin-top:0!important;transform:translateY(-7px);pointer-events:none}
+.interactive-reference-nav details[open] .nav-dropdown{transform:translateY(0);pointer-events:auto}
+.interactive-reference-nav details:hover>.nav-dropdown,.interactive-reference-nav details:focus-within>.nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
+.interactive-reference-nav details:hover>summary{color:#56f5dd}
+.interactive-reference-nav details:hover>.nav-dropdown{display:block}
+@media(max-width:760px){
+ .interactive-reference-nav{display:none!important}
+ .reference-art-window{aspect-ratio:1672/863;overflow:hidden}
+ .reference-stage .reference-art-window .reference-art{width:100%!important;left:0!important;top:-9.05%!important;transform:none!important}
+ .reference-art-window .reference-hotspots{display:none}
+}
+
 </style>
 </head>
 
@@ -807,7 +826,7 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 <details><summary>♧ Mentorship</summary><div class="nav-dropdown"><a href="#mentorship">Mentorship program</a><a href="#connect">Contact &amp; community</a></div></details>
 <details><summary>ⓘ About</summary><div class="nav-dropdown"><a href="#about">Our mission</a><a href="#founder">Founder</a><a href="#resources">Official resources</a><a href="#connect">Contact</a></div></details>
 <a class="nav-si-entry" href="/reference-ai.html">✦ SI</a><a class="nav-login" href="/learning.html">Sign In</a><a class="nav-main-cta" href="#platform-features">Explore NeoClinIQ →</a></nav></header>
-<img class="reference-art" src="/launch-reference.jpg" alt="NeoClinIQ Canadian pharmacy education launch showcase with laptop, tablet, audio learning phone, MCQ practice, visual clinical library, mentorship, Ottawa skyline and Canadian flag" fetchpriority="high">
+<div class="reference-art-window"><img class="reference-art" src="/launch-reference.jpg" alt="NeoClinIQ Canadian pharmacy education launch showcase with laptop, tablet, audio learning phone, MCQ practice, visual clinical library, mentorship, Ottawa skyline and Canadian flag" fetchpriority="high">
 <nav class="reference-hotspots" aria-label="NeoClinIQ launch artwork buttons">
 <a class="ref-link ref-platform" href="#platform-features" aria-label="The Platform"><span>The Platform</span></a>
 <a class="ref-link ref-clinical" href="#clinical" aria-label="Clinical Library"><span>Clinical Library</span></a>
@@ -822,7 +841,7 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 <a class="ref-link ref-card-assessment" href="#programs" aria-label="Practice and Assessment"><span>Practice and Assessment</span></a>
 <a class="ref-link ref-card-mentor" href="#mentorship" aria-label="Guided Mentorship"><span>Guided Mentorship</span></a>
 <a class="ref-link ref-card-si" href="#super-intelligence" aria-label="Clinical Intelligence and NeoClinIQ SI"><span>SI · Super Intelligence</span></a>
-</nav>
+</nav></div>
 </section>
 <section class="reference-mobile-actions" aria-label="Explore NeoClinIQ"><div class="container"><a class="btn primary" href="#platform-features">Explore the Platform →</a><a class="btn outline" href="#app-film">▷ Discover the Method</a><a class="btn primary" href="#super-intelligence">✦ SI · Super Intelligence</a></div></section>
 <section class="si-launch-bar"><div class="container"><a class="si-launch-identity" href="/reference-ai.html"><img src="/neocliniq-si-icon.png" alt="NeoClinIQ SI icon"><span><strong>NeoClinIQ SI · Super Intelligence</strong><small>Ask. Understand. Reason. Explore our signature clinical learning experience.</small></span><b>Explore SI →</b></a><a class="si-osce-tag" href="#osce-preview">PEBC OSCE <span>Coming soon</span></a></div></section>
@@ -1420,8 +1439,14 @@ const menu=document.querySelector('.interactive-reference-nav');
 if(!menu)return;
 const dropdowns=[...menu.querySelectorAll('details')];
 dropdowns.forEach(item=>{
+ let closeTimer;
+ const close=()=>{clearTimeout(closeTimer);closeTimer=setTimeout(()=>{if(!item.matches(':hover')&&!item.contains(document.activeElement))item.open=false;},110);};
+ item.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen'){clearTimeout(closeTimer);dropdowns.forEach(other=>{if(other!==item)other.open=false;});item.open=true;}});
+ item.addEventListener('pointerleave',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen')close();});
+ item.addEventListener('focusin',()=>{clearTimeout(closeTimer);item.open=true;dropdowns.forEach(other=>{if(other!==item)other.open=false;});});
+ item.addEventListener('focusout',close);
  item.addEventListener('toggle',()=>{if(item.open)dropdowns.forEach(other=>{if(other!==item)other.open=false;});});
- item.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{item.open=false;}));
+ item.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{clearTimeout(closeTimer);item.open=false;}));
 });
 document.addEventListener('pointerdown',event=>{if(!menu.contains(event.target))dropdowns.forEach(item=>item.open=false);});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){dropdowns.forEach(item=>item.open=false);}});
