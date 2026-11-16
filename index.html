@@ -756,6 +756,23 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 .reference-mobile-actions{display:none}.si-launch-bar{background:linear-gradient(105deg,#041a2c,#07536a);border-block:1px solid #2fe9d061;padding:18px 0}.si-launch-bar .container{display:flex;align-items:center;justify-content:space-between;gap:20px}.si-launch-identity{display:flex;align-items:center;gap:17px;color:white;text-decoration:none;min-width:0}.si-launch-identity img{width:85px;height:85px;object-fit:contain;border-radius:18px;box-shadow:0 0 24px #1be5c844}.si-launch-identity span{display:flex;flex-direction:column;gap:5px}.si-launch-identity strong{font-size:clamp(20px,2.3vw,31px);color:#6ef7dc}.si-launch-identity small{font-size:14px;color:#ccebe9}.si-launch-identity b{white-space:nowrap;color:#75f4df}.si-osce-tag{flex-shrink:0;color:white;border:1px solid #8bd5d0;border-radius:12px;padding:12px 16px;text-decoration:none}.si-osce-tag span{display:block;font-size:12px;color:#7ff7d8}
 @media(max-width:760px){.reference-mobile-header{display:flex;background:#041b2d;align-items:center;justify-content:space-between;padding:10px 15px;position:relative;z-index:20}.reference-mobile-header img{width:145px;background:white;border-radius:8px;padding:3px}.reference-mobile-header details{position:relative;color:white}.reference-mobile-header summary{border:1px solid #69bfb9;padding:10px;border-radius:8px;cursor:pointer}.reference-mobile-header nav{position:absolute;right:0;top:100%;width:min(85vw,290px);background:#f8feff;border:1px solid #b9dbe2;box-shadow:0 12px 32px #0006;padding:8px;border-radius:12px;max-height:72vh;overflow:auto}.reference-mobile-header nav a{display:block;color:#072a41;text-decoration:none;padding:9px 12px;border-bottom:1px solid #deedf0}.reference-stage{overflow:hidden}.reference-art{width:155%;max-width:none;transform:translateX(-10%)}.reference-hotspots{display:none}.reference-mobile-actions{display:block;background:#051c30;padding:15px 0}.reference-mobile-actions .container{display:flex;flex-wrap:wrap;gap:10px}.reference-mobile-actions .btn{font-size:13px;padding:10px 13px}.si-launch-bar .container{flex-direction:column;align-items:stretch}.si-launch-identity{gap:10px}.si-launch-identity img{width:66px;height:66px}.si-launch-identity b{display:none}.si-osce-tag{align-self:flex-start}}
 
+
+/* Interactive menus replace the static screenshot navigation strip */
+.interactive-reference-nav{position:absolute;top:0;left:0;right:0;height:8.15%;z-index:10;background:linear-gradient(105deg,#041726,#092d42);border-bottom:1px solid #26d6ca66;display:flex;align-items:center;justify-content:space-between;padding:0 3.3%;gap:18px;line-height:1.3}
+.interactive-brand{width:20%;max-width:265px;display:flex;align-items:center}.interactive-brand img{width:100%;max-height:58px;object-fit:contain;object-position:left center;background:transparent;border-radius:4px}
+.interactive-reference-nav nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(5px,1.1vw,18px);flex:1;min-width:0}
+.interactive-reference-nav nav>a,.interactive-reference-nav summary{color:#eefcfe;text-decoration:none;font-size:clamp(10px,.9vw,15px);font-weight:700;white-space:nowrap;cursor:pointer;list-style:none}
+.interactive-reference-nav summary::-webkit-details-marker{display:none}.interactive-reference-nav summary:after{content:"⌄";padding-left:5px;color:#b9e9e9}
+.interactive-reference-nav details{position:relative}.interactive-reference-nav details[open] summary{color:#4af3d6}
+.nav-dropdown{position:absolute;top:calc(100% + 17px);left:-10px;min-width:215px;background:#f6fcff;border:1px solid #b2e6e5;box-shadow:0 16px 34px #0006;border-radius:12px;padding:8px;z-index:40}
+.nav-dropdown a{display:block;padding:10px 12px;border-radius:7px;color:#082d44;font-size:13px;font-weight:650;text-decoration:none}.nav-dropdown a:hover,.nav-dropdown a:focus-visible{background:#d5f7f1}
+.interactive-reference-nav .nav-si-entry{color:#57f2dc}.interactive-reference-nav .nav-login{border:1px solid #b7dce6;border-radius:9px;padding:10px 12px}
+.interactive-reference-nav .nav-main-cta{background:linear-gradient(110deg,#12cda0,#068780);border-radius:999px;padding:11px 16px}
+.interactive-reference-nav nav a:hover,.interactive-reference-nav summary:hover{color:#60f5df}
+.reference-hotspots .ref-platform,.reference-hotspots .ref-clinical,.reference-hotspots .ref-mcq,.reference-hotspots .ref-mentor,.reference-hotspots .ref-about,.reference-hotspots .ref-signin,.reference-hotspots .ref-explore{display:none}
+@media(max-width:1080px){.interactive-reference-nav{gap:8px;padding:0 2%}.interactive-brand{width:16%}.interactive-reference-nav nav{gap:7px}.interactive-reference-nav nav>a,.interactive-reference-nav summary{font-size:10px}.interactive-reference-nav .nav-main-cta{padding:9px 10px}}
+@media(max-width:760px){.interactive-reference-nav{display:none}.reference-mobile-header{display:flex}}
+
 </style>
 </head>
 
@@ -764,8 +781,15 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
 <header class="reference-mobile-header"><a href="#top" aria-label="NeoClinIQ home"><img src="neocliniq-logo.jpeg" alt="NeoClinIQ"></a><details><summary>☰ Menu</summary><nav aria-label="Mobile navigation"><a href="#top">The Platform</a><a href="#clinical">Clinical Library</a><a href="#programs">PEBC MCQ</a><a href="#osce-preview">PEBC OSCE · Coming soon</a><a href="#super-intelligence">SI · Super Intelligence</a><a href="#mentorship">Mentorship</a><a href="#about">About</a><a href="/learning.html">Sign In</a><a href="#platform-features">Explore NeoClinIQ</a><a href="#app-film">App Film</a><a href="#founder">Founder</a><a href="#resources">Official Resources</a><a href="#connect">Contact &amp; Community</a></nav></details></header>
 <main id="top">
 <section class="reference-stage" aria-label="NeoClinIQ launch experience">
+<header class="interactive-reference-nav"><a class="interactive-brand" href="#top"><img src="/neocliniq-logo.jpeg" alt="NeoClinIQ home"></a><nav aria-label="Primary website menu">
+<details><summary>⌂ The Platform</summary><div class="nav-dropdown"><a href="#platform-features">Platform overview</a><a href="#app-film">Discover the Method</a><a href="#books">Clinical book series</a><a href="#super-intelligence">SI · Super Intelligence</a></div></details>
+<details><summary>▣ Clinical Library</summary><div class="nav-dropdown"><a href="#clinical">Clinical library</a><a href="#books">12-volume series</a><a href="#resources">Official resources</a></div></details>
+<details><summary>◎ PEBC MCQ</summary><div class="nav-dropdown"><a href="#programs">MCQ preparation</a><a href="/learning.html">Student portal / Sign In</a><a href="#osce-preview">PEBC OSCE · Coming soon</a></div></details>
+<details><summary>♧ Mentorship</summary><div class="nav-dropdown"><a href="#mentorship">Mentorship program</a><a href="#connect">Contact &amp; community</a></div></details>
+<details><summary>ⓘ About</summary><div class="nav-dropdown"><a href="#about">Our mission</a><a href="#founder">Founder</a><a href="#resources">Official resources</a><a href="#connect">Contact</a></div></details>
+<a class="nav-si-entry" href="/reference-ai.html">✦ SI</a><a class="nav-login" href="/learning.html">Sign In</a><a class="nav-main-cta" href="#platform-features">Explore NeoClinIQ →</a></nav></header>
 <img class="reference-art" src="/launch-reference.jpg" alt="NeoClinIQ Canadian pharmacy education launch showcase with laptop, tablet, audio learning phone, MCQ practice, visual clinical library, mentorship, Ottawa skyline and Canadian flag" fetchpriority="high">
-<nav class="reference-hotspots" aria-label="NeoClinIQ launch navigation">
+<nav class="reference-hotspots" aria-label="NeoClinIQ launch artwork buttons">
 <a class="ref-link ref-platform" href="#platform-features" aria-label="The Platform"><span>The Platform</span></a>
 <a class="ref-link ref-clinical" href="#clinical" aria-label="Clinical Library"><span>Clinical Library</span></a>
 <a class="ref-link ref-mcq" href="#programs" aria-label="PEBC MCQ"><span>PEBC MCQ</span></a>
