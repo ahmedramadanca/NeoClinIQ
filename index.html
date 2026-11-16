@@ -811,6 +811,16 @@ a:focus-visible,summary:focus-visible{outline:3px solid #18a99b;outline-offset:4
  .reference-art-window .reference-hotspots{display:none}
 }
 
+
+/* Final layout corrections: override generic section padding causing 86px empty band. */
+section.reference-stage{padding:0!important;margin:0!important;display:block!important;scroll-margin-top:0}
+.reference-stage>.interactive-reference-nav{margin:0!important;padding-top:0!important;padding-bottom:0!important;align-items:center!important}
+.reference-stage .reference-art-window{margin:0!important;padding:0!important}
+.interactive-brand{width:clamp(230px,23vw,360px)!important;max-width:none!important;flex-shrink:0!important;overflow:visible}
+.reference-brand-crop{width:100%!important;height:clamp(56px,4.5vw,76px)!important;background-size:500% auto!important;background-position:2.8% 0%!important;background-color:transparent!important;overflow:visible}
+@media(max-width:1200px){.interactive-brand{width:clamp(190px,20vw,280px)!important}}
+@media(max-width:760px){section.reference-stage{padding:0!important}.reference-mobile-header{margin:0!important}}
+
 </style>
 </head>
 
