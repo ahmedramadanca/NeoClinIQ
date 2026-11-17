@@ -835,6 +835,13 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 @media(max-width:760px){.interactive-reference-nav{display:none!important}.si-heading-with-icon img{width:70px;height:70px}.si-heading-with-icon{gap:12px}}
 
 #meet-the-founder{scroll-margin-top:20px}
+
+/* Compact two-film switcher: shown only after both videos are available. */
+.film-select{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:26px auto 0}
+.film-select[hidden]{display:none!important}
+.film-select button{font:700 14px/1.3 inherit;font-family:inherit;cursor:pointer;padding:12px 18px;border-radius:999px;border:1px solid #78beba;background:#fff;color:#123f51}
+.film-select button[aria-pressed="true"]{background:#087e89;color:#fff;border-color:#087e89}
+.film-select button:focus-visible{outline:3px solid #35aa80;outline-offset:3px}
 </style>
 </head>
 
@@ -1107,6 +1114,10 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
       and Canadian pharmacy examination preparation.
     </p>
 
+    <div class="film-select" id="neocliniq-film-select" hidden aria-label="Choose introduction video">
+      <button type="button" data-video="neocliniq-ultimate-introduction.mp4" aria-pressed="true">Ultimate Introduction · 3 min</button>
+      <button type="button" data-video="neocliniq-launch-film.mp4" aria-pressed="false">Website Launch Film · 3 min</button>
+    </div>
     <div class="film-shell">
       <div class="film-inner">
         <video
@@ -1117,7 +1128,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
           playsinline
           preload="metadata"
           oncontextmenu="return false"
-          aria-label="NeoClinIQ App Launch Film">
+          id="neocliniq-feature-film" aria-label="NeoClinIQ App Launch Film">
 
           <source
             src="NeoClinIQ_App_Launch_Film.mp4"
@@ -1129,7 +1140,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
     </div>
 
     <p class="film-caption">
-      NeoClinIQ App Launch Film · Official Preview
+      <span id="neocliniq-film-caption">NeoClinIQ App Launch Film · Official Preview</span>
     </p>
 
     <div class="actions film-actions">
@@ -1476,6 +1487,29 @@ document.addEventListener('pointerdown',event=>{if(!menu.contains(event.target))
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){dropdowns.forEach(item=>item.open=false);}});
 const mobile=document.querySelector('.reference-mobile-header details');
 if(mobile){mobile.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{mobile.open=false;}));document.addEventListener('pointerdown',event=>{if(!mobile.contains(event.target))mobile.open=false;});}
+})();
+
+/* Activate the two launch films when both optimized MP4 files are published. */
+(async function(){
+ const buttons=document.querySelectorAll('#neocliniq-film-select button');
+ const selector=document.getElementById('neocliniq-film-select');
+ const video=document.getElementById('neocliniq-feature-film');
+ const caption=document.getElementById('neocliniq-film-caption');
+ if(!selector||!video||buttons.length!==2)return;
+ const urls=[...buttons].map(b=>b.dataset.video);
+ const available=await Promise.all(urls.map(async url=>{
+   try{const response=await fetch(url,{method:'HEAD',cache:'no-store'});return response.ok&&/video|octet-stream/i.test(response.headers.get('content-type')||'video/mp4');}catch{return false;}
+ }));
+ if(!available.every(Boolean))return;
+ selector.hidden=false;
+ function select(button){
+   [...buttons].forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+   video.pause();video.src=button.dataset.video;video.load();
+   video.setAttribute('aria-label',button.textContent.trim());
+   if(caption)caption.textContent=button.textContent.trim()+' · Official NeoClinIQ Video';
+ }
+ buttons.forEach(b=>b.addEventListener('click',()=>select(b)));
+ select(buttons[0]);
 })();
 </script>
 </body>
