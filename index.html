@@ -1114,8 +1114,9 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
       and Canadian pharmacy examination preparation.
     </p>
 
-    <div class="film-select" id="neocliniq-film-select" hidden aria-label="Choose introduction video">
-      <button type="button" data-video="neocliniq-ultimate-introduction.mp4" aria-pressed="true">Ultimate Introduction · 3 min</button>
+    <div class="film-select" id="neocliniq-film-select" aria-label="Choose NeoClinIQ video">
+      <button type="button" data-video="NeoClinIQ_App_Launch_Film.mp4" aria-pressed="true">Original App Launch Film</button>
+      <button type="button" data-video="neocliniq-ultimate-introduction.mp4" aria-pressed="false">Ultimate Introduction · 3 min</button>
       <button type="button" data-video="neocliniq-launch-film.mp4" aria-pressed="false">Website Launch Film · 3 min</button>
     </div>
     <div class="film-shell">
@@ -1489,27 +1490,21 @@ const mobile=document.querySelector('.reference-mobile-header details');
 if(mobile){mobile.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{mobile.open=false;}));document.addEventListener('pointerdown',event=>{if(!mobile.contains(event.target))mobile.open=false;});}
 })();
 
-/* Activate the two launch films when both optimized MP4 files are published. */
-(async function(){
- const buttons=document.querySelectorAll('#neocliniq-film-select button');
- const selector=document.getElementById('neocliniq-film-select');
+/* Keep the original app launch film as the default; offer both newer films alongside it. */
+(function(){
+ const buttons=[...document.querySelectorAll('#neocliniq-film-select button')];
  const video=document.getElementById('neocliniq-feature-film');
  const caption=document.getElementById('neocliniq-film-caption');
- if(!selector||!video||buttons.length!==2)return;
- const urls=[...buttons].map(b=>b.dataset.video);
- const available=await Promise.all(urls.map(async url=>{
-   try{const response=await fetch(url,{method:'HEAD',cache:'no-store'});return response.ok&&/video|octet-stream/i.test(response.headers.get('content-type')||'video/mp4');}catch{return false;}
- }));
- if(!available.every(Boolean))return;
- selector.hidden=false;
- function select(button){
-   [...buttons].forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
-   video.pause();video.src=button.dataset.video;video.load();
+ if(!video||buttons.length!==3)return;
+ buttons.forEach(button=>button.addEventListener('click',()=>{
+   if(button.getAttribute('aria-pressed')==='true')return;
+   buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+   video.pause();
+   video.src=button.dataset.video;
+   video.load();
    video.setAttribute('aria-label',button.textContent.trim());
    if(caption)caption.textContent=button.textContent.trim()+' · Official NeoClinIQ Video';
- }
- buttons.forEach(b=>b.addEventListener('click',()=>select(b)));
- select(buttons[0]);
+ }));
 })();
 </script>
 </body>
