@@ -23,6 +23,7 @@
 <section class="panel"><h2>PEBC OSCE <small style="display:inline-block;vertical-align:middle;font-size:12px;background:#e6f3f3;color:#075c61;border-radius:999px;padding:3px 10px">Coming soon</small></h2><div class="price">C$1,800 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$900. OSCE website purchases are not yet available.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
 </div>
 <section class="panel"><h2>MCQ learning resources</h2><p>Students with verified active MCQ access can use the dedicated library for videos, PDFs and infographics when the private resource service is configured.</p><a class="btn secondary" href="/mcq-library.html">Open MCQ resource library</a><p class="muted">Resource access requires an active MCQ entitlement. The library does not enable checkout or bypass payment validation.</p></section>
+<section id="admin-drive" class="panel hidden" aria-label="Administrator Google Drive connection"><h2>Administrator · Google Drive</h2><p>Reconnect the private Google Drive source used to securely stream NeoClinIQ learning resources. This action requires website administrator authorization.</p><div class="buttons"><button id="connect-drive" class="btn" type="button">Connect Google Drive</button></div><p id="drive-status" class="muted" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> Four calendar months of access.</div><div class="detail"><strong>MCQ extension:</strong> One discounted four-month extension per enrollment, purchasable before expiry or within 42 days afterward. Access stops at expiry unless renewed; an extension purchased after expiry provides four months from payment.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
 </main><footer>© <span id="year"></span> NeoClinIQ · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></footer>
 <script type="module">
@@ -47,6 +48,7 @@ function render(){
  $("auth-form").classList.toggle("hidden",!ready||!!session);
  $("signed-in").classList.toggle("hidden",!session);
  $("user-email").textContent=session?.user?.email||"";
+ $("admin-drive").classList.toggle("hidden",!session||session.user.email?.toLowerCase()!=="ahmed.ramadan.ca@gmail.com");
  $("auth-status").textContent=!ready?"Authentication awaits the public Supabase publishable key.":session?"Signed in securely.":"Sign in or create an account.";
  for(const p of ["mcq","osce"]){
   const e=entitlements?.[p],el=$(p+"-access");
@@ -89,6 +91,18 @@ $("reset").addEventListener("click",async()=>{
  notice(error?error.message:"If an account exists, reset instructions will be emailed.",error?"error":"");
 });
 $("signout").addEventListener("click",async()=>{if(client)await client.auth.signOut()});
+$("connect-drive").addEventListener("click",async()=>{
+ if(!session)return;
+ const button=$("connect-drive"),status=$("drive-status");button.disabled=true;status.textContent="Starting secure Google authorization…";
+ try{
+  const response=await fetch(CONFIG.SUPABASE_URL+"/functions/v1/google-drive-oauth",{method:"POST",headers:{"Authorization":"Bearer "+session.access_token,"apikey":CONFIG.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:"{}",cache:"no-store"});
+  const result=await response.json();
+  if(!response.ok)throw Error(result.error||"Unable to start Google authorization");
+  const url=new URL(result.authorizationUrl);
+  if(url.protocol!=="https:"||url.hostname!=="accounts.google.com"||url.pathname!=="/o/oauth2/v2/auth")throw Error("Unexpected authorization destination");
+  location.assign(url.href);
+ }catch(error){status.textContent=error.message||"Authorization could not start";button.disabled=false}
+});
 async function checkout(program,purchase_type){
  if(!CONFIG.LIVE_CHECKOUT_ENABLED||program!=="mcq"||!session||!entitlements)return;
  try{
