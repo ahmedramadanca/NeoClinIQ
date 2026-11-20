@@ -10,15 +10,11 @@ def required(k):
  if not v: raise RuntimeError("Missing required GitHub Actions secret: "+k)
  return v
 db=create_client(required("SUPABASE_URL"),required("SUPABASE_SERVICE_ROLE_KEY"))
-token_response=requests.post("https://oauth2.googleapis.com/token",data={
- "client_id":required("GOOGLE_CLIENT_ID"),
- "client_secret":required("GOOGLE_CLIENT_SECRET"),
- "refresh_token":required("GOOGLE_REFRESH_TOKEN"),
- "grant_type":"refresh_token"},timeout=30)
-token_response.raise_for_status()
-token=token_response.json()["access_token"]
 session=requests.Session()
-session.headers["Authorization"]="Bearer "+token
+def private_pdf_url(id):
+ response=session.post(required("SUPABASE_URL").rstrip("/")+"/functions/v1/website-osce-drive",headers={"Authorization":"Bearer "+required("SUPABASE_SERVICE_ROLE_KEY"),"Content-Type":"application/json"},json={"action":"worker-open","id":id},timeout=30)
+ response.raise_for_status()
+ return response.json()["url"]
 
 def save(id,number,text,words):
  db.table("osce_ocr_pages").upsert({"drive_file_id":id,"page_number":number,"page_text":text[:100000],"ocr_words":words[:10000]}).execute()
@@ -29,8 +25,7 @@ def process(item):
  done={p["page_number"] for p in existing}
  for attempt in range(4):
   try:
-   r=session.get("https://www.googleapis.com/drive/v3/files/"+id,params={"alt":"media"},timeout=180)
-   if r.status_code==401: raise RuntimeError("Google access token expired; rerun job")
+   r=session.get(private_pdf_url(id),timeout=180)
    r.raise_for_status()
    doc=fitz.open(stream=r.content,filetype="pdf")
    for idx,page in enumerate(doc):
