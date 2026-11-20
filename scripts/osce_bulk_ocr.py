@@ -18,7 +18,7 @@ db=create_client(SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY)
 print("Supabase project host:", SUPABASE_URL.split("//",1)[-1],flush=True)
 session=requests.Session()
 def private_pdf_url(id):
- response=session.post(required("SUPABASE_URL").rstrip("/")+"/functions/v1/website-osce-drive",headers={"Authorization":"Bearer "+required("SUPABASE_SERVICE_ROLE_KEY"),"Content-Type":"application/json"},json={"action":"worker-open","id":id},timeout=30)
+ response=session.post(required("SUPABASE_URL").rstrip("/")+"/functions/v1/website-osce-drive",headers={"apikey":SUPABASE_SERVICE_ROLE_KEY,"Content-Type":"application/json"},json={"action":"worker-open","id":id},timeout=30)
  response.raise_for_status()
  return response.json()["url"]
 
@@ -59,6 +59,7 @@ def process(item):
    return True
   except Exception as e:
    print("RETRY",id,attempt,str(e),flush=True)
+   if "401 Client Error" in str(e) or "403 Client Error" in str(e): raise RuntimeError("Private PDF authentication failed; stopping instead of retrying all 471 PDFs") from e
    if attempt==3:return False
    time.sleep(2**attempt)
  return False
