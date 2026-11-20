@@ -9,7 +9,12 @@ def required(k):
  v=os.getenv(k)
  if not v: raise RuntimeError("Missing required GitHub Actions secret: "+k)
  return v
-db=create_client(required("SUPABASE_URL"),required("SUPABASE_SERVICE_ROLE_KEY"))
+SUPABASE_URL=required("SUPABASE_URL").rstrip("/")
+SUPABASE_SERVICE_ROLE_KEY=required("SUPABASE_SERVICE_ROLE_KEY")
+if not SUPABASE_URL.endswith(".supabase.co") or "/functions/" in SUPABASE_URL or "/rest/" in SUPABASE_URL:
+ raise RuntimeError("SUPABASE_URL must be the Supabase project base URL ending in .supabase.co (not the API Settings page, an /rest/v1 URL, or an Edge Function URL)")
+db=create_client(SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY)
+print("Supabase project host:", SUPABASE_URL.split("//",1)[-1],flush=True)
 session=requests.Session()
 def private_pdf_url(id):
  response=session.post(required("SUPABASE_URL").rstrip("/")+"/functions/v1/website-osce-drive",headers={"Authorization":"Bearer "+required("SUPABASE_SERVICE_ROLE_KEY"),"Content-Type":"application/json"},json={"action":"worker-open","id":id},timeout=30)
