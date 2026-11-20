@@ -9,10 +9,11 @@ def required(k):
  v=os.getenv(k)
  if not v: raise RuntimeError("Missing required GitHub Actions secret: "+k)
  return v
-SUPABASE_URL=required("SUPABASE_URL").rstrip("/")
+SUPABASE_URL=required("SUPABASE_URL").strip().rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY=required("SUPABASE_SERVICE_ROLE_KEY")
-if not SUPABASE_URL.endswith(".supabase.co") or "/functions/" in SUPABASE_URL or "/rest/" in SUPABASE_URL:
- raise RuntimeError("SUPABASE_URL must be the Supabase project base URL ending in .supabase.co (not the API Settings page, an /rest/v1 URL, or an Edge Function URL)")
+EXPECTED_PROJECT_HOST="uxnqoglkqptnslsdowxn.supabase.co"
+if SUPABASE_URL != "https://"+EXPECTED_PROJECT_HOST:
+ raise RuntimeError("SUPABASE_URL secret must be https://"+EXPECTED_PROJECT_HOST+"; check GitHub Actions repository secrets.")
 db=create_client(SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY)
 print("Supabase project host:", SUPABASE_URL.split("//",1)[-1],flush=True)
 session=requests.Session()
