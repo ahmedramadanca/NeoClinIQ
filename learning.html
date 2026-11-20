@@ -13,18 +13,18 @@
 <header class="nc-site-header"><div class="nc-head-inner"><a class="nc-brand" href="/" aria-label="NeoClinIQ homepage"><img src="/neocliniq-logo.jpeg" alt="NeoClinIQ official logo — Think Like a Pharmacist"></a><nav class="nc-links" aria-label="NeoClinIQ navigation"><a href="/">Home</a><a href="/features.html">Features</a><a href="/pebc-mcq.html">MCQ Course</a><a href="/mcq-library.html">MCQ Library</a><a href="/reference-ai.html">NeoClinIQ SI</a><a href="/mentorship.html">Mentorship</a><a href="/learning.html" aria-current="page" class="nc-account">My Account</a></nav></div></header>
 <section class="hero"><div class="wrap"><h1>NeoClinIQ Learning Portal</h1><p>MCQ and OSCE learning access, in one secure account.</p></div></section>
 <main class="wrap">
-<div id="notice" class="status warn" role="status" aria-live="polite">MCQ enrollment is open. Sign in to purchase four months of website access.</div>
+<div id="notice" class="status warn" role="status" aria-live="polite">MCQ and OSCE enrollment are open. Sign in to choose your program.</div>
 <section class="panel"><h2>Your account</h2><p id="auth-status" class="muted">Checking configuration…</p>
 <form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button></div></form>
 <div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p><button class="btn secondary" type="button" id="signout">Sign out</button></div>
 </section>
 <div class="grid">
 <section class="panel"><h2>PEBC MCQ</h2><div class="price">C$1,500 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$750. You may extend before expiry or within 42 days afterward; the grace period does not include free access.</p><div id="mcq-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="mcq-initial" class="btn" disabled>Purchase MCQ</button><button id="mcq-extension" class="btn secondary" disabled>Extend MCQ</button></div></section>
-<section class="panel"><h2>PEBC OSCE <small style="display:inline-block;vertical-align:middle;font-size:12px;background:#e6f3f3;color:#075c61;border-radius:999px;padding:3px 10px">Coming soon</small></h2><div class="price">C$1,800 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$900. OSCE website purchases are not yet available.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
+<section class="panel"><h2>PEBC OSCE</h2><div class="price">C$1,800 <small>initial / 16 weeks</small></div><p>One optional 4-week extension: C$900. Extend before expiry or within 42 days afterward. The grace period does not provide learning access.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
 </div>
 <section class="panel"><h2>MCQ learning resources</h2><p>Students with verified active MCQ access can use the dedicated library for videos, PDFs and infographics when the private resource service is configured.</p><a class="btn secondary" href="/mcq-library.html">Open MCQ resource library</a><p class="muted">Resource access requires an active MCQ entitlement. The library does not enable checkout or bypass payment validation.</p></section>
 <section id="admin-drive" class="panel hidden" aria-label="Administrator Google Drive connection"><h2>Administrator · Google Drive</h2><p>Reconnect the private Google Drive source used to securely stream NeoClinIQ learning resources. This action requires website administrator authorization.</p><div class="buttons"><button id="connect-drive" class="btn" type="button">Connect Google Drive</button></div><p id="drive-status" class="muted" role="status" aria-live="polite"></p></section>
-<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> Four calendar months of access.</div><div class="detail"><strong>MCQ extension:</strong> One discounted four-month extension per enrollment, purchasable before expiry or within 42 days afterward. Access stops at expiry unless renewed; an extension purchased after expiry provides four months from payment.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
+<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> MCQ: four calendar months. OSCE: 16 weeks.</div><div class="detail"><strong>Extensions:</strong> One discounted extension per enrollment, purchasable before expiry or within 42 days afterward. MCQ adds four calendar months; OSCE adds four weeks. Access stops at expiry during the grace period. An extension purchased after expiry starts a new extension period on payment.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets. After the 42-day grace period, a discounted extension is no longer available.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
 </main><footer>© <span id="year"></span> NeoClinIQ · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></footer>
 <script type="module">
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
@@ -42,7 +42,7 @@ let session=null,entitlements=null;
 $("year").textContent=new Date().getFullYear();
 function notice(s,type="warn"){$("notice").textContent=s;$("notice").className="status "+type}
 function isActive(e){return !!(e?.active&&e.expires_at&&new Date(e.expires_at).getTime()>Date.now())}
-function canExtend(program,e){if(!e?.active||e.extension_used!==false||!e.expires_at)return false;const expiry=new Date(e.expires_at).getTime();return Number.isFinite(expiry)&&(isActive(e)||(program==="mcq"&&Date.now()<=expiry+42*86400000))}
+function canExtend(program,e){if(!e?.active||e.extension_used!==false||!e.expires_at)return false;const expiry=new Date(e.expires_at).getTime();return Number.isFinite(expiry)&&(isActive(e)||(Date.now()<=expiry+42*86400000))}
 function date(s){return new Intl.DateTimeFormat("en-CA",{dateStyle:"long",timeZone:"America/Toronto"}).format(new Date(s))}
 function render(){
  $("auth-form").classList.toggle("hidden",!ready||!!session);
@@ -54,8 +54,8 @@ function render(){
   const e=entitlements?.[p],el=$(p+"-access");
   if(!entitlements){el.textContent="Checking your program access…";el.className="status warn"}
   else if(isActive(e)){el.textContent="Active until "+date(e.expires_at)+(e.extension_used?" · Extension used":" · Extension available");el.className="status"}
-  else{const grace=p==="mcq"&&canExtend(p,e);el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"")+(grace?" · Discounted extension available until "+date(new Date(new Date(e.expires_at).getTime()+42*86400000).toISOString()):"");el.className="status warn"}
-  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&p==="mcq"&&session&&entitlements);
+  else{const grace=canExtend(p,e);el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"")+(grace?" · Discounted extension available until "+date(new Date(new Date(e.expires_at).getTime()+42*86400000).toISOString()):"");el.className="status warn"}
+  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements);
   $(p+"-initial").disabled=!(canBuy&&!isActive(e));
   $(p+"-extension").disabled=!(canBuy&&canExtend(p,e));
  }
@@ -104,7 +104,7 @@ $("connect-drive").addEventListener("click",async()=>{
  }catch(error){status.textContent=error.message||"Authorization could not start";button.disabled=false}
 });
 async function checkout(program,purchase_type){
- if(!CONFIG.LIVE_CHECKOUT_ENABLED||program!=="mcq"||!session||!entitlements)return;
+ if(!CONFIG.LIVE_CHECKOUT_ENABLED||!session||!entitlements)return;
  try{
   const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({program,purchaseType:purchase_type})});
   const data=await r.json();if(!r.ok)throw Error(data.error||"Checkout unavailable");
