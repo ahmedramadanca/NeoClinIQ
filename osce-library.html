@@ -6,13 +6,17 @@ function expandOsceVideos(rows){
   const title=item.title||"",m=Number(item.module),positions=osceChapterByPosition[m];let chapters=[];
   if(m===14){chapters=/food drug interactions diabetes education/i.test(title)?[104,109,110,111]:[102,103,105,106,108];}
   else if(positions){
-   const matches=[...title.matchAll(/(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?\s*\/\s*(\d{1,2})/g)];
-   const last=matches.find(x=>Number(x[3])===positions.length);
-   let start=last?Number(last[1]):0,end=last?Number(last[2]||last[1]):0;
+   const fractions=[...title.matchAll(/(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?\s*\/\s*(\d{1,2})/g)];
+   const match=fractions.find(x=>Number(x[3])===positions.length);
+   let start=match?Number(match[1]):0,end=match?Number(match[2]||match[1]):0;
    if(m===2&&/9 self care/i.test(title)){start=9;end=9;}
    if(m===9&&/22 Lifestyle/i.test(title)){start=2;end=2;}
-   if(m===8&&end===19){end=10;}
+   if(m===8&&/9-19\/11/i.test(title)){start=9;end=10;}
    if(start>0&&start<=positions.length&&end>=start&&end<=positions.length)chapters=positions.slice(start-1,end);
+   if(!chapters.length){
+    const keywords={1:[["headache",1],["tinnitus",5],["heat disorders",2],["vertigo",6],["insomnia",3],["smoking cessation",4]],2:[["interaction",13],["behavior change",8],["self treat",15],["home testing",9],["alternative medicine",7],["travellers",10],["pregnancy care",14],["devices",11],["self care",12]],3:[["dental conditions",18],["caries",19],["gingivitis",21],["teething",24],["cold sores",17],["canker sores",16],["dry mouth",20],["halitosis",22],["oral thrush",23]],4:[["atopic",25],["contact",28],["stasis",39],["burns",27],["dandruff",29],["dressings",31],["diaper",30],["drug induced",32],["dry skin",33],["body odor",26],["frostbite",34],["fungal",35],["hair care",36],["insect bites",37],["wounds",43],["parasitic",38],["sun induced",40],["viral skin warts",42],["viral rash",41]],5:[["ear conditions",44],["ear piercing",45],["ear wax",46],["otitis externa",47]],6:[["eye assessment",51],["conjunctivitis",48],["dry eye",50],["contact lens",49],["eye lid",52]],7:[["foot symptoms",54],["athelets foot",53],["corns",55],["plantar warts",56]],8:[["abdominal",57],["perianal",66],["diarrhea",59],["constipation",58],["gerd",60],["gas",61],["hemorroids",62],["infant colics",63],["ostomy",65],["nausea",64],["pinworms",67]],9:[["diabets devices",68],["lifestyle",69]],10:[["athelets supplements",70],["low back",71],["sports injuries",73],["osteoarthritis",72]],11:[["infant nutrition",75],["athelets nutrition",74],["nutritional supplements",76],["special diets",77]],12:[["dysmenorrhea",79],["contraception",78],["premenstrual",81],["pregnancy testing",80],["vaginal health",83],["prenatal",82]],13:[["acute cough",84],["respiratory symptoms",86],["allergic rhinitis",85],["viral pharyngitis",87]]};
+    chapters=(keywords[m]||[]).filter(([word])=>title.toLowerCase().includes(word)).map(([,chapter])=>chapter);
+   }
   }
   if(!chapters.length){out.push(item);continue;}
   for(const chapter of [...new Set(chapters)])out.push({...item,chapter,virtualVideoCopy:true});
