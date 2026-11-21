@@ -4,7 +4,7 @@ function expandOsceVideos(rows){
  for(const item of rows){
   if(item.type!=="video"||item.chapter!=null){out.push(item);continue;}
   const title=item.title||"",m=Number(item.module),positions=osceChapterByPosition[m];let chapters=[];
-  if(m===14){chapters=/food drug interactions diabetes education/i.test(title)?[104,109,110,111]:[102,103,105,106,108];}
+  if(m===14){chapters=/food drug interactions diabetes education/i.test(title)?[104,109,110,111]:[102,103,105,106,107,108];}
   else if(positions){
    const fractions=[...title.matchAll(/(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?\s*\/\s*(\d{1,2})/g)];
    const match=fractions.find(x=>Number(x[3])===positions.length);
