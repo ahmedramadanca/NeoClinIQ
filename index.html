@@ -1125,6 +1125,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
       <button type="button" data-video="NeoClinIQ_App_Launch_Film.mp4" aria-pressed="true">Original App Launch Film</button>
       <button type="button" data-video="neocliniq-ultimate-introduction.mp4" aria-pressed="false">Ultimate Introduction · 3 min</button>
       <button type="button" data-video="neocliniq-launch-film.mp4" aria-pressed="false">Website Launch Film · 3 min</button>
+      <button type="button" data-video="neocliniq-si-super-intelligence-insights.mp4" aria-pressed="false" hidden>SI Super Intelligence Insights · 1 min 20 sec</button>
     </div>
     <div class="film-shell">
       <div class="film-inner">
@@ -1509,7 +1510,9 @@ if(mobile){mobile.querySelectorAll('a').forEach(link=>link.addEventListener('cli
  const buttons=[...document.querySelectorAll('#neocliniq-film-select button')];
  const video=document.getElementById('neocliniq-feature-film');
  const caption=document.getElementById('neocliniq-film-caption');
- if(!video||buttons.length!==3)return;
+ if(!video||buttons.length!==4)return;
+ const insights=buttons.find(b=>b.dataset.video==='neocliniq-si-super-intelligence-insights.mp4');
+ if(insights)fetch(insights.dataset.video,{method:'HEAD',cache:'no-store'}).then(r=>{if(r.ok&&r.headers.get('content-type')?.includes('video'))insights.hidden=false;}).catch(()=>{});
  buttons.forEach(button=>button.addEventListener('click',()=>{
    if(button.getAttribute('aria-pressed')==='true')return;
    buttons.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
