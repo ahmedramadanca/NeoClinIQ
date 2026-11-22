@@ -869,6 +869,22 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 /* Discreet brand marks beneath the corresponding CLEAR intelligence cards. */
 .si-clear-logos{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:9px;margin-top:auto;padding-top:14px;min-height:51px}
 .si-clear-logos img{width:36px;height:36px;object-fit:contain;border-radius:9px;background:#fff;padding:5px;box-sizing:border-box;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+
+/* Harmonized CLEAR identity, card rhythm and brand icon alignment */
+.si-clear{text-align:center}
+.si-clear-title{margin:0 auto 26px;max-width:780px}
+.si-clear-title h3{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px 16px;margin:8px 0 10px;line-height:1.2}
+.si-clear-title .si-clear-equals{color:#a6dfe4;font-size:.78em;font-weight:500}
+.si-clear-title .si-clear-si{color:#fff;letter-spacing:normal}
+.si-clear-title p{color:#c7e6eb;font-size:clamp(13px,1.3vw,16px);margin:0}
+.si-clear-grid{align-items:stretch}
+.si-clear-card{align-items:center;text-align:center;gap:11px;min-height:290px;padding:22px 14px 18px}
+.si-clear-letter{flex-shrink:0}
+.si-clear-card strong{min-height:50px;display:flex;align-items:center;justify-content:center}
+.si-clear-card>span:last-of-type{flex:1;display:flex;align-items:flex-start;justify-content:center}
+.si-clear-logos{width:100%;min-height:100px;align-content:center;align-items:center;justify-content:center;gap:9px;margin-top:auto;padding-top:14px;border-top:1px solid rgba(132,242,225,.18)}
+.si-clear-logos img{width:37px;height:37px;flex:0 0 37px;object-fit:contain;border:1px solid rgba(104,228,212,.32);border-radius:10px;background:#f2fbfc;padding:6px;box-sizing:border-box;box-shadow:0 4px 12px rgba(0,10,24,.2)}
+@media(max-width:620px){.si-clear-card{min-height:270px}.si-clear-card strong{min-height:58px}.si-clear-logos{min-height:96px;gap:7px}.si-clear-logos img{width:34px;height:34px;flex-basis:34px}.si-clear-title h3{gap:6px 10px}}
 </style>
 </head>
 
@@ -941,7 +957,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
     </div>
     <div class="si-clear" aria-labelledby="si-clear-heading">
       <p class="si-kicker">Five intelligences. One connected approach.</p>
-      <h3 id="si-clear-heading">The <span>CLEAR</span> Intelligence Framework</h3>
+      <div class="si-clear-title"><h3 id="si-clear-heading"><span>CLEAR</span> <span class="si-clear-equals">=</span> <span class="si-clear-si">SI · Super Intelligence</span></h3><p>Five complementary intelligences, unified in one clinical learning framework.</p></div>
       <div class="si-clear-grid">
         <div class="si-clear-card"><span class="si-clear-letter">C</span><strong>Clinical</strong><span>Clinical reasoning and therapeutic decision-making</span><div class="si-clear-logos" aria-label="University of Toronto Leslie Dan Faculty of Pharmacy"><img src="https://www.google.com/s2/favicons?domain=pharmacy.utoronto.ca&amp;sz=128" alt="University of Toronto Leslie Dan Faculty of Pharmacy logo" title="University of Toronto Leslie Dan Faculty of Pharmacy" loading="lazy"></div></div>
         <div class="si-clear-card"><span class="si-clear-letter">L</span><strong>Learning</strong><span>Structured knowledge and visual understanding</span><div class="si-clear-logos" aria-label="Amazon, Apple"><img src="https://www.google.com/s2/favicons?domain=amazon.ca&amp;sz=128" alt="Amazon logo" title="Amazon" loading="lazy"><img src="https://www.google.com/s2/favicons?domain=apple.com&amp;sz=128" alt="Apple logo" title="Apple" loading="lazy"></div></div>
