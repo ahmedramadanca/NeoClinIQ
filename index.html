@@ -874,19 +874,25 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 <a class="ref-link ref-cta-platform" href="#platform-features" aria-label="Explore the Platform"><span>Explore the Platform</span></a>
 <a class="ref-link ref-cta-method" href="#app-film" aria-label="Discover the Method"><span>Discover the Method</span></a>
 
-</nav></div>
+</nav><div class="launch-social-icons" aria-label="NeoClinIQ app and official channels">
+<a class="launch-social-icon" href="/learning.html" aria-label="NeoClinIQ App"><img src="/neocliniq-logo.jpeg" alt="" loading="lazy"><span>App</span></a>
+<a class="launch-social-icon" href="mailto:neocliniq@maplecanadaramadan.ca" aria-label="Email NeoClinIQ"><img src="https://cdn.jsdelivr.net/npm/lucide-static@0.468.0/icons/mail.svg" alt="" loading="lazy"><span>Email</span></a>
+<a class="launch-social-icon" href="https://www.youtube.com/@neocliniq" target="_blank" rel="noopener noreferrer" aria-label="NeoClinIQ YouTube"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/youtube.svg" alt="" loading="lazy"><span>YouTube</span></a>
+<a class="launch-social-icon" href="https://www.amazon.ca/dp/B0HKJ7NJF9?binding=paperback&amp;ref=dbs_dp_sirpi" target="_blank" rel="noopener noreferrer" aria-label="NeoClinIQ Amazon Books"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/amazon.svg" alt="" loading="lazy"><span>Amazon</span></a>
+<a class="launch-social-icon" href="https://www.linkedin.com/company/neocliniq/" target="_blank" rel="noopener noreferrer" aria-label="NeoClinIQ LinkedIn"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/linkedin.svg" alt="" loading="lazy"><span>LinkedIn</span></a>
+<a class="launch-social-icon" href="https://payhip.com/b/1un8s" target="_blank" rel="noopener noreferrer" aria-label="NeoClinIQ Payhip"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/payhip.svg" alt="" loading="lazy"><span>Payhip</span></a>
+</div></div>
 </section>
 <style>
-/* Hide the four promotional cards embedded in the launch artwork on all screen sizes. */
-.reference-stage .reference-art-window {
-  aspect-ratio: 1672 / 520 !important;
-}
-.reference-stage .reference-art-window .reference-art {
-  top: -9.05% !important;
-}
-.reference-stage .reference-art-window .reference-hotspots .ref-link[class*="ref-card-"] {
-  display: none !important;
-}
+/* Preserve the original launch hero and replace its four embedded cards with six linked icons. */
+.reference-stage .reference-art-window{aspect-ratio:1672 / 863 !important}
+.reference-stage .reference-art-window .reference-hotspots .ref-link[class*="ref-card-"]{display:none!important}
+.launch-social-icons{position:absolute;left:0;right:0;bottom:0;height:31%;z-index:5;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:center;gap:clamp(6px,1vw,18px);padding:clamp(8px,1.4vw,22px);box-sizing:border-box;background:linear-gradient(115deg,#e8f9f9 0%,#f7fbff 55%,#eaf5ff 100%);line-height:1.2}
+.launch-social-icon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(5px,.6vw,11px);height:100%;min-width:0;border:1px solid #c7e6e8;border-radius:clamp(9px,1.1vw,20px);background:#fff;color:#112b41;text-decoration:none;font-weight:750;font-size:clamp(11px,1.1vw,18px);box-shadow:0 5px 18px rgba(14,53,77,.08);transition:transform .18s,box-shadow .18s}
+.launch-social-icon:hover,.launch-social-icon:focus-visible{transform:translateY(-4px);box-shadow:0 8px 25px rgba(14,53,77,.16)}
+.launch-social-icon img{display:block;width:clamp(30px,4.1vw,66px);height:clamp(30px,4.1vw,66px);object-fit:contain}
+.launch-social-icon span{white-space:nowrap}
+@media(max-width:760px){.launch-social-icons{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));height:39%;gap:5px;padding:7px}.launch-social-icon{font-size:10px;gap:3px;border-radius:8px}.launch-social-icon img{width:23px;height:23px}.reference-stage .reference-art-window{aspect-ratio:1672 / 863 !important}}
 </style>
 <section class="reference-mobile-actions" aria-label="Explore NeoClinIQ"><div class="container"><a class="btn primary" href="#platform-features">Explore the Platform →</a><a class="btn outline" href="#app-film">▷ Discover the Method</a><a class="btn primary" href="#super-intelligence">✦ SI · Super Intelligence</a></div></section>
 <section id="platform-features" class="si-launch-bar"><div class="container"><a class="si-launch-identity" href="/reference-ai.html"><img src="/neocliniq-si-icon.png" alt="NeoClinIQ SI icon"><span><strong>NeoClinIQ SI · Super Intelligence</strong><small>Ask. Understand. Reason. Explore our signature clinical learning experience.</small></span><b>Explore SI →</b></a></div></section>
