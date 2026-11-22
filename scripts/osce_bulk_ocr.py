@@ -27,8 +27,8 @@ def save(id,number,text,words):
 
 def process(item):
  id=item["drive_file_id"]
- existing=db.table("osce_ocr_pages").select("page_number").eq("drive_file_id",id).execute().data
- done={p["page_number"] for p in existing}
+ existing=db.table("osce_ocr_pages").select("page_number,page_text").eq("drive_file_id",id).execute().data
+ done={p["page_number"] for p in existing if len((p.get("page_text") or "").strip())>=20}
  for attempt in range(4):
   try:
    r=session.get(private_pdf_url(id),timeout=180)
@@ -54,9 +54,13 @@ def process(item):
      for w in page.get_text("words"):
       x0,y0,x1,y1,t,*_=w
       words.append({"t":t,"x":x0/page.rect.width,"y":y0/page.rect.height,"w":(x1-x0)/page.rect.width,"h":(y1-y0)/page.rect.height})
+    if len(text.strip())<20:
+     print("OCR_UNRESOLVED",id,n,"characters",len(text.strip()),flush=True)
+     continue
     save(id,n,text,words)
-   print("INDEXED",id,len(doc),"pages",flush=True)
-   return True
+   unresolved=[n for n in range(1,len(doc)+1) if n not in done and len((db.table("osce_ocr_pages").select("page_text").eq("drive_file_id",id).eq("page_number",n).execute().data or [{}])[0].get("page_text","").strip())<20]
+   print("INDEXED",id,len(doc),"pages","UNRESOLVED",unresolved,flush=True)
+   return not unresolved
   except Exception as e:
    print("RETRY",id,attempt,str(e),flush=True)
    if "401 Client Error" in str(e) or "403 Client Error" in str(e): raise RuntimeError("Private PDF authentication failed; stopping instead of retrying all 471 PDFs") from e
