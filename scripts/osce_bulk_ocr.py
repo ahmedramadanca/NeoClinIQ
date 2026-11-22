@@ -1,7 +1,7 @@
 """Resumable private Google Drive OSCE OCR -> Supabase page index."""
 import os,sys,time,io
 import requests,fitz,pytesseract
-from PIL import Image
+from PIL import Image,ImageOps,ImageEnhance
 from supabase import create_client
 from concurrent.futures import ThreadPoolExecutor
 
@@ -50,6 +50,22 @@ def process(item):
       lines.append(t)
       words.append({"t":t,"x":ocr["left"][j]/pix.width,"y":ocr["top"][j]/pix.height,"w":ocr["width"][j]/pix.width,"h":ocr["height"][j]/pix.height})
      text=" ".join(lines)
+     if len(text.strip())<20:
+      # Try alternate segmentation on high-contrast render for sparse/scanned pages.
+      enhanced=ImageEnhance.Contrast(ImageOps.grayscale(image)).enhance(2.0)
+      for psm in (6,11,12):
+       alt=pytesseract.image_to_data(enhanced,output_type=pytesseract.Output.DICT,config="--psm "+str(psm))
+       alt_lines=[]
+       alt_words=[]
+       for j,t in enumerate(alt["text"]):
+        t=t.strip()
+        if not t: continue
+        alt_lines.append(t)
+        alt_words.append({"t":t,"x":alt["left"][j]/pix.width,"y":alt["top"][j]/pix.height,"w":alt["width"][j]/pix.width,"h":alt["height"][j]/pix.height})
+       if len(" ".join(alt_lines).strip())>len(text.strip()):
+        text=" ".join(alt_lines)
+        words=alt_words
+       if len(text.strip())>=20:break
     else:
      for w in page.get_text("words"):
       x0,y0,x1,y1,t,*_=w
