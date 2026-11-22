@@ -1,6 +1,11 @@
 name: OSCE bulk OCR indexing
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/osce_bulk_ocr.py'
+      - '.github/workflows/osce-bulk-ocr.yml'
   schedule:
     - cron: '*/30 * * * *'
 permissions:
