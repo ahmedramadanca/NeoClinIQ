@@ -852,6 +852,19 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 .interactive-reference-nav nav>details:last-of-type>.nav-dropdown{left:auto!important;right:0!important;min-width:245px;max-width:min(340px,calc(100vw - 24px));box-sizing:border-box}
 .interactive-reference-nav nav>details:last-of-type>.nav-dropdown a{white-space:normal;overflow-wrap:anywhere;line-height:1.45;padding:12px 14px}
 @media(max-width:760px){.reference-mobile-header nav details div{max-width:100%;box-sizing:border-box}.reference-mobile-header nav a{white-space:normal;overflow-wrap:anywhere}}
+
+/* CLEAR: five pillars of NeoClinIQ Super Intelligence */
+.si-clear{margin-top:32px;padding:clamp(20px,3vw,36px);border:1px solid rgba(78,235,208,.36);border-radius:22px;background:linear-gradient(135deg,#092c43,#0b4051 55%,#082b42);box-shadow:0 18px 42px rgba(0,14,35,.2);color:#f2ffff}
+.si-clear .si-kicker{color:#73f3df;letter-spacing:.09em;text-transform:uppercase;font-size:12px;font-weight:800}
+.si-clear h3{color:#fff;margin:9px 0 22px;font-size:clamp(23px,2.6vw,34px)}
+.si-clear h3 span{color:#62f2d9;letter-spacing:.09em}
+.si-clear-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.si-clear-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0;padding:20px 15px;border:1px solid rgba(132,242,225,.25);border-radius:16px;background:linear-gradient(160deg,rgba(30,103,118,.55),rgba(5,32,55,.75))}
+.si-clear-letter{display:grid;place-items:center;width:50px;height:50px;border-radius:13px;background:#4ae4ca;color:#063347;font-size:30px;font-weight:900;box-shadow:0 5px 18px rgba(35,232,197,.18)}
+.si-clear-card strong{font-size:clamp(15px,1.25vw,19px);color:#fff;line-height:1.3}
+.si-clear-card>span:last-child{font-size:13px;line-height:1.55;color:#c8e8ed}
+@media(max-width:1000px){.si-clear-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.si-clear-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.si-clear-card:last-child{grid-column:1/-1}.si-clear-card{padding:16px 13px}}
 </style>
 </head>
 
@@ -919,7 +932,18 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
           <li>Voice-enabled learning interface</li>
           <li>Clinical reasoning alongside visual learning and exam preparation</li>
         </ul>
-        <p class="si-note">SI is an educational tool, not a substitute for clinical judgment. Availability and features may vary during rollout. NeoClinIQ makes no unverified claim of market exclusivity.</p>
+        
+      </div>
+    </div>
+    <div class="si-clear" aria-labelledby="si-clear-heading">
+      <p class="si-kicker">Five intelligences. One connected approach.</p>
+      <h3 id="si-clear-heading">The <span>CLEAR</span> Intelligence Framework</h3>
+      <div class="si-clear-grid">
+        <div class="si-clear-card"><span class="si-clear-letter">C</span><strong>Clinical</strong><span>Clinical reasoning and therapeutic decision-making</span></div>
+        <div class="si-clear-card"><span class="si-clear-letter">L</span><strong>Learning</strong><span>Structured knowledge and visual understanding</span></div>
+        <div class="si-clear-card"><span class="si-clear-letter">E</span><strong>Evidence</strong><span>Reference-grounded answers and critical appraisal</span></div>
+        <div class="si-clear-card"><span class="si-clear-letter">A</span><strong>Artificial Intelligence</strong><span>Interactive explanations and intelligent support</span></div>
+        <div class="si-clear-card"><span class="si-clear-letter">R</span><strong>Real Human Intelligence</strong><span>Professional judgment, experience and empathy</span></div>
       </div>
     </div>
   </div>
