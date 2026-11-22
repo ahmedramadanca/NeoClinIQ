@@ -68,6 +68,18 @@ def process(item):
    time.sleep(2**attempt)
  return False
 
+# Retry existing low-text OCR records first.
+priority=set()
+page_offset=0
+while True:
+ rows=db.table("osce_ocr_pages").select("drive_file_id,page_text").range(page_offset,page_offset+499).execute().data
+ for row in rows:
+  if len((row.get("page_text") or "").strip())<20:
+   priority.add(row["drive_file_id"])
+ if len(rows)<500:break
+ page_offset+=500
+print("PRIORITY_PDFS",len(priority),flush=True)
+
 items=[]
 offset=0
 while True:
@@ -75,7 +87,9 @@ while True:
  items.extend(rows)
  if len(rows)<100:break
  offset+=100
+items.sort(key=lambda item:(item["drive_file_id"] not in priority,item["drive_file_id"]))
 print("SOURCE_PDFS",len(items),flush=True)
+print("PRIORITY_IDS",sorted(priority),flush=True)
 failed=[]
 for i,item in enumerate(items,1):
  if not process(item):failed.append(item["drive_file_id"])
