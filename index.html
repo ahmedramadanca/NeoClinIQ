@@ -893,6 +893,14 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 .launch-social-icon img{display:block;width:clamp(30px,4.1vw,66px);height:clamp(30px,4.1vw,66px);object-fit:contain}
 .launch-social-icon span{white-space:nowrap}
 @media(max-width:760px){.launch-social-icons{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));height:39%;gap:5px;padding:7px}.launch-social-icon{font-size:10px;gap:3px;border-radius:8px}.launch-social-icon img{width:23px;height:23px}.reference-stage .reference-art-window{aspect-ratio:1672 / 863 !important}}
+/* Remove the embedded tagline, learning metrics and two CTA buttons by ending the artwork before that lower band. Keep the six new channel icons in their own row. */
+.reference-stage .reference-art-window{aspect-ratio:auto!important;overflow:visible!important;line-height:normal!important}
+.reference-stage .reference-art-window .reference-art{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;max-height:none!important;transform:none!important;clip-path:inset(0 0 45% 0)!important;margin-bottom:-24.7%!important}
+.reference-stage .reference-art-window .reference-hotspots{bottom:auto!important;height:55%!important}
+.reference-stage .reference-art-window .reference-hotspots .ref-cta-platform,
+.reference-stage .reference-art-window .reference-hotspots .ref-cta-method{display:none!important}
+.reference-stage .reference-art-window .launch-social-icons{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;height:auto!important;min-height:140px!important;padding:14px!important}
+@media(max-width:760px){.reference-stage .reference-art-window .reference-art{margin-bottom:-24.7%!important}.reference-stage .reference-art-window .launch-social-icons{min-height:160px!important}}
 </style>
 <section class="reference-mobile-actions" aria-label="Explore NeoClinIQ"><div class="container"><a class="btn primary" href="#platform-features">Explore the Platform →</a><a class="btn outline" href="#app-film">▷ Discover the Method</a><a class="btn primary" href="#super-intelligence">✦ SI · Super Intelligence</a></div></section>
 <section id="platform-features" class="si-launch-bar"><div class="container"><a class="si-launch-identity" href="/reference-ai.html"><img src="/neocliniq-si-icon.png" alt="NeoClinIQ SI icon"><span><strong>NeoClinIQ SI · Super Intelligence</strong><small>Ask. Understand. Reason. Explore our signature clinical learning experience.</small></span><b>Explore SI →</b></a></div></section>
