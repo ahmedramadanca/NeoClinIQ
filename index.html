@@ -885,6 +885,14 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 .si-clear-logos{width:100%;min-height:100px;align-content:center;align-items:center;justify-content:center;gap:9px;margin-top:auto;padding-top:14px;border-top:1px solid rgba(132,242,225,.18)}
 .si-clear-logos img{width:37px;height:37px;flex:0 0 37px;object-fit:contain;border:1px solid rgba(104,228,212,.32);border-radius:10px;background:#f2fbfc;padding:6px;box-sizing:border-box;box-shadow:0 4px 12px rgba(0,10,24,.2)}
 @media(max-width:620px){.si-clear-card{min-height:270px}.si-clear-card strong{min-height:58px}.si-clear-logos{min-height:96px;gap:7px}.si-clear-logos img{width:34px;height:34px;flex-basis:34px}.si-clear-title h3{gap:6px 10px}}
+
+/* Match SI headline to NeoClinIQ navy / turquoise brand identity. */
+.si-showcase .si-brand-heading{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 .35em;line-height:1.15;letter-spacing:-.025em}
+.si-showcase .si-brand-heading .si-brand-initials{color:#65f2d9;font-weight:900;text-shadow:0 3px 18px rgba(67,233,204,.16)}
+.si-showcase .si-brand-heading .si-brand-name{color:#fff;font-weight:800}
+.si-clear-title .si-clear-si{color:#fff;font-weight:800}
+.si-clear-title h3>span:first-child{color:#65f2d9;font-weight:900}
+@media(max-width:620px){.si-showcase .si-brand-heading{gap:0 .25em}}
 </style>
 </head>
 
@@ -931,7 +939,7 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 <section id="super-intelligence" class="si-showcase" aria-labelledby="si-heading">
   <div class="container">
     <p class="eyebrow">NeoClinIQ Signature Innovation</p>
-    <h2 id="si-heading">SI <span style="color:#4aebd0">· Super Intelligence</span></h2>
+    <h2 id="si-heading" class="si-brand-heading"><span class="si-brand-initials">SI</span><span class="si-brand-name">· Super Intelligence</span></h2>
     <p class="lead">A distinctive, reference-grounded clinical learning experience designed to connect questions, explanations, and source-based reasoning in one NeoClinIQ environment.</p>
     <div class="si-grid">
       <div class="si-panel">
