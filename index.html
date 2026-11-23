@@ -899,6 +899,16 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
 .si-showcase .si-brand-heading .si-brand-name{color:#65f2d9}
 .si-clear-title h3>span:first-child{color:#fff}
 .si-clear-title .si-clear-si{color:#65f2d9}
+
+/* Founder award: branded medal icon and balanced four-card grid */
+#founder .highlights{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch}
+#founder .highlight{min-width:0;box-shadow:0 8px 24px rgba(7,38,60,.06)}
+#founder .founder-award{border-top-color:var(--teal);background:linear-gradient(160deg,#fff 65%,#effbf9)}
+#founder .founder-award-icon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:14px;border-radius:13px;background:#e0f8f3;color:#087e80;border:1px solid #a8e9dd}
+#founder .founder-award-icon svg{width:28px;height:28px;display:block}
+#founder .founder-award span b{color:var(--navy);font-weight:700}
+@media(max-width:1050px){#founder .highlights{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){#founder .highlights{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -1229,6 +1239,14 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
       <div class="highlight">
         <strong>Educational Leadership</strong>
         <span>Leslie Dan Faculty of Pharmacy<br>IPG Class Representative<br>University of Toronto Alumni Ambassador</span>
+      </div>
+
+      <div class="highlight founder-award">
+        <div class="founder-award-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="m8.7 12-1.2 9 4.5-2.7 4.5 2.7-1.2-9"/><path d="m10 8 1.4 1.4L14.3 6.5"/></svg>
+        </div>
+        <strong>Professional Recognition</strong>
+        <span><b>Loblaw Companies Limited / Shoppers Drug Mart</b><br>Pharmacy Team of the Year Award · 2026<br>Recognized as part of an award-winning pharmacy team.</span>
       </div>
 
       <div class="highlight">
