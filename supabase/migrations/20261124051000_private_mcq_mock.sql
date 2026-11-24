@@ -99,7 +99,7 @@ begin
       or (select count(distinct lower(btrim(o))) from unnest(i.options) as u(o))<>4
       or exists (select 1 from unnest(i.options) as u(o) where o is null or length(btrim(o)) not between 1 and 1300)
       or exists (select 1 from unnest(i.option_rationales) as u(r) where r is null or length(btrim(r)) not between 1 and 3000)
-      or exists (select 1 from unnest(array_prepend(i.rationale,i.option_rationales)) as u(r) where r ~* '(https?://|www\.|doi:|\]\(|<\s*a\s|drive\.google\.com|sediment://)')
+      or exists (select 1 from unnest(array_prepend(i.rationale,i.option_rationales)) as u(r) where r ~* '([a-z][a-z0-9+.-]*://|www\.|mailto:|doi:|\]\(|<\s*a\s|drive\.google\.com|storage/v1/)')
       or (select count(distinct d) from unnest(i.source_ids) as u(d))<>cardinality(i.source_ids)
       or exists (
         select 1 from generate_subscripts(i.source_ids,1) s(k)
@@ -108,7 +108,7 @@ begin
           or d.title is distinct from i.source_titles[s.k]
           or i.source_locators[s.k] is null or length(btrim(i.source_locators[s.k])) not between 1 and 500
           or i.source_titles[s.k] is null or length(btrim(i.source_titles[s.k])) not between 1 and 300
-          or i.source_titles[s.k] ~* '(https?://|www\.|doi:|\]\(|<|>|[[:cntrl:]]|sediment://)'
+          or i.source_titles[s.k] ~* '([a-z][a-z0-9+.-]*://|www\.|mailto:|doi:|\]\(|<|>|[[:cntrl:]]|drive\.google\.com|storage/v1/)'
       )
     )
   ) then raise exception 'A question is missing review, valid options, rationales or indexed-reference labels'; end if;
@@ -164,6 +164,23 @@ begin
     select 1 from public.website_payments w
     where w.user_id=p_user_id and w.program='mcq' and w.status='fulfilled'
       and w.purchase_type in ('initial','extension') and w.amount_cents>0
+      and not exists (
+        -- A fulfilled ledger row may remain after a refund/dispute is recorded.
+        select 1 from public.website_payment_reconciliation r
+        where r.user_id=w.user_id
+          and (r.stripe_payment_intent_id=w.stripe_payment_intent_id or r.stripe_checkout_session_id=w.stripe_checkout_session_id)
+          and (
+            (r.case_type='refund_succeeded' and
+             case when coalesce(r.details->>'amount_refunded','') ~ '^[0-9]{1,15}$'
+               then (r.details->>'amount_refunded')::bigint>=w.amount_cents else true end)
+            or (r.case_type='dispute_closed' and coalesce(r.details->>'dispute_status','') <> 'won')
+            or (r.case_type='dispute_opened' and not exists (
+              select 1 from public.website_payment_reconciliation won
+              where won.user_id=w.user_id and won.case_type='dispute_closed' and won.details->>'dispute_status'='won'
+                and (won.stripe_payment_intent_id=w.stripe_payment_intent_id or won.stripe_checkout_session_id=w.stripe_checkout_session_id)
+            ))
+          )
+      )
   ) then
     return jsonb_build_object('status',403,'body',jsonb_build_object('error','An active paid website MCQ subscription is required.'));
   end if;
