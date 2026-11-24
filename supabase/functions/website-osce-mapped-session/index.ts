@@ -107,7 +107,8 @@ async function approvedStation(caseId: string) {
     notice:"Fictional candidate-visible record fields only. Missing entries remain unknown."
   }:null;
   const referenceLeads=Array.isArray(profile.clinical_reference_review)?profile.clinical_reference_review:[];
-  return {door,name,age,gender,role,opening,curve,checklist,replyFor,actorFacts,candidateChart,referenceLeads, caseId, profileUpdatedAt:profile.updated_at,
+  return {door,name,age,gender,role,opening,curve,checklist,replyFor,actorFacts,candidateChart,referenceLeads,
+    profileVersion:profile.updated_at,
     practice:!strict,
     publicationVersion:practice?publication.content_updated_at:null};
 }
@@ -152,35 +153,30 @@ async function spokenAudio(station:any,caseId:string,text:string){
     return {audio:encodeBase64(new Uint8Array(await speech.arrayBuffer())),voice,voiceDisclosure:"AI-generated voice"};
   }catch(error){console.error("Mapped TTS unavailable",error instanceof Error?error.message:"unknown");return {audio:null,voice,voiceDisclosure:"AI-generated voice"}}
 }
-const PHAC = "https://www.canada.ca/en/public-health/services/";
-const Lyme = {title:"Public Health Agency of Canada · Lyme disease for health professionals",url:PHAC+"diseases/lyme-disease/health-professionals-lyme-disease.html"};
-const flu = {title:"Public Health Agency of Canada · Seasonal influenza symptoms and treatment",url:PHAC+"diseases/flu-influenza.html"};
-const fluVaccine = {title:"Canadian Immunization Guide · Seasonal influenza vaccines",url:PHAC+"publications/healthy-living/canadian-immunization-guide-part-4-active-vaccines/page-10-influenza-vaccine.html"};
-const oseltamivir = {title:"Health Canada Drug Product Database · Tamiflu product monograph",url:"https://health-products.canada.ca/dpd-bdpp/info?code=65111&lang=eng"};
-const publicReferencesByCase = new Map([
-  ["NC-OSCE-002-1", [Lyme]],
-  ["NC-OSCE-002-2", [Lyme]],
-  ["NC-OSCE-002-3", [Lyme]],
-  ["NC-OSCE-002-4", [Lyme]],
-  ["NC-OSCE-002-5", [Lyme]],
-  ["NC-OSCE-005-1", [oseltamivir, flu]],
-  ["NC-OSCE-005-2", [flu, fluVaccine]],
-  ["NC-OSCE-005-3", [oseltamivir]],
-  ["NC-OSCE-005-4", [flu]],
-  ["NC-OSCE-005-5", [flu]],
-]);
-const publicReferencesReviewedVersion = "2026-11-24T17:43:56.689849Z";
-function casePublicReferences(station:any) {
-  const version=cap(station.profileUpdatedAt,80).replace(" ","T").replace(/\+00(?::00)?$/,"Z");
-  if(version!==publicReferencesReviewedVersion) return [];
-  return (publicReferencesByCase.get(station.caseId)||[])
-    .map(reference=>({...reference,verification:"case_matched_public_source",excerpts:[]}));
+async function reviewedReferenceLinks(caseId:string,profileVersion:string){
+  const {data,error}=await db.from("osce_station_reference_links").select("url,title,locator")
+    .eq("case_key",caseId).eq("profile_version",profileVersion).order("title",{ascending:true}).limit(8);
+  if(error) throw Error("Case references are temporarily unavailable.");
+  return (data||[]).flatMap((item:any)=>{
+    const url=URL.parse(item.url);
+    if(url?.protocol!=="https:"||url.username||url.password) return [];
+    return [{title:cap(item.title,250),locator:cap(item.locator,300),url:url.href,verification:"case_matched_public_source"}];
+  });
 }
-async function stationReferences(station:any){
-  const leads=Array.isArray(station.referenceLeads)?station.referenceLeads:[];
+async function stationReferences(caseId:string,station:any){
+  const [links,excerpts]=await Promise.all([
+    reviewedReferenceLinks(caseId,station.profileVersion),
+    reviewedReferenceExcerpts(station.referenceLeads),
+  ]);
+  const references=[...links,...excerpts];
+  const notice=references.length?"References assigned to this station.":"No verified references are assigned to this station yet.";
+  return {references,notice};
+}
+async function reviewedReferenceExcerpts(referenceLeads:unknown){
+  const leads=Array.isArray(referenceLeads)?referenceLeads:[];
   const reviewed=new Map<string,Set<number>>();
   for(const lead of leads){
-    if(!["verified","approved"].includes(cap(lead?.review_status,40).toLowerCase())) continue;
+    if(lead?.display_authorized!==true||!["verified","approved"].includes(cap(lead?.review_status,40).toLowerCase())) continue;
     const sourceId=cap(lead?.source_id,120);
     const value=lead?.passage_number;
     const number=typeof value==="number"?value:typeof value==="string"&&/^\d+$/.test(value.trim())?Number(value):NaN;
@@ -190,8 +186,7 @@ async function stationReferences(station:any){
     numbers.add(number);
     reviewed.set(sourceId,numbers);
   }
-  const unavailable={references:[],notice:"No verified reference excerpts are assigned to this station yet."};
-  if(!reviewed.size) return unavailable;
+  if(!reviewed.size) return [];
 
   const groups=[...reviewed].slice(0,8);
   const {data:documents,error:documentError}=await db.from("original_reference_documents")
@@ -211,8 +206,7 @@ async function stationReferences(station:any){
       .filter((item:any)=>item.text);
     return excerpts.length?{title,verification:"verified",excerpts}:null;
   }));
-  const references=results.filter(Boolean);
-  return references.length?{references,notice:"Verified excerpts assigned to this station."}:unavailable;
+  return results.filter(Boolean);
 }
 const clampRating=(value:any)=>Math.min(4,Math.max(0,Math.round(Number(value)||0)));
 const cleanList=(value:any)=>Array.isArray(value)?value.map((item:any)=>cap(item,400)).filter(Boolean).slice(0,8):[];
@@ -422,13 +416,7 @@ Deno.serve(async (req:Request) => {
       const effectiveStart=session.pending_reply_at?shiftEncounterStart(enteredAt,session.pending_reply_at):enteredAt;
       const activeElapsed=ageOf(effectiveStart);
       if(activeElapsed>ENCOUNTER_MS+TRANSPORT_GRACE_MS) return response({error:"Station time expired."},409);
-      const assigned=await stationReferences(station);
-      const publicReferences=casePublicReferences(station);
-      const references=[...assigned.references,...publicReferences];
-      const notice=publicReferences.length
-        ? "These Canadian sources were matched to the station topic. Clinical review and indexed passage verification are separate."
-        : assigned.notice;
-      return response({references,notice,...practiceMeta(station)});
+      return response({...await stationReferences(caseId,station),...practiceMeta(station)});
     }
     if(mode==="assess") {
       let assessment;
