@@ -107,7 +107,7 @@ async function approvedStation(caseId: string) {
     notice:"Fictional candidate-visible record fields only. Missing entries remain unknown."
   }:null;
   const referenceLeads=Array.isArray(profile.clinical_reference_review)?profile.clinical_reference_review:[];
-  return {door,name,age,gender,role,opening,curve,checklist,replyFor,actorFacts,candidateChart,referenceLeads,
+  return {door,name,age,gender,role,opening,curve,checklist,replyFor,actorFacts,candidateChart,referenceLeads, caseId, profileUpdatedAt:profile.updated_at,
     practice:!strict,
     publicationVersion:practice?publication.content_updated_at:null};
 }
@@ -151,6 +151,30 @@ async function spokenAudio(station:any,caseId:string,text:string){
     if(!speech.ok){console.error("Mapped TTS unavailable",speech.status);return {audio:null,voice,voiceDisclosure:"AI-generated voice"}}
     return {audio:encodeBase64(new Uint8Array(await speech.arrayBuffer())),voice,voiceDisclosure:"AI-generated voice"};
   }catch(error){console.error("Mapped TTS unavailable",error instanceof Error?error.message:"unknown");return {audio:null,voice,voiceDisclosure:"AI-generated voice"}}
+}
+const PHAC = "https://www.canada.ca/en/public-health/services/";
+const Lyme = {title:"Public Health Agency of Canada · Lyme disease for health professionals",url:PHAC+"diseases/lyme-disease/health-professionals-lyme-disease.html"};
+const flu = {title:"Public Health Agency of Canada · Seasonal influenza symptoms and treatment",url:PHAC+"diseases/flu-influenza.html"};
+const fluVaccine = {title:"Canadian Immunization Guide · Seasonal influenza vaccines",url:PHAC+"publications/healthy-living/canadian-immunization-guide-part-4-active-vaccines/page-10-influenza-vaccine.html"};
+const oseltamivir = {title:"Health Canada Drug Product Database · Tamiflu product monograph",url:"https://health-products.canada.ca/dpd-bdpp/info?code=65111&lang=eng"};
+const publicReferencesByCase = new Map([
+  ["NC-OSCE-002-1", [Lyme]],
+  ["NC-OSCE-002-2", [Lyme]],
+  ["NC-OSCE-002-3", [Lyme]],
+  ["NC-OSCE-002-4", [Lyme]],
+  ["NC-OSCE-002-5", [Lyme]],
+  ["NC-OSCE-005-1", [oseltamivir, flu]],
+  ["NC-OSCE-005-2", [flu, fluVaccine]],
+  ["NC-OSCE-005-3", [oseltamivir]],
+  ["NC-OSCE-005-4", [flu]],
+  ["NC-OSCE-005-5", [flu]],
+]);
+const publicReferencesReviewedVersion = "2026-11-24T17:43:56.689849Z";
+function casePublicReferences(station:any) {
+  const version=cap(station.profileUpdatedAt,80).replace(" ","T").replace(/\+00(?::00)?$/,"Z");
+  if(version!==publicReferencesReviewedVersion) return [];
+  return (publicReferencesByCase.get(station.caseId)||[])
+    .map(reference=>({...reference,verification:"case_matched_public_source",excerpts:[]}));
 }
 async function stationReferences(station:any){
   const leads=Array.isArray(station.referenceLeads)?station.referenceLeads:[];
@@ -398,7 +422,13 @@ Deno.serve(async (req:Request) => {
       const effectiveStart=session.pending_reply_at?shiftEncounterStart(enteredAt,session.pending_reply_at):enteredAt;
       const activeElapsed=ageOf(effectiveStart);
       if(activeElapsed>ENCOUNTER_MS+TRANSPORT_GRACE_MS) return response({error:"Station time expired."},409);
-      return response({...await stationReferences(station),...practiceMeta(station)});
+      const assigned=await stationReferences(station);
+      const publicReferences=casePublicReferences(station);
+      const references=[...assigned.references,...publicReferences];
+      const notice=publicReferences.length
+        ? "These Canadian sources were matched to the station topic. Clinical review and indexed passage verification are separate."
+        : assigned.notice;
+      return response({references,notice,...practiceMeta(station)});
     }
     if(mode==="assess") {
       let assessment;
