@@ -1,19 +1,50 @@
 begin;
 create schema if not exists private;
 
+-- Official PEBC Part I Blueprint v03-2026, effective May 2026.
+-- Domain item counts are exact here; PEBC does not publish per-code quotas.
+create function private.mcq_mock_blueprint_2026_03()
+returns table(official_domain_code text,domain_slug text,domain_items integer,competency_code text)
+language sql immutable set search_path='' as $$
+  select d.domain_code,d.slug,d.items,c.code
+  from (values
+    ('1A','clinical_care',100,array['1.1','1.2','1.3','1.4','1.5']),
+    ('1B','distribution',40,array['1.6','1.7','1.8','1.9','1.10']),
+    ('2','knowledge_expertise',22,array['2.2']),
+    ('3','communication_collaboration',8,array['3.1','3.2','3.3','3.4']),
+    ('4','leadership_stewardship',6,array['4.2']),
+    ('5','professionalism',24,array['5.1','5.2','5.4','5.5'])
+  ) as d(domain_code,slug,items,codes)
+  cross join lateral unnest(d.codes) as c(code)
+$$;
+
+create function private.mcq_mock_competency_in_blueprint(version text,domain text,code text)
+returns boolean language sql immutable strict set search_path='' as $$
+  select version='2026-03' and exists (
+    select 1 from private.mcq_mock_blueprint_2026_03() b
+    where b.domain_slug=domain and b.competency_code=code
+  )
+$$;
+
 create table private.mcq_mock_forms (
   id uuid primary key default gen_random_uuid(),
   name text not null check (length(btrim(name)) between 1 and 120),
   version text not null unique check (length(btrim(version)) between 1 and 50),
+  blueprint_version text not null default '2026-03' check (blueprint_version='2026-03'),
   reviewed_by uuid references auth.users(id),
   reviewed_at timestamptz,
-  released_at timestamptz
+  released_at timestamptz,
+  unique (id,blueprint_version)
 );
 create table private.mcq_mock_items (
   id uuid primary key default gen_random_uuid(),
-  form_id uuid not null references private.mcq_mock_forms(id) on delete restrict,
+  form_id uuid not null,
+  blueprint_version text not null default '2026-03',
   position integer not null check (position between 1 and 200),
-  competency text not null check (competency in ('clinical_care','distribution','knowledge_expertise','communication_collaboration','leadership_stewardship','professionalism')),
+  competency text not null,
+  competency_code text not null,
+  competency_mapping_note text not null check (length(competency_mapping_note)<=500 and competency_mapping_note ~ '[^[:space:]]'),
+  authoring_key text not null check (authoring_key ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{1,79}$'),
   provenance text not null check (provenance in ('original','licensed')),
   provenance_note text not null check (length(btrim(provenance_note)) between 1 and 500),
   reviewed_by uuid not null references auth.users(id),
@@ -26,7 +57,12 @@ create table private.mcq_mock_items (
   source_ids uuid[] not null check (cardinality(source_ids) between 1 and 5 and array_ndims(source_ids)=1 and array_lower(source_ids,1)=1),
   source_titles text[] not null check (cardinality(source_titles)=cardinality(source_ids) and array_ndims(source_titles)=1 and array_lower(source_titles,1)=1),
   source_locators text[] not null check (cardinality(source_locators)=cardinality(source_ids) and array_ndims(source_locators)=1 and array_lower(source_locators,1)=1),
-  unique (form_id,position)
+  unique (form_id,position),
+  unique (form_id,authoring_key),
+  foreign key (form_id,blueprint_version) references private.mcq_mock_forms(id,blueprint_version) on delete restrict,
+  constraint mcq_mock_competency_matches_blueprint check (
+    private.mcq_mock_competency_in_blueprint(blueprint_version,competency,competency_code)
+  )
 );
 create table private.mcq_mock_attempts (
   id uuid primary key default gen_random_uuid(),
@@ -87,9 +123,17 @@ begin
   end if;
   select count(*) into source_count from private.mcq_mock_items where form_id=old.id;
   if source_count<>200 or exists (
-    select 1 from (values ('clinical_care',100),('distribution',40),('knowledge_expertise',22),('communication_collaboration',8),('leadership_stewardship',6),('professionalism',24)) q(name,n)
-    where (select count(*) from private.mcq_mock_items i where i.form_id=old.id and i.competency=q.name)<>q.n
+    select 1
+    from (select distinct domain_slug,domain_items from private.mcq_mock_blueprint_2026_03()) q
+    where (select count(*) from private.mcq_mock_items i where i.form_id=old.id and i.competency=q.domain_slug)<>q.domain_items
   ) then raise exception 'Mock form must match the 200-question blueprint'; end if;
+  if exists (
+    select 1 from private.mcq_mock_blueprint_2026_03() b
+    where not exists (
+      select 1 from private.mcq_mock_items i where i.form_id=old.id and i.blueprint_version=new.blueprint_version
+        and i.competency=b.domain_slug and i.competency_code=b.competency_code
+    )
+  ) then raise exception 'Mock form must cover all 20 listed PEBC competencies'; end if;
   if (select count(distinct lower(regexp_replace(btrim(stem),'[[:space:]]+',' ','g'))) from private.mcq_mock_items where form_id=old.id)<>200 then
     raise exception 'Duplicate stems are not permitted';
   end if;
@@ -287,6 +331,8 @@ begin
 end
 $$;
 
+revoke all on function private.mcq_mock_blueprint_2026_03() from public, anon, authenticated, service_role;
+revoke all on function private.mcq_mock_competency_in_blueprint(text,text,text) from public, anon, authenticated, service_role;
 revoke all on function private.mcq_mock_freeze_item() from public, anon, authenticated, service_role;
 revoke all on function private.mcq_mock_freeze_form() from public, anon, authenticated, service_role;
 revoke all on function private.mcq_mock_options(uuid,text[]) from public, anon, authenticated, service_role;
