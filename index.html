@@ -475,6 +475,10 @@ p {margin:0 0 18px}
   box-shadow:0 16px 40px rgba(10,52,80,.13);
 }
 
+.book-cover-link {display:block;max-width:660px;margin:34px auto;border-radius:16px}
+.book-cover-link .book-image {display:block;margin:0}
+.book-cover-link:focus-visible {outline:3px solid #087f7c;outline-offset:5px}
+
 /* FOUNDER */
 
 .founder {
@@ -1155,10 +1159,12 @@ section.reference-stage{padding:0!important;margin:0!important;display:block!imp
       covering major therapeutic systems and supporting pharmacy education.
     </p>
 
-    <img class="book-image"
+    <a class="book-cover-link" href="https://a.co/d/03QKGUbn" target="_blank" rel="noopener noreferrer" aria-label="View the NeoClinIQ Clinical Review Series on Amazon">
+      <img class="book-image"
            src="neocliniq-amazon-series.jpg"
            alt="NeoClinIQ 12-volume Clinical Review Series"
            loading="lazy">
+    </a>
 
     <div class="actions">
       <a class="btn"
