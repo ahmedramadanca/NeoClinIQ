@@ -40,7 +40,7 @@ async function approvedStation(caseId: string) {
   const [ready, queue, generated, profile] = await Promise.all([
     checkInfo("osce_case_launch_readiness","launch_ready,clinical_review_status",caseId),
     checkInfo("osce_case_authoring_queue","stage",caseId),
-    checkInfo("osce_generated_cases","station_type,chapter_title,door_note,review_status",caseId),
+    checkInfo("osce_generated_cases","station_type,door_note,review_status",caseId),
     checkInfo("osce_case_clinical_profiles","patient_identity,clinical_history,medications,allergies,dispensing_history,investigations,vital_signs,consent_context,encounter_script,fifth_minute_event,examiner_checklist,clinical_reference_review,clinical_review_status,reviewer,reviewed_at,updated_at",caseId),
   ]);
   if(!generated || !profile) return null;
@@ -108,7 +108,7 @@ async function approvedStation(caseId: string) {
   }:null;
   const referenceLeads=Array.isArray(profile.clinical_reference_review)?profile.clinical_reference_review:[];
   return {door,name,age,gender,role,opening,curve,checklist,replyFor,actorFacts,candidateChart,referenceLeads,
-    chapterTitle:cap(generated.chapter_title,250),practice:!strict,
+    practice:!strict,
     publicationVersion:practice?publication.content_updated_at:null};
 }
 function practiceMeta(station:any) {
@@ -152,40 +152,43 @@ async function spokenAudio(station:any,caseId:string,text:string){
     return {audio:encodeBase64(new Uint8Array(await speech.arrayBuffer())),voice,voiceDisclosure:"AI-generated voice"};
   }catch(error){console.error("Mapped TTS unavailable",error instanceof Error?error.message:"unknown");return {audio:null,voice,voiceDisclosure:"AI-generated voice"}}
 }
-function overlapScore(textValue:string,terms:string[]){
-  const value=textValue.toLowerCase();
-  return terms.reduce((score,term)=>score+(value.includes(term)?1:0),0);
-}
 async function stationReferences(station:any){
-  const all=Array.isArray(station.referenceLeads)?station.referenceLeads:[];
-  const leads=(station.practice?all:all.filter((item:any)=>["verified","approved"].includes(cap(item?.review_status,40).toLowerCase())))
-    .filter((item:any)=>cap(item?.source_id,120)).slice(0,8);
-  if(!leads.length)return {references:[],notice:station.practice?
-    "No case-specific reference lead is attached to this practice station.":
-    "No verified case-specific reference is attached to this station."};
-  const ids=[...new Set(leads.map((item:any)=>cap(item.source_id,120)))];
-  const [{data:documents,error:documentError},{data:passages,error:passageError}]=await Promise.all([
-    db.from("original_reference_documents").select("id,title,indexing_status").in("id",ids),
-    db.from("original_reference_passages").select("document_id,passage_number,passage_text").in("document_id",ids)
-      .order("passage_number",{ascending:true}).limit(400)
-  ]);
-  if(documentError||passageError)throw Error("Case references are temporarily unavailable.");
-  const terms=[...new Set((station.chapterTitle+" "+station.door).toLowerCase().match(/[a-z][a-z0-9-]{4,}/g)||[])]
-    .filter(term=>!["pharmacist","patient","community","review","related","encounter","appropriate"].includes(term)).slice(0,24);
-  const leadMap=new Map(leads.map((item:any)=>[cap(item.source_id,120),item]));
-  const references=(documents||[]).map((document:any)=>{
-    const lead=leadMap.get(document.id),status=cap(lead?.review_status,40).toLowerCase();
-    const verified=["verified","approved"].includes(status);
-    const candidates=(passages||[]).filter((item:any)=>item.document_id===document.id)
-      .map((item:any)=>({item,score:overlapScore(String(item.passage_text||""),terms)}))
-      .sort((a:any,b:any)=>b.score-a.score||a.item.passage_number-b.item.passage_number).slice(0,2);
-    return {title:cap(document.title,250),verification:verified?"verified":"pending",
-      locator:lead?.section??lead?.page??lead?.locator??null,
-      excerpts:candidates.map((entry:any)=>({section:entry.item.passage_number,text:cap(entry.item.passage_text,1300)}))};
-  }).filter((item:any)=>item.excerpts.length);
-  return {references,notice:station.practice?
-    "Case-specific source leads from the private NeoClinIQ index. Items marked pending are unverified and must not be treated as clinical authority.":
-    "Verified case-specific excerpts from the private NeoClinIQ index."};
+  const leads=Array.isArray(station.referenceLeads)?station.referenceLeads:[];
+  const reviewed=new Map<string,Set<number>>();
+  for(const lead of leads){
+    if(!["verified","approved"].includes(cap(lead?.review_status,40).toLowerCase())) continue;
+    const sourceId=cap(lead?.source_id,120);
+    const value=lead?.passage_number;
+    const number=typeof value==="number"?value:typeof value==="string"&&/^\d+$/.test(value.trim())?Number(value):NaN;
+    // A PDF page, section title, or keyword match is not an indexed passage identifier.
+    if(!sourceId||!Number.isSafeInteger(number)||number<0) continue;
+    const numbers=reviewed.get(sourceId)??new Set<number>();
+    numbers.add(number);
+    reviewed.set(sourceId,numbers);
+  }
+  const unavailable={references:[],notice:"No verified reference excerpts are assigned to this station yet."};
+  if(!reviewed.size) return unavailable;
+
+  const groups=[...reviewed].slice(0,8);
+  const {data:documents,error:documentError}=await db.from("original_reference_documents")
+    .select("id,title").in("id",groups.map(([id])=>id));
+  if(documentError) throw Error("Case references are temporarily unavailable.");
+  const titles=new Map<string,string>((documents||[]).map((item:any)=>[item.id,cap(item.title,250)]));
+  const results=await Promise.all(groups.map(async ([id,numbers])=>{
+    const title=titles.get(id);
+    if(!title) return null;
+    const {data:passages,error}=await db.from("original_reference_passages")
+      .select("document_id,passage_number,passage_text").eq("document_id",id)
+      .in("passage_number",[...numbers].slice(0,8)).order("passage_number",{ascending:true});
+    if(error) throw Error("Case references are temporarily unavailable.");
+    const excerpts=(passages||[])
+      .filter((item:any)=>item.document_id===id&&numbers.has(item.passage_number))
+      .map((item:any)=>({section:item.passage_number,text:cap(item.passage_text,1300)}))
+      .filter((item:any)=>item.text);
+    return excerpts.length?{title,verification:"verified",excerpts}:null;
+  }));
+  const references=results.filter(Boolean);
+  return references.length?{references,notice:"Verified excerpts assigned to this station."}:unavailable;
 }
 const clampRating=(value:any)=>Math.min(4,Math.max(0,Math.round(Number(value)||0)));
 const cleanList=(value:any)=>Array.isArray(value)?value.map((item:any)=>cap(item,400)).filter(Boolean).slice(0,8):[];
