@@ -23,6 +23,7 @@
 <section class="panel"><h2>PEBC OSCE</h2><div class="price">C$1,800 <small>initial / 16 weeks</small></div><p>One optional 4-month extension: C$900. Extend before expiry or within 42 days afterward. The grace period does not provide learning access.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
 </div>
 <section class="panel"><h2>SI OSCE Tutor</h2><p>Use your active OSCE subscription to practise timed pharmacy stations with AI roleplay, a patient pharmacy profile where applicable, and formative feedback based on your dialogue.</p><a class="btn secondary" href="/osce-simulator.html">Open SI OSCE Tutor</a></section><section class="panel"><h2>OSCE learning resources</h2><p>Access protected OSCE stations, counselling materials, videos and PDFs with an active OSCE enrolment.</p><a class="btn secondary" href="/osce-library.html">Open OSCE resource library</a><p class="muted">The library only displays published materials and checks OSCE access on every request.</p></section><section class="panel"><h2>MCQ learning resources</h2><p>Students with verified active MCQ access can use the dedicated library for videos, PDFs and infographics when the private resource service is configured.</p><a class="btn secondary" href="/mcq-library.html">Open MCQ resource library</a><p class="muted">Resource access requires an active MCQ entitlement. The library does not enable checkout or bypass payment validation.</p></section>
+<section id="mcq-mock-card" class="panel hidden"><h2>PEBC MCQ Mock Exam</h2><p>200 questions · 4 hours 20 minutes. Owner-reviewed practice for active paid website MCQ subscribers.</p><a class="btn" href="/mcq-mock.html">Open timed MCQ mock exam</a></section>
 <section id="admin-drive" class="panel hidden" aria-label="Administrator Google Drive connection"><h2>Administrator · Google Drive</h2><p>Reconnect the private Google Drive source used to securely stream NeoClinIQ learning resources. This action requires website administrator authorization.</p><div class="buttons"><button id="connect-drive" class="btn" type="button">Connect Google Drive</button></div><p id="drive-status" class="muted" role="status" aria-live="polite"></p></section>
 <section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> MCQ: four calendar months. OSCE: 16 weeks.</div><div class="detail"><strong>Extensions:</strong> One discounted extension per enrollment, purchasable before expiry or within 42 days afterward. Both MCQ and OSCE add four calendar months. Access stops at expiry during the grace period. An extension purchased after expiry starts a new extension period on payment.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets. After the 42-day grace period, a discounted extension is no longer available.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
 </main><footer>© <span id="year"></span> NeoClinIQ · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></footer>
@@ -38,7 +39,7 @@ const CONFIG=Object.freeze({
 const $=id=>document.getElementById(id);
 const ready=CONFIG.SUPABASE_PUBLISHABLE_KEY!=="REPLACE_WITH_PUBLIC_SUPABASE_KEY";
 const client=ready?createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY):null;
-let session=null,entitlements=null;
+let session=null,entitlements=null,mockCheck=0;
 $("year").textContent=new Date().getFullYear();
 function notice(s,type="warn"){$("notice").textContent=s;$("notice").className="status "+type}
 function isActive(e){return !!(e?.active&&e.expires_at&&new Date(e.expires_at).getTime()>Date.now())}
@@ -60,15 +61,23 @@ function render(){
   $(p+"-extension").disabled=!(canBuy&&canExtend(p,e));
  }
 }
+function checkMockAccess(){
+ const active=session, check=++mockCheck, card=$("mcq-mock-card");
+ card.classList.add("hidden");
+ if(!active||!isActive(entitlements?.mcq))return;
+ fetch(CONFIG.SUPABASE_URL+"/functions/v1/website-mcq-mock",{method:"POST",cache:"no-store",headers:{Authorization:"Bearer "+active.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",compact:true})})
+ .then(async r=>{if(!r.ok)return;const {state}=await r.json();if(session?.user?.id===active.user.id&&check===mockCheck&&["available","in_progress","submitted","expired"].includes(state))card.classList.remove("hidden")})
+ .catch(()=>{});
+}
 async function loadAccess(){
- entitlements=null;render();
+ entitlements=null;render();checkMockAccess();
  if(!session||!CONFIG.ENTITLEMENTS_ENDPOINT)return;
  try{
   const res=await fetch(CONFIG.ENTITLEMENTS_ENDPOINT,{headers:{Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},cache:"no-store"});
   if(!res.ok)throw Error("Unable to load access");
   const data=await res.json();
   if(!data||typeof data!=="object"||!("mcq" in data)||!("osce" in data))throw Error("Invalid access response");
-  entitlements=data;render();
+  entitlements=data;render();checkMockAccess();
  }catch(e){console.error(e);notice("Unable to verify access. Please contact support.","error")}
 }
 $("auth-form").addEventListener("submit",async e=>{
@@ -115,7 +124,7 @@ async function checkout(program,purchase_type){
 }
 for(const p of ["mcq","osce"])for(const t of ["initial","extension"])$(p+"-"+t).addEventListener("click",()=>checkout(p,t));
 if(client){
- client.auth.onAuthStateChange((_event,next)=>{session=next;entitlements=null;render();setTimeout(()=>{if(next)loadAccess()},0)});
+ client.auth.onAuthStateChange((_event,next)=>{session=next;entitlements=null;render();checkMockAccess();setTimeout(()=>{if(next)loadAccess()},0)});
  const {data,error}=await client.auth.getSession();if(error)notice("Could not restore session.","error");
  session=data?.session||null;render();if(session)await loadAccess();
 }else{notice("Portal preview is available; authentication and live purchases are not yet enabled.");render()}
