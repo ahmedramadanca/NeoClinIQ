@@ -44,3 +44,121 @@ body:has(#notice) .btn:not(.secondary){background:linear-gradient(110deg,#087d88
 main>.hero{box-shadow:0 16px 32px #042c4018}
 main>.panel,main>.section .panel{border-top:3px solid #27c8b5}
 @media(max-width:600px){body:has(.shell) .shell>header{padding:13px 20px}body:has(.shell) .si-brand{padding:16px}body:has(.shell) .si-brand img{width:66px;height:66px}}
+
+/*
+ * NeoClinIQ inner-page palette.
+ * Opt-in on published content. Information, access states, clinical warnings,
+ * PDF/video controls, spacing and layout continue to be owned by each page.
+ */
+body.nc-inner-theme {
+  --nc-inner-mast:linear-gradient(110deg,#041726,#092d42);
+  --nc-inner-hero:radial-gradient(circle at 88% 12%,#31bcae30 0%,transparent 46%),linear-gradient(125deg,#061b30 8%,#0a354a 58%,#0a6666);
+  --nc-inner-canvas:radial-gradient(ellipse at 95% 0%,#d9f7f0 0%,transparent 38%),linear-gradient(180deg,#edf8fa,#fbfdfe 52%,#eef8f8);
+  --nc-inner-surface:linear-gradient(155deg,#fff 52%,#f7fcfc);
+  --nc-inner-ink:#12374c;
+  --nc-inner-heading:#082d45;
+  --nc-inner-muted:#496779;
+  --nc-inner-mint:#8cebdd;
+  --nc-inner-border:#c6e4e5;
+  --nc-inner-action:#086f73;
+  --nc-inner-action-hover:#075c64;
+  --nc-inner-dark-ink:#effffb;
+  --nc-inner-dark-muted:#ccebed;
+  --nc-inner-radius:18px;
+  background:var(--nc-inner-canvas)!important;
+  color:var(--nc-inner-ink);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body.nc-inner-theme>header,
+body.nc-inner-theme>.shell>header {
+  background:var(--nc-inner-mast)!important;
+  color:var(--nc-inner-dark-ink)!important;
+  border-bottom:1px solid #3db9ab!important;
+  box-shadow:0 8px 22px #041b2921;
+}
+body.nc-inner-theme>header a,
+body.nc-inner-theme>.shell>header a,
+body.nc-inner-theme>header nav summary,
+body.nc-inner-theme>.shell>header nav summary {
+  color:var(--nc-inner-dark-ink)!important;
+}
+body.nc-inner-theme :is(header,.nc-site-header) nav a[aria-current="page"],
+body.nc-inner-theme>header a:not(.nc-global-enrol,.nc-account,.nc-global-account):hover,
+body.nc-inner-theme>.shell>header a:not(.nc-global-enrol,.nc-account,.nc-global-account):hover,
+body.nc-inner-theme>header nav summary:hover,
+body.nc-inner-theme>.shell>header nav summary:hover {
+  color:var(--nc-inner-mint)!important;
+}
+body.nc-inner-theme .nc-global-enrol,
+body.nc-inner-theme .nc-links .nc-account {
+  background:var(--nc-inner-action)!important;
+  color:#fff!important;
+}
+body.nc-inner-theme .nc-global-enrol:hover,
+body.nc-inner-theme .nc-links .nc-account:hover {
+  background:var(--nc-inner-action-hover)!important;
+}
+body.nc-inner-theme .hero {
+  background:var(--nc-inner-hero)!important;
+  color:var(--nc-inner-dark-ink)!important;
+  border-color:#3db9ab!important;
+}
+body.nc-inner-theme .hero :is(h1,h2,h3) {
+  color:var(--nc-inner-dark-ink)!important;
+}
+body.nc-inner-theme .hero :is(p,.lead,.muted,.effective) {
+  color:var(--nc-inner-dark-muted)!important;
+}
+body.nc-inner-theme .hero :is(.eyebrow,.osce-eyebrow,.osce-kicker) {
+  color:var(--nc-inner-mint)!important;
+}
+body.nc-inner-theme .hero a:not(.btn,.cta,.button) {
+  color:var(--nc-inner-mint)!important;
+}
+body.nc-inner-theme main :is(.panel,.card,.module,.metric):not(:is(.warning,.warn,.notice,.error,.success,.status,.danger,.badge,.pill,.hero *,.stage *,#viewer *,.viewer *,.voice-panel *)) {
+  background:var(--nc-inner-surface);
+  border-color:var(--nc-inner-border)!important;
+  border-radius:var(--nc-inner-radius)!important;
+  box-shadow:0 8px 23px #092d4210;
+}
+body.nc-inner-theme main>h1 {
+  color:var(--nc-inner-heading);
+}
+body.nc-inner-theme main :is(.panel,.card,.module)>:is(h1,h2,h3) {
+  color:var(--nc-inner-heading);
+}
+body.nc-inner-theme main>.lead {
+  color:var(--nc-inner-muted);
+}
+body.nc-inner-theme main a:not(:is(.btn,.cta,.button,header *,.stage *,#viewer *,.viewer *,.voice-panel *,.warning *,.warn *,.error *,.status *)) {
+  color:var(--nc-inner-action);
+}
+body.nc-inner-theme main :is(.btn,.cta,.button,button[type="submit"]):not(:is(.secondary,.alt,.muted,.danger,.warn,.warning,.error,.success,.status,[style],[disabled],[aria-disabled="true"],#viewer *,.viewer *,.stage *)) {
+  background:var(--nc-inner-action)!important;
+  color:#fff!important;
+  border-color:var(--nc-inner-action);
+}
+body.nc-inner-theme main .btn[style*="background:#078d92"][style*="color:white"] {background:var(--nc-inner-action)!important;color:#fff!important}
+body.nc-inner-theme main :is(.btn,.cta,.button,button[type="submit"]):not(:is(.secondary,.alt,.muted,.danger,.warn,.warning,.error,.success,.status,[style],[disabled],[aria-disabled="true"],#viewer *,.viewer *,.stage *)):hover {
+  background:var(--nc-inner-action-hover)!important;
+}
+body.nc-inner-theme :is(a,button,summary,input,select,textarea):not(:is(#viewer *,.viewer *,.stage *)):focus-visible {
+  outline:3px solid #116870!important;
+  outline-offset:3px;
+}
+body.nc-inner-theme>header :is(a,button,summary,input,select,textarea):focus-visible,
+body.nc-inner-theme :is(.nc-site-header,.hero,.si-brand,.voice-panel,footer) :is(a,button,summary,input,select,textarea):focus-visible {
+  outline-color:var(--nc-inner-mint)!important;
+}
+body.nc-inner-theme>footer {
+  background:var(--nc-inner-mast);
+  color:var(--nc-inner-dark-muted);
+  border-color:#3db9ab;
+}
+body.nc-inner-theme>footer a {
+  color:var(--nc-inner-mint);
+}
+@media print {
+  body.nc-inner-theme {background:#fff!important;color:#111!important}
+  body.nc-inner-theme main :is(.panel,.card,.module,.metric) {box-shadow:none}
+}
