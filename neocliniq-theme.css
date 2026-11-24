@@ -89,12 +89,12 @@ body.nc-inner-theme>header nav summary:hover,
 body.nc-inner-theme>.shell>header nav summary:hover {
   color:var(--nc-inner-mint)!important;
 }
-body.nc-inner-theme .nc-global-enrol,
+body.nc-inner-theme header .nc-global-nav>a.nc-global-enrol,
 body.nc-inner-theme .nc-links .nc-account {
   background:var(--nc-inner-action)!important;
   color:#fff!important;
 }
-body.nc-inner-theme .nc-global-enrol:hover,
+body.nc-inner-theme header .nc-global-nav>a.nc-global-enrol:hover,
 body.nc-inner-theme .nc-links .nc-account:hover {
   background:var(--nc-inner-action-hover)!important;
 }
