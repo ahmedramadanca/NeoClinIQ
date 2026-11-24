@@ -10,6 +10,7 @@ const owner3="10000000-0000-0000-0000-000000000004";
 const free="10000000-0000-0000-0000-000000000005";
 const osce="10000000-0000-0000-0000-000000000006";
 const noPayment="10000000-0000-0000-0000-000000000007";
+const disputed="10000000-0000-0000-0000-000000000008";
 const reference="20000000-0000-0000-0000-000000000001";
 const form="30000000-0000-0000-0000-000000000001";
 const expiredAttempt="40000000-0000-0000-0000-000000000001";
@@ -21,12 +22,15 @@ test("private database API and immutable, 200-item, server-timed attempt", async
   await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
     create schema auth; create table auth.users(id uuid primary key);
     create table public.program_entitlements(user_id uuid,program text,active bool,expires_at timestamptz,source text);
-    create table public.website_payments(user_id uuid,program text,purchase_type text,status text,amount_cents int);
-    grant select on public.program_entitlements,public.website_payments to service_role;
+    create table public.website_payments(user_id uuid,program text,purchase_type text,status text,amount_cents int,
+      stripe_payment_intent_id text,stripe_checkout_session_id text);
+    create table public.website_payment_reconciliation(user_id uuid,case_type text, stripe_payment_intent_id text,
+      stripe_checkout_session_id text, details jsonb);
+    grant select on public.program_entitlements,public.website_payments,public.website_payment_reconciliation to service_role;
     create table public.original_reference_documents(id uuid primary key,title text,indexing_status text,source_url text,drive_file_id text);`);
   const migration=fs.readFileSync(new URL("../supabase/migrations/20261124051000_private_mcq_mock.sql",import.meta.url),"utf8");
   await db.exec(migration);
-  await db.query("insert into auth.users select unnest(\$1::uuid[])",[[owner,owner2,expired,owner3,free,osce,noPayment]]);
+  await db.query("insert into auth.users select unnest(\$1::uuid[])",[[owner,owner2,expired,owner3,free,osce,noPayment,disputed]]);
   await db.query(`insert into public.program_entitlements values
     (\$1,'mcq',true,clock_timestamp()+interval '1 day','stripe_website'),
     (\$2,'mcq',true,clock_timestamp()+interval '1 day','stripe_website'),
@@ -35,10 +39,16 @@ test("private database API and immutable, 200-item, server-timed attempt", async
     (\$5,'mcq',true,clock_timestamp()+interval '1 day','founder_test'),
     (\$6,'osce',true,clock_timestamp()+interval '1 day','stripe_website'),
     (\$7,'mcq',true,clock_timestamp()+interval '1 day','stripe_website')`,[owner,owner2,expired,owner3,free,osce,noPayment]);
-  await db.query(`insert into public.website_payments values
+  await db.query(`insert into public.website_payments(user_id,program,purchase_type,status,amount_cents) values
     (\$1,'mcq','initial','fulfilled',150000),(\$2,'mcq','initial','fulfilled',150000),
     (\$3,'mcq','initial','fulfilled',150000),(\$4,'mcq','initial','fulfilled',150000),
     (\$5,'osce','initial','fulfilled',180000),(\$6,'mcq','initial','rejected',150000)`,[owner,owner2,expired,owner3,osce,noPayment]);
+  await db.query("update public.website_payments set stripe_payment_intent_id='fixture-refund' where user_id=$1",[noPayment]);
+  await db.query("update public.website_payments set status='fulfilled' where user_id=$1",[noPayment]);
+  await db.query("insert into public.website_payment_reconciliation(user_id,case_type,stripe_payment_intent_id,details) values ($1,'refund_succeeded','fixture-refund',$2)",[noPayment,JSON.stringify({amount_refunded:150000})]);
+  await db.query("insert into public.program_entitlements values ($1,'mcq',true,clock_timestamp()+interval '1 day','stripe_website')",[disputed]);
+  await db.query("insert into public.website_payments values ($1,'mcq','initial','fulfilled',150000,'fixture-dispute','fixture-session')",[disputed]);
+  await db.query("insert into public.website_payment_reconciliation values ($1,'dispute_opened','fixture-dispute','fixture-session',null)",[disputed]);
   await db.query("insert into public.original_reference_documents values (\$1,'SI Library Fixture Title','indexed','https://example.invalid/NEVER_RETURN','private-drive-id')",[reference]);
   await db.query("insert into private.mcq_mock_forms (id,name,version) values (\$1,'Synthetic fixture only','fixture-1')",[form]);
   let run=(action,user=owner,attempt=null,answers=[],flags=[],compact=false)=>db.query(
@@ -54,8 +64,10 @@ test("private database API and immutable, 200-item, server-timed attempt", async
   });
   await role("service_role",async()=>{
    assert.equal((await run("start")).status,503,"unreleased forms must not start");
-   for(const id of [expired,free,osce,noPayment])assert.equal((await run("status",id)).status,403);
+   for(const id of [expired,free,osce,noPayment,disputed])assert.equal((await run("status",id)).status,403);
   });
+  await db.query("insert into public.website_payment_reconciliation values ($1,'dispute_closed','fixture-dispute','fixture-session',$2)",[disputed,JSON.stringify({dispute_status:"won"})]);
+  await role("service_role",async()=>assert.equal((await run("status",disputed)).status,503,"won dispute has paid access but fixture form is not yet released"));
   await assert.rejects(db.query("update private.mcq_mock_forms set reviewed_by=\$1,reviewed_at=now(),released_at=now() where id=\$2",[owner,form]),/200-question blueprint/);
   await db.query(`insert into private.mcq_mock_items(form_id,position,competency,provenance,provenance_note,reviewed_by,reviewed_at,stem,options,
     correct_index,rationale,option_rationales,source_ids,source_titles,source_locators)
