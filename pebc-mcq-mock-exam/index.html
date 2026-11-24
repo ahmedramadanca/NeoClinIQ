@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="/neocliniq-theme.css?v=20261124-inner1">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f2fafb;color:#12374c;font:16px/1.6 system-ui,sans-serif}a{color:#08636c;text-underline-offset:3px}.wrap{width:min(100% - 36px,1050px);margin-inline:auto}.page-header{padding:10px 0}.head-row{display:flex;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap}.head-row>a{display:inline-flex;align-items:center}.head-row img{width:148px;height:auto;padding:5px;border-radius:8px;background:white}.head-row nav{display:flex;gap:5px 14px;flex-wrap:wrap}.head-row nav a{padding-block:7px;font-weight:650;text-decoration:underline}main{padding:18px 0 36px}.crumb{margin:0 0 14px}.hero,.card,.panel{border:1px solid #bfe4e3;border-radius:18px}.hero{padding:clamp(21px,5vw,53px)}.eyebrow{font-weight:750;letter-spacing:.05em;text-transform:uppercase;font-size:.83rem;margin:0 0 9px}.hero h1{margin:0 0 .2em;font-size:clamp(2rem,6.4vw,3.5rem);line-height:1.13}.hero p{margin:.5em 0;max-width:65ch}.hero .state{display:inline-block;background:#e8faf6;color:#104850;border-radius:9px;padding:6px 10px;font-weight:750;margin:.6em 0 .35em}.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,215px),1fr));gap:12px;margin:15px 0 18px}.card,.panel{padding:clamp(15px,3vw,24px);background:#fff}.card strong{font-size:1.27rem;line-height:1.25;color:#07334c}.card p{margin:.25em 0 0}.panel h2{margin:0 0 .4em;line-height:1.25}.panel p{margin:.35em 0}.panel ul{padding-inline-start:1.3rem;margin:.4em 0 .2em}.panel li+li{margin-top:.45em}.panel+.panel{margin-top:13px}.footer{padding:17px 0}.footer p{margin:0}@media(max-width:430px){.head-row img{width:130px}.wrap{width:calc(100% - 28px)}.head-row nav a{font-size:.91rem}}
-</style>
+.mock-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin:1.25rem 0 .45rem}.mock-actions .mock-primary{display:inline-block;padding:.75rem 1.05rem;background:#082e50;color:#fff;border-radius:.55rem;font-weight:700;text-decoration:none;line-height:1.35}.mock-actions .mock-primary:hover{background:#12456c}.mock-actions a:focus-visible{outline:3px solid #078d92;outline-offset:4px}.mock-access-note{font-size:.94rem}</style>
 </head>
 <body>
 <header class="page-header"><div class="wrap head-row">
@@ -36,8 +36,9 @@
     <p class="eyebrow">NeoClinIQ · PEBC Part I preparation</p>
     <h1 id="title">PEBC MCQ Mock Exam</h1>
     <p class="state">Available to active paid website MCQ subscribers</p>
-    <p>A full-length, owner-reviewed practice exam for active paid NeoClinIQ website MCQ subscribers. Sign in to the Learning Portal to start. This practice form has not been independently clinically reviewed.</p>
-    <p><a href="/learning.html"><strong>Open the Learning Portal</strong></a></p>
+    <p>A full-length, owner-reviewed practice exam for active paid NeoClinIQ website MCQ subscribers. Sign in with the account linked to your paid website MCQ subscription. This practice form has not been independently clinically reviewed.</p>
+    <div class="mock-actions" aria-label="Mock exam access"><a class="mock-primary" href="/mcq-mock.html">Open timed mock exam</a><a href="/learning.html">Sign in to the Learning Portal</a></div>
+    <p class="mock-access-note">Opening the exam does not start the timer. Start it only when you’re ready.</p>
   </section>
   <section class="facts" aria-label="Mock exam format">
     <div class="card"><strong>200 questions</strong><p>Four options and one best answer per question.</p></div>
