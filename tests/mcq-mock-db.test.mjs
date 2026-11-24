@@ -14,7 +14,14 @@ const disputed="10000000-0000-0000-0000-000000000008";
 const reference="20000000-0000-0000-0000-000000000001";
 const form="30000000-0000-0000-0000-000000000001";
 const expiredAttempt="40000000-0000-0000-0000-000000000001";
-const blueprint=[[100,"clinical_care"],[40,"distribution"],[22,"knowledge_expertise"],[8,"communication_collaboration"],[6,"leadership_stewardship"],[24,"professionalism"]].flatMap(([n,name])=>Array(n).fill(name));
+const blueprint=[
+  [100,"clinical_care",["1.1","1.2","1.3","1.4","1.5"]],
+  [40,"distribution",["1.6","1.7","1.8","1.9","1.10"]],
+  [22,"knowledge_expertise",["2.2"]],
+  [8,"communication_collaboration",["3.1","3.2","3.3","3.4"]],
+  [6,"leadership_stewardship",["4.2"]],
+  [24,"professionalism",["5.1","5.2","5.4","5.5"]],
+].flatMap(([n,domain,codes])=>Array.from({length:n},(_,i)=>[domain,codes[i%codes.length]]));
 
 test("private database API and immutable, 200-item, server-timed attempt", async ()=>{
  const db = new PGlite();
@@ -69,13 +76,29 @@ test("private database API and immutable, 200-item, server-timed attempt", async
   await db.query("insert into public.website_payment_reconciliation values ($1,'dispute_closed','fixture-dispute','fixture-session',$2)",[disputed,JSON.stringify({dispute_status:"won"})]);
   await role("service_role",async()=>assert.equal((await run("status",disputed)).status,503,"won dispute has paid access but fixture form is not yet released"));
   await assert.rejects(db.query("update private.mcq_mock_forms set reviewed_by=\$1,reviewed_at=now(),released_at=now() where id=\$2",[owner,form]),/200-question blueprint/);
-  await db.query(`insert into private.mcq_mock_items(form_id,position,competency,provenance,provenance_note,reviewed_by,reviewed_at,stem,options,
+  await db.query(`insert into private.mcq_mock_items(form_id,position,competency,competency_code,competency_mapping_note,authoring_key,provenance,provenance_note,reviewed_by,reviewed_at,stem,options,
     correct_index,rationale,option_rationales,source_ids,source_titles,source_locators)
-    select \$1,row_number() over (),s,'original','Not real exam material',\$2,now(),
-    'Synthetic question '||row_number() over (),array['A fixture','B fixture','C fixture','D fixture'],
+    select \$1,row_number() over (order by s.n),s.domain,s.code,'Fixture mapping note','fixture-item-'||s.n,'original','Not real exam material',\$2,now(),
+    'Synthetic question '||row_number() over (order by s.n),array['A fixture','B fixture','C fixture','D fixture'],
     2,'Reviewed fixture explanation',array['Why A is wrong','Why B is correct','Why C is wrong','Why D is wrong'],
     array[\$3::uuid],array['SI Library Fixture Title'],array['Unit test section']
-    from unnest(\$4::text[]) s`,[form,owner,reference,blueprint]);
+    from unnest(\$4::text[],\$5::text[]) with ordinality s(domain,code,n)`,[form,owner,reference,blueprint.map(x=>x[0]),blueprint.map(x=>x[1])]);
+  const declared=await db.query("select count(*) as n from private.mcq_mock_blueprint_2026_03()");
+  assert.equal(Number(declared.rows[0].n),20);
+  assert.equal((await db.query("select count(*) as n from private.mcq_mock_items where competency_code='1.10' and competency='distribution'")).rows.map(x=>Number(x.n))[0],8);
+  await assert.rejects(db.query("update private.mcq_mock_items set competency_code=null where position=1"),/not-null/);
+  await assert.rejects(db.query("update private.mcq_mock_items set competency_code='1.6' where position=1"),/mcq_mock_competency_matches_blueprint/);
+  await assert.rejects(db.query("update private.mcq_mock_items set competency_code='2.1' where position=141"),/mcq_mock_competency_matches_blueprint/);
+  await assert.rejects(db.query("update private.mcq_mock_items set competency_mapping_note='  ' where position=1"),/competency_mapping_note/);
+  await db.query("update private.mcq_mock_items set competency_code='1.1' where competency_code='1.5'");
+  await assert.rejects(db.query("update private.mcq_mock_forms set reviewed_by=$1,reviewed_at=now(),released_at=now() where id=$2",[owner,form]),/all 20 listed PEBC competencies/);
+  await db.query("update private.mcq_mock_items set competency_code='1.5' where competency='clinical_care' and position%5=0");
+  // Keep all codes and 200 items but shift one question into the wrong domain total.
+  await db.query("update private.mcq_mock_items set competency='distribution',competency_code='1.6' where position=1");
+  await assert.rejects(db.query("update private.mcq_mock_forms set reviewed_by=$1,reviewed_at=now(),released_at=now() where id=$2",[owner,form]),/200-question blueprint/);
+  await db.query("update private.mcq_mock_items set competency='clinical_care',competency_code='1.1' where position=1");
+  await assert.rejects(db.query("update private.mcq_mock_items set blueprint_version='2025-01' where position=1"),/mcq_mock_competency_matches_blueprint/);
+  await assert.rejects(db.query("update private.mcq_mock_items set authoring_key='fixture-item-2' where position=1"),/unique constraint/);
   // Identical title is not enough: it must match an actual indexed catalog identifier.
   await db.query("update private.mcq_mock_items set source_ids=array[gen_random_uuid()] where position=10");
   await assert.rejects(db.query("update private.mcq_mock_forms set reviewed_by=\$1,reviewed_at=now(),released_at=now() where id=\$2",[owner,form]),/indexed-reference/);
@@ -97,7 +120,7 @@ test("private database API and immutable, 200-item, server-timed attempt", async
    assert.ok(a.questions.every(q=>q.options.length===4 && Object.keys(q).length===3 && q.options.every(x=>Object.keys(x).length===2)));
    assert.equal(Date.parse(a.expires_at)-Date.parse(a.started_at),260*60*1000);
    const text=JSON.stringify(a);
-   assert.ok(!/correct|rationale|source|NEVER_RETURN|private-drive-id/i.test(text));
+   assert.ok(!/correct|rationale|source|competency|Fixture mapping note|fixture-item-|NEVER_RETURN|private-drive-id/i.test(text));
    assert.equal((await run("status",owner,a.attempt_id,[],[],true)).body.questions,undefined);
    assert.equal((await run("start")).body.attempt_id,a.attempt_id,"start retry resumes, not a new timer");
    assert.equal((await run("results",owner,a.attempt_id)).status,409);
@@ -126,6 +149,7 @@ test("private database API and immutable, 200-item, server-timed attempt", async
    assert.ok(!JSON.stringify(r).includes("NEVER_RETURN"));
    assert.ok(!JSON.stringify(r).includes("private-drive-id"));
    assert.ok(!JSON.stringify(r).includes(reference));
+   assert.ok(!/competency_code|competency_mapping_note|Fixture mapping note|fixture-item-/.test(JSON.stringify(r)));
    const retry=(await run("submit",owner,a.attempt_id,[pick(p,0)],[])).body.result;
    const stale=(await run("save",owner,a.attempt_id,[],[])).body.result;
    assert.deepEqual(retry,r);assert.deepEqual(stale,r);
