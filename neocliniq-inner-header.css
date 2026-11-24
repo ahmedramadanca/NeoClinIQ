@@ -18,3 +18,11 @@
 .nc-site-header .nc-links a:hover,.nc-site-header .nc-links a[aria-current="page"]{background:#0c5763!important;color:#9af8e6!important}
 .nc-site-header .nc-links .nc-account{background:#078f87!important;color:#fff!important}
 .nc-site-header .nc-links .nc-account:hover{background:#0aa69c!important;color:#fff!important}
+
+/* Without JS all links stay visible; the mobile control is added only when ready. */
+.nc-site-header .nc-mobile-menu-toggle{display:none}
+@media(max-width:760px){
+ .nc-site-header .nc-mobile-menu-toggle{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid #81c6c9;border-radius:9px;color:#e7fffb;background:#0c4b60;font:650 14px/1.3 system-ui,sans-serif;cursor:pointer}
+ .nc-site-header .nc-mobile-menu-toggle:focus-visible{outline:2px solid #89f7de;outline-offset:3px}
+ .nc-site-header .nc-global-nav[data-nc-mobile-collapsed="true"]{display:none!important}
+}
