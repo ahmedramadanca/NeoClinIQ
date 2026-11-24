@@ -6,7 +6,10 @@ import {join} from "node:path";
 import {pathToFileURL} from "node:url";
 const root=mkdtempSync(join(tmpdir(),"osce-mapped-test-"));
 process.on("exit",()=>rmSync(root,{recursive:true,force:true}));
-const source=fs.readFileSync(new URL("../supabase/functions/website-osce-mapped-session/index.ts",import.meta.url),"utf8").replace(/^import .+;/m,"const createClient=globalThis.makeMock;");
+const helper=fs.readFileSync(new URL("../supabase/functions/_shared/osce-practice-readiness.ts",import.meta.url),"utf8").replace(/export /g,"");
+const source=fs.readFileSync(new URL("../supabase/functions/website-osce-mapped-session/index.ts",import.meta.url),"utf8")
+ .replace(/^import .+supabase-js.+;/m,"const createClient=globalThis.makeMock;")
+ .replace(/^import .+osce-practice-readiness.+;\n/m,helper+"\n");
 fs.writeFileSync(root+"/mock.mts",source);
 const caseId="NC-OSCE-SRC-001-1", started=Date.now();
 let handler, session, entitled=true, queue="ready", approval="approved", refs=[{title:"Synthetic citation",source_id:"fixture",section:"§1",review_status:"verified"}], providerCalls=0;
@@ -73,3 +76,4 @@ const [assessmentCode,assessment]=await run("assess",{...options,history:[{role:
 assert.equal(assessmentCode,200);assert.deepEqual(assessment.selfAssessment,[{name:"Fixture assessment",max:15}]);assert.equal(providerCalls,0);
 assert.equal(session,null);assert.equal((await run("curve",options))[0],409);
 console.log("Passed mapped endpoint fixture: entitlement, clinical/QA/reference gates, case-specific setup, hidden-data minimization, timing, scripted turns, revocation, self-review, session invalidation, and no provider calls.");
+

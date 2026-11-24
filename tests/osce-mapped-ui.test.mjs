@@ -37,11 +37,11 @@ DEFER.shift()(Response.json({playable:true,caseId:readyId,doorNote:"stale instru
 assert.equal(get("live-start").disabled,true);
 assert.match(get("osce-case-notice").textContent,/draft/);
 get("osce-case").value=readyId;const selecting=get("osce-case").onchange();await new Promise(setImmediate);
-DEFER.shift()(Response.json({playable:true,caseId:readyId,doorNote:"Verified instructions"}));await selecting;
-assert.equal(get("live-start").disabled,false);assert.match(get("osce-case-door").textContent,/Verified/);
+DEFER.shift()(Response.json({playable:true,caseId:readyId,doorNote:"Verified instructions",releaseMode:"owner_reviewed_practice",sourceVerification:"pending",practiceNotice:"AI roleplay practice. Source verification pending."}));await selecting;
+assert.equal(get("live-start").disabled,false);assert.match(get("osce-case-door").textContent,/Practice station/);assert.match(get("osce-case-notice").textContent,/verification pending/);
 await get("live-start").onclick();
 assert.match(get("live-door").textContent,/Mapped instructions/);
-assert.equal(get("live-mic-toggle").attributes["aria-pressed"],"false");assert.equal(get("live-mic-toggle").disabled,true);
+assert.equal(get("live-mic-toggle").attributes["aria-pressed"],"false");assert.equal(get("live-mic-toggle").disabled,false);
 assert.equal(get("osce-case").disabled,true);
 await vm.runInContext("liveEncounter()",context);
 assert.match(get("live-name").textContent,/Fixture Participant/);
@@ -52,4 +52,8 @@ assert.equal(get("osce-case").disabled,false);
 assert.equal(get("live-status").textContent,"Fixture formative only");
 assert.ok(calls.every(([route,b])=>route.endsWith("/website-osce-mapped-session")&&b.caseId===readyId));
 assert.ok(calls.filter(([,b])=>["enter","reply","assess"].includes(b.mode)).every(([,b])=>b.startedAt==="fixture"));assert.ok(calls.every(([,b])=>!b.history));assert.ok(calls.every(([,b])=>b.mode!=="speak"));
-console.log("Passed simulator UI fixture: stale approval response cannot start a draft, mapped ID persisted, door→enter→dialogue→assessment, mapped microphone disabled, local text fallback, legacy endpoint not used for mapped case.");
+assert.match(html,/processed by NeoClinIQ’s AI provider/);
+assert.ok(!html.includes("Mapped stations never send your responses to an AI provider"));
+assert.match(html,/id="legacy-station-selector" hidden/);
+console.log("Passed simulator UI fixture: stale approval response cannot start a draft, mapped ID persisted, door→enter→dialogue→assessment, optional mapped microphone, local text fallback, legacy endpoint not used for mapped case.");
+
