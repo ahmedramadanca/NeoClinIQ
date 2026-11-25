@@ -43,8 +43,10 @@
           <div><label for="module">Module</label><select id="module"></select></div>
           <div><label for="chapter">Chapter</label><select id="chapter"></select></div>
           <div><label for="competency">PEBC competency</label><select id="competency"></select></div>
+          <div><label for="review-filter">Review status</label><select id="review-filter" aria-describedby="review-help"><option value="all">All questions</option><option value="flagged">Flagged</option><option value="wrong">Wrong Answers</option></select></div>
         </div>
         <p class="bank-note">Tags marked preliminary are not independently verified. Questions with no assigned tag are under Unclassified. See the <a href="https://pebc.ca/pharmacists/qualifying-examination/preparing-for-the-examination/examination-blueprint/">official PEBC blueprint</a>.</p>
+        <p class="bank-note" id="review-help">Flags and wrong answers are saved to your account. A correct retry clears the question from Wrong Answers. Written self-checks aren’t scored.</p>
         <button class="btn" type="submit">Apply filters</button>
       </form>
       <section class="panel bank-practice" id="practice" aria-labelledby="question-title" hidden>
@@ -62,6 +64,7 @@
           <div id="references"></div>
         </section>
         <div class="actions bank-question-controls">
+          <button class="btn secondary" type="button" id="flag-question" aria-pressed="false">Flag for review</button>
           <button class="btn secondary" type="button" id="prev">Previous question</button>
           <button class="btn secondary" type="button" id="next">Next question</button>
         </div>

@@ -22,3 +22,5 @@
 .bank-choice-result[data-selected="true"][data-correct="false"] { border-color:#9a4229; background:#fcf3ee }
 .bank-question-controls { margin-top:1rem }
 @media(max-width: 650px) { .bank-controls { grid-template-columns: 1fr } .bank-question-controls { gap:.5rem } }
+#flag-question[aria-pressed="true"] { border-color:#08786d; background:#ecf6f5; color:#06494b; font-weight:700 }
+#flag-question[aria-pressed="true"]::before { content:"✓ "; }

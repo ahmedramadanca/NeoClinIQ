@@ -58,9 +58,10 @@ Deno.serve(async (req: Request) => {
     let body;
     try { body = await readJSON(req); } catch { return reply({ error: "Invalid request." }, 400); }
     if (!body || typeof body !== "object" || Array.isArray(body) ||
-        !["status", "catalog", "list", "answer"].includes(body.action)) return reply({ error: "Invalid action." }, 400);
-    const keys = body.action === "list" ? ["action", "module", "chapter", "competency", "planner", "track", "after"] :
-      body.action === "answer" ? ["action", "item", "selected"] : ["action"];
+        !["status", "catalog", "list", "answer", "flag"].includes(body.action)) return reply({ error: "Invalid action." }, 400);
+    const keys = body.action === "list" ? ["action", "module", "chapter", "competency", "planner", "track", "after", "review"] :
+      body.action === "answer" ? ["action", "item", "selected"] :
+      body.action === "flag" ? ["action", "item", "flagged"] : ["action"];
     if (!Object.keys(body).every(k => keys.includes(k))) return reply({ error: "Unexpected input." }, 400);
     if (body.action === "list" &&
         ((body.module != null && (!Number.isInteger(body.module) || body.module < 1 || body.module > 14)) ||
@@ -69,6 +70,7 @@ Deno.serve(async (req: Request) => {
         (body.planner != null && (!Array.isArray(body.planner) || body.planner.length > 40 ||
           !body.planner.every((v: unknown) => typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 161))) ||
         (body.track != null && !["single", "additional"].includes(body.track)) ||
+        (body.review != null && !["all", "flagged", "wrong"].includes(body.review)) ||
         (body.after != null && (typeof body.after !== "string" || !itemId.test(body.after)))))
       return reply({ error: "Invalid filters." }, 400);
     if (body.action === "answer" &&
@@ -76,6 +78,8 @@ Deno.serve(async (req: Request) => {
           body.selected.length > 5 || new Set(body.selected).size !== body.selected.length ||
           !body.selected.every((v: unknown) => typeof v === "string" && /^[A-E]$/.test(v))))
       return reply({ error: "Invalid answer choice." }, 400);
+    if (body.action === "flag" && (typeof body.item !== "string" || !itemId.test(body.item) || typeof body.flagged !== "boolean"))
+      return reply({ error: "Invalid flag." }, 400);
     const result = await createClient(url, secret, options).rpc("website_mcq_bank_action", {
       p_user_id: data.user.id,
       p_action: body.action,
@@ -87,6 +91,8 @@ Deno.serve(async (req: Request) => {
       p_after: body.after ?? null,
       p_item: body.item ?? null,
       p_selected: body.selected ?? [],
+      p_review: body.review ?? "all",
+      p_flagged: body.flagged ?? null,
     });
     if (result.error || !result.data?.body || !statuses.has(result.data.status))
       return reply({ error: "Question bank unavailable." }, 503);

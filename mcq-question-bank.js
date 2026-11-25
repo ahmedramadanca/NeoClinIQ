@@ -22,6 +22,7 @@ const day=parseInt(seed.get('day'),10);
 let planner=[...new Set(seed.getAll('planner').filter(v=>/^[0-9]{1,3}$/.test(v)).map(Number).filter(v=>v>=1&&v<=161))].slice(0,40);
 let session=null,generation=0,request=null,action=0,chapters=[],byChapter=new Map(),rows=[],selectedIndex=0,nextCursor=null,total=0;
 let choices=new Map(),answers=new Map(),written=new Map(),activeFilters=null;
+const flagRequests=new Set();
 const $=id=>document.getElementById(id);
 function node(tag,text){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n}
 function status(message=''){$('notice').textContent=message}
@@ -29,10 +30,10 @@ function bstate(which){$('bank').hidden=which!=='bank';$('blocked').hidden=which
 function wipe(){
   generation++; action++; request?.abort(); request=null;
   chapters=[];byChapter.clear();rows=[];selectedIndex=0;nextCursor=null;total=0;activeFilters=null;
-  answers.clear();choices.clear();written.clear();
+  answers.clear();choices.clear();written.clear();flagRequests.clear();
   for(const id of ['options','references','explanations','module','chapter'])$(id).replaceChildren();
   for(const id of ['question-title','question-meta','stem','feedback-title'])$(id).textContent='';
-  $('written').value='';$('feedback').hidden=true;$('practice').hidden=true;$('empty').hidden=true;
+  $('written').value='';$('flag-question').setAttribute('aria-pressed','false');$('flag-question').disabled=true;$('feedback').hidden=true;$('practice').hidden=true;$('empty').hidden=true;
 }
 function block(message,retry=false){
   wipe();bstate('blocked');status();
@@ -90,6 +91,8 @@ function drawFilters(initial=false){
     const comp=seed.get('competency');
     if([...$('competency').options].some(x=>x.value===comp))$('competency').value=comp;
     $('track').value=seed.get('track')==='additional'?'additional':'single';
+    const review=seed.get('review');
+    $('review-filter').value=['flagged','wrong'].includes(review)?review:'all';
   }else drawChapters();
   bankScope();
 }
@@ -113,7 +116,7 @@ async function boot(next){
   }
 }
 function filterPayload(){
-  return {module:Number($('module').value)||null,chapter:$('chapter').value||null,competency:$('competency').value||null,planner,track:$('track').value};
+  return {module:Number($('module').value)||null,chapter:$('chapter').value||null,competency:$('competency').value||null,planner,track:$('track').value,review:$('review-filter').value};
 }
 const writtenKind=q=>['fill_in','open_response'].includes(q.kind);
 function validQuestion(q){
@@ -132,6 +135,7 @@ async function loadPage(append=false){
     for(const id of ['stem','question-title','feedback-title'])$(id).textContent='';
     for(const id of ['options','references','explanations'])$(id).replaceChildren();
     $('empty').hidden=true;$('practice').hidden=true;
+    $('flag-question').setAttribute('aria-pressed','false');$('flag-question').disabled=true;
   }
   $('next').disabled=true;
   status('Loading questions…');
@@ -145,6 +149,10 @@ async function loadPage(append=false){
     nextCursor=result.next_after;total=result.total;
     if(!rows.length&&planner.length&&!scoped().length){
       $('empty').textContent='No released practice questions are mapped to these study-day topics yet. Browse the full bank to find other chapters.';
+    }else if(activeFilters.review==='flagged'){
+      $('empty').textContent='No flagged questions match these filters. Choose All questions to find and flag questions for later.';
+    }else if(activeFilters.review==='wrong'){
+      $('empty').textContent='No wrong answers match these filters. A question appears here if your latest graded answer was incorrect.';
     }else $('empty').textContent='No released questions match these filters. Try another practice type, chapter or competency.';
     $('empty').hidden=!!rows.length;
     $('practice').hidden=!rows.length;
@@ -189,10 +197,40 @@ function drawQuestion(focus=false){
   $('feedback').hidden=!answered;
   $('explanations').replaceChildren();$('references').replaceChildren();
   if(answered)review(q,answers.get(q.id));
+  drawFlag(q);
   $('prev').disabled=selectedIndex===0;
   $('next').disabled=selectedIndex+1===rows.length&&!nextCursor;
   if(focus)$('question-title').focus();
 }
+function drawFlag(q){
+  const button=$('flag-question');
+  button.disabled=flagRequests.has(q.id);
+  button.setAttribute('aria-pressed',String(q.flagged===true));
+}
+$('flag-question').addEventListener('click',async()=>{
+  const q=rows[selectedIndex],key=generation;
+  if(!q||flagRequests.has(q.id))return;
+  flagRequests.add(q.id);drawFlag(q);
+  const nextFlag=q.flagged!==true;
+  try{
+    const result=await api('flag',{item:q.id,flagged:nextFlag});
+    if(key!==generation)return;
+    if(result?.id!==q.id||result.flagged!==nextFlag)throw Error('Invalid flag response');
+    q.flagged=result.flagged;
+    for(const row of rows)if(row.id===q.id)row.flagged=result.flagged;
+    if(rows[selectedIndex]?.id===q.id){
+      status(result.flagged?'Flag saved to your account.':'Flag removed.');
+    }
+  }catch(error){
+    if(key!==generation||denied(error))return;
+    if(rows[selectedIndex]?.id===q.id)status('Your flag could not save. Check your connection and try again.');
+  }finally{
+    if(key===generation){
+      flagRequests.delete(q.id);
+      if(rows[selectedIndex]?.id===q.id)drawFlag(rows[selectedIndex]);
+    }
+  }
+});
 function safeTitle(v){
   return typeof v==='string'&&v.length<=300&&v.trim()===v&&v.length>0&&
     !/[\/\\<>\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]|%2f|%5c|www\.|mailto:|doi:|javascript:|vbscript:|data:|file:|tel:|sms:/i.test(v);
