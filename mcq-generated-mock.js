@@ -7,7 +7,7 @@ const count=200;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const supplied=new URL(location.href).searchParams.get('form');
 const formId=supplied&&uuid.test(supplied)?supplied:null;
-let unstarted=[];
+let unstarted=[],mockRoutes=new Map();
 const $=id=>document.getElementById(id);
 const states=['catalog','entry','active','results','blocked'];
 const status=(text='')=>{$('notice').textContent=text};
@@ -33,7 +33,7 @@ function retire(){
   if($('confirmation').open)$('confirmation').close();
   attempt=null;endAt=0;questions=[];idx=0;answers=new Map();flags=new Set();result=null;
   revision=0;savedRevision=0;saveJob=null;saveFailed=false;ended=false;closing=false;cachedSeconds=-1;
-  unstarted=[];if($('form-list'))$('form-list').replaceChildren();
+  unstarted=[];mockRoutes.clear();$('form-list').replaceChildren(el('option','Select Mock 1–21'));$('form-list').options[0].value='';$('open-form').disabled=true;
   for(const id of ['options','jump','review','score'])$(id).replaceChildren();
   for(const id of ['stem','question-title','form-progress','progress','save-status','completion','confirm-summary'])$(id).textContent='';
   $('timer').textContent='4:20:00';
@@ -96,17 +96,27 @@ function catalog(data){
   const statesText={available:'Not started',in_progress:'In progress',submitted:'Completed',expired:'Time expired'};
   unstarted=data.active_form_id?[]:list.filter(x=>x.state==='available');
   $('random-form').disabled=unstarted.length===0;
+  mockRoutes=new Map([['mock-1','/mcq-mock.html']]);
+  const first=el('option','Mock 1');first.value='mock-1';
+  const placeholder=el('option','Select Mock 1–21');placeholder.value='';
   const entries=list.slice().sort((a,b)=>a.number-b.number).map(f=>{
-    const item=el('li'),link=el('a','Mock '+(f.number+1)+' · '+statesText[f.state]);
-    link.href='/mcq-generated-mock.html?form='+encodeURIComponent(f.form_id);
-    item.append(link);return item;
+    const opt=el('option','Mock '+(f.number+1)+' · '+statesText[f.state]);
+    opt.value=f.form_id;
+    mockRoutes.set(f.form_id,'/mcq-generated-mock.html?form='+encodeURIComponent(f.form_id));
+    return opt;
   });
-  const first=el('li'), firstLink=el('a','Mock 1');
-  firstLink.href='/mcq-mock.html';first.append(firstLink);
-  $('form-list').replaceChildren(first,...entries);
+  $('form-list').replaceChildren(placeholder,first,...entries);
+  $('form-list').value='';$('open-form').disabled=true;
   status(data.active_form_id?'A practice mock is already running. Select the form marked In progress to resume.':'');
   show('catalog','catalog-title');
 }
+$('form-list').addEventListener('change',()=>{$('open-form').disabled=!mockRoutes.has($('form-list').value)});
+$('mock-choice-form').addEventListener('submit',event=>{
+  event.preventDefault();
+  if(view!=='catalog')return;
+  const route=mockRoutes.get($('form-list').value);
+  if(route)location.assign(route);
+});
 $('random-form').onclick=()=>{
   if(!unstarted.length)return;
   const draws=new Uint32Array(1), max=Math.floor(4294967296/unstarted.length)*unstarted.length;

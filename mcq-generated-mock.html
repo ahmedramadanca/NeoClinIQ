@@ -8,20 +8,23 @@
 <title>PEBC MCQ Mocks 1–21 | NeoClinIQ</title>
 <link rel="icon" href="/NeoClinIQ_Logo_Extracted.png">
 <link rel="stylesheet" href="/mcq-mock.css">
-<script type="module" src="/mcq-generated-mock.js?v=numbered-21"></script>
+<script type="module" src="/mcq-generated-mock.js?v=dropdown-21"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to exam</a>
 <header class="site-header"><div class="wrap top"><a href="/" aria-label="NeoClinIQ home"><img src="/NeoClinIQ_Logo_Extracted.png" alt="NeoClinIQ" width="156"></a><a href="/learning.html">Learning Portal</a></div></header>
 <main id="main" tabindex="-1">
-  <header class="hero"><div class="wrap"><div class="eyebrow">Subscriber practice</div><h1>PEBC MCQ Mocks 1–21</h1><p>200 questions · 4 hours 20 minutes · one continuous section</p><p>Mocks 2–21 use PEBC domain weights and preliminary competency tags. Clinical Care questions do not repeat across forms. Questions in smaller domains can recur across forms. Not for patient care.</p></div></header>
+  <header class="hero"><div class="wrap"><div class="eyebrow">Subscriber practice</div><h1>PEBC MCQ Mocks 1–21</h1><p>200 questions · 4 hours 20 minutes · one continuous section</p><p>Mocks 2–21 use PEBC domain weights.</p></div></header>
   <div class="wrap body-wrap">
     <p id="notice" role="status" aria-live="polite">Checking your access…</p>
     <section class="panel" id="catalog" hidden aria-labelledby="catalog-title">
       <h2 id="catalog-title" tabindex="-1">Choose a practice mock</h2>
       <p>Every form includes 200 different questions and a 4-hour 20-minute timer. Choose any numbered mock.</p>
-      <div class="actions"><button class="btn" id="random-form" type="button">Pick an unstarted Mock 2–21 at random</button></div>
-      <ul id="form-list"></ul>
+      <form id="mock-choice-form">
+        <label for="form-list">Mock number</label>
+        <select id="form-list" required><option value="">Select Mock 1–21</option></select>
+        <div class="actions"><button class="btn" id="open-form" type="submit" disabled>Open selected mock</button><button class="btn secondary" id="random-form" type="button">Pick an unstarted Mock 2–21 at random</button></div>
+      </form>
     </section>
     <section class="panel" id="entry" hidden aria-labelledby="entry-title">
       <h2 id="entry-title" tabindex="-1">Start your timed practice mock</h2>
