@@ -243,7 +243,7 @@ async function startMappedStation(){
   if(data.caseId!==attempt.id||!data.startedAt||!data.doorNote)throw Error("Invalid station setup.");
   if(mappedAttempt!==attempt)return;
   attempt.startedAt=data.startedAt;attempt.doorDeadline=performance.now()+120000;
-  liveOn=true;liveBusy=false;liveAiWaiting=false;livePhase="door";liveRemaining=120;liveHistory=[];
+  liveSpeechDraft="";liveOn=true;liveBusy=false;liveAiWaiting=false;livePhase="door";liveRemaining=120;liveHistory=[];
   liveCurve=false;liveCurveDelivered=false;mappedCurveBusy=false;liveMicEnabled=true;
   $("live-mic-toggle").setAttribute("aria-pressed","true");$("live-mic-toggle").disabled=false;$("live-mic-toggle").textContent="🎙 Disable microphone";
   $("live-reply").textContent="";$("live-text").value="";$("live-pharmacy-chart").classList.add("hidden");
@@ -324,7 +324,7 @@ async function liveAnswer(text){
    ?await withMappedClockPaused(attempt,"SI is preparing the participant’s reply.",()=>mappedOperation("reply",{utterance:text},attempt))
    :await liveRequest("reply",{utterance:text,history:liveHistory,curve:liveCurve});
   if(attempt&&(mappedAttempt!==attempt||!liveOn))return;
-  liveHistory.push({role:"student",text},{role:"patient",text:data.reply});
+  liveSpeechDraft="";liveHistory.push({role:"student",text},{role:"patient",text:data.reply});
   $("live-text").value="";
   await liveSpeak(data.reply,data.audio,data.voice);
  }catch(e){
@@ -334,21 +334,44 @@ async function liveAnswer(text){
   if(!attempt||mappedAttempt===attempt){liveBusy=false;liveAiWaiting=false}
  }
 }
+const LIVE_SILENCE_MS=3000;
+let liveSpeechDraft="";
 function liveListen(){
  if(!liveOn||liveRec||!liveMicEnabled||livePhase!=="encounter"||mappedAttempt?.pauseStartedAt!=null)return;
  const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!Speech){$("live-status").textContent="Browser speech recognition unavailable. Type your response and press Send.";return}
- const listeningAttempt=mappedAttempt;let finalText="",failed=false;
+ const listeningAttempt=mappedAttempt;let finalText=liveSpeechDraft,interim="",failed=false,speaking=false,submitted=false;
  const rec=new Speech();liveRec=rec;rec.lang="en-CA";rec.continuous=true;rec.interimResults=true;
  const isCurrent=()=>mappedAttempt===listeningAttempt&&liveOn&&livePhase==="encounter"&&liveMicEnabled;
- rec.onresult=e=>{
-  if(!isCurrent())return;
-  for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+" ";$("live-text").value=finalText+(e.results[i].isFinal?"":e.results[i][0].transcript)}
-  clearTimeout(liveSilence);liveSilence=setTimeout(()=>{if(isCurrent()&&finalText.trim()&&liveRec===rec){rec.stop();liveAnswer(finalText.trim())}},850);
+ const eligible=()=>isCurrent()&&!liveBusy&&!mappedCurveBusy&&mappedAttempt?.pauseStartedAt==null;
+ const schedule=()=>{
+  clearTimeout(liveSilence);
+  if(speaking||!finalText.trim()||interim.trim())return;
+  liveSilence=setTimeout(()=>{
+   if(!eligible()||speaking||interim.trim()||liveRec!==rec)return;
+   submitted=true;liveSpeechDraft="";rec.stop();liveAnswer(finalText.trim());
+  },LIVE_SILENCE_MS);
  };
- rec.onend=()=>{if(liveRec===rec)liveRec=null;if(isCurrent()&&!failed&&!liveBusy&&!finalText.trim())setTimeout(()=>{if(isCurrent())liveListen()},250)};
- rec.onerror=e=>{failed=true;if(isCurrent())$("live-status").textContent="Microphone: "+e.error+". You can type instead."};
- try{rec.start();$("live-status").textContent="Listening — speak, then pause for the patient to answer."}catch(e){failed=true;if(liveRec===rec)liveRec=null;$("live-status").textContent=e.message}
+ rec.onspeechstart=()=>{speaking=true;clearTimeout(liveSilence)};
+ rec.onspeechend=()=>{speaking=false;schedule()};
+ rec.onresult=e=>{
+  if(!isCurrent()||submitted)return;
+  interim="";
+  for(let i=e.resultIndex;i<e.results.length;i++){
+   const value=e.results[i][0].transcript;
+   if(e.results[i].isFinal)finalText+=value+" ";else interim+=value;
+  }
+  liveSpeechDraft=finalText;$("live-text").value=finalText+interim;
+  schedule();
+ };
+ rec.onend=()=>{
+  clearTimeout(liveSilence);if(liveRec===rec)liveRec=null;
+  if(submitted||!isCurrent())return;
+  liveSpeechDraft=finalText;
+  if(!failed&&eligible())setTimeout(()=>{if(eligible()&&!liveRec)liveListen()},250);
+ };
+ rec.onerror=e=>{failed=true;liveSpeechDraft=finalText;if(isCurrent())$("live-status").textContent="Microphone: "+e.error+". Your recognized text is retained; you can type or send it."};
+ try{rec.start();$("live-status").textContent="Listening — speak naturally. SI waits for a 3-second pause.";schedule()}catch(e){failed=true;if(liveRec===rec)liveRec=null;$("live-status").textContent=e.message}
 }
 function liveClock(){const m=Math.floor(liveRemaining/60),sec=liveRemaining%60;const t=String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");$("live-clock").textContent=t;$("live-float-time").textContent=t;$("live-float-phase").textContent=livePhase==="door"?"Door note":mappedAttempt?.pauseStartedAt!=null?"Paused · SI preparing response":"Encounter";$("live-timer-float").style.display=(livePhase==="door"||livePhase==="encounter")?"flex":"none";$("live-timer-float").classList.toggle("urgent",livePhase==="encounter"&&liveRemaining<=60)}
 function showMappedPharmacyChart(data){
@@ -441,7 +464,7 @@ async function liveFinish(){if(livePhase==="idle"||livePhase==="done")return;con
  if(Array.isArray(r.criteria)){const table=document.createElement("table");const th=document.createElement("tr");for(const t of ["Expected action","Awarded","Evidence and feedback"]){const cell=document.createElement("th");cell.textContent=t;th.append(cell)}table.append(th);for(const c of r.criteria){const tr=document.createElement("tr");for(const value of [c.name,String(c.earned)+" / "+String(c.max),String(c.evidence)+" — "+String(c.feedback)]){const td=document.createElement("td");td.textContent=value;tr.append(td)}table.append(tr)}box.append(table)}if(r.safety_flags){const h=document.createElement("h3");h.textContent="Patient safety flags";box.append(h);const p=document.createElement("p");p.textContent="Misinformation: "+(r.safety_flags.misinformation?"Flagged":"Not flagged")+" · Patient risk: "+(r.safety_flags.patient_risk?"Flagged":"Not flagged")+" · "+String(r.safety_flags.explanation||"");box.append(p)}if(r.competencies){const h=document.createElement("h3");h.textContent="Competency ratings (0–4)";box.append(h);const p=document.createElement("p");p.textContent=Object.entries(r.competencies).map(([k,v])=>k.replaceAll("_"," ")+": "+v+"/4").join(" · ");box.append(p)}for(const key of ["summary","patient_safety","clinical_reasoning","communication","professionalism","limitations"]){const h=document.createElement("h4");h.textContent=key.replaceAll("_"," ");const p=document.createElement("p");p.textContent=String(r[key]||"Not assessed");box.append(h,p)}for(const key of ["strengths","improvements","recommendations"]){const h=document.createElement("h4");h.textContent=key;box.append(h);const ul=document.createElement("ul");for(const value of Array.isArray(r[key])?r[key]:[]){const li=document.createElement("li");li.textContent=String(value);ul.append(li)}box.append(ul)}if(attempt)recordMasteryAssessment(attempt,r);$("live-status").textContent=data.disclaimer}catch(e){box.textContent="Assessment unavailable: "+e.message;$("live-status").textContent="You may restart the station."}finally{if(attempt)endMappedUI(attempt)}}
 $("live-start").onclick=async()=>{if(mappedAttempt||mappedFinishing)return;if(mappedCase)return startMappedStation();if(liveOn||$("live-start").disabled)return;liveMicEnabled=true;$("live-mic-toggle").textContent="🎙 Disable microphone";$("live-mic-toggle").setAttribute("aria-pressed","true");liveOn=true;liveHistory=[];liveCurve=false;liveCurveDelivered=false;liveCurveDelivered=false;livePhase="door";liveRemaining=120;$("live-knock").disabled=true;liveProfile();$("live-pharmacy-chart").classList.add("hidden");$("station-references").hidden=true;try{const {data:{session}}=await client.auth.getSession();const response=await fetch(url+"/functions/v1/website-osce-references",{method:"POST",headers:{"Content-Type":"application/json",apikey:key,Authorization:"Bearer "+session.access_token},body:JSON.stringify({mode:"start",caseId:$("live-case").value})});if(!response.ok)throw Error("Station setup unavailable");}catch(e){liveOn=false;livePhase="idle";$("live-timer-float").style.display="none";$("live-status").textContent=e.message;return;}show("live-assessment",false);show("live-door",true);$("live-knock").disabled=false;$("live-door").textContent="Door note: "+($("live-case").value==="otc"?"A patient requests echinacea to prevent influenza. Assess appropriateness and counsel safely.":$("live-case").value==="hcp"?"A prescriber requests a medication review for a patient on anticoagulation. Gather relevant clinical information.":$("live-case").value==="counsel"?"Counsel a patient starting a new asthma inhaler. Assess technique, safety and understanding.":"Assess a patient reporting feeling unwell. Identify red flags and referral urgency.");$("live-phase").textContent="Door note";$("live-status").textContent="Microphone enabled automatically. Allow microphone permission when requested. Patient starts after the door note.";liveClock();clearInterval(liveTimer);liveTimer=setInterval(()=>{if(!liveOn)return;if(livePhase==="encounter"&&liveAiWaiting){$("live-status").textContent="SI generating response — station clock paused.";return}if(liveRemaining>0)liveRemaining--;liveClock();if(livePhase==="door"&&liveRemaining===0)liveEncounter();else if(livePhase==="encounter"){if(!liveCurve&&liveRemaining<=120){liveCurve=true;liveCurveball();}if(liveRemaining===0)liveFinish()}},1000)};
 $("live-knock").onclick=()=>{if(liveOn&&livePhase==="door")liveEncounter()};$("live-stop").onclick=()=>{if(mappedAttempt)try{window.speechSynthesis?.cancel()}catch{}liveFinish()};
-$("live-send").onclick=()=>{if(!liveOn){$("live-status").textContent="Start the conversation first.";return}if(liveRec)liveRec.stop();liveAnswer($("live-text").value.trim())};
+$("live-send").onclick=()=>{if(!liveOn){$("live-status").textContent="Start the conversation first.";return}clearTimeout(liveSilence);if(liveRec)liveRec.stop();liveAnswer($("live-text").value.trim())};
 $("live-mic-toggle").onclick=()=>{liveMicEnabled=!liveMicEnabled;$("live-mic-toggle").setAttribute("aria-pressed",String(liveMicEnabled));$("live-mic-toggle").textContent=liveMicEnabled?"🎙 Disable microphone":"🎙 Enable microphone";if(!liveMicEnabled&&liveRec)liveRec.stop();if(liveMicEnabled&&liveOn&&livePhase==="encounter"&&$("live-audio").paused&&!window.speechSynthesis?.speaking&&!liveBusy)liveListen();$("live-status").textContent=liveMicEnabled?"Microphone enabled. Speak after the patient finishes.":"Microphone off. You can type your response."};
 $("live-camera-toggle").onclick=async()=>{if(liveCameraStream){liveCameraStream.getTracks().forEach(t=>t.stop());liveCameraStream=null;$("live-camera").srcObject=null;$("live-video-box").classList.remove("active");$("live-camera-toggle").textContent="📷 Enable camera";$("live-camera-toggle").setAttribute("aria-pressed","false");return}try{liveCameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:false});$("live-camera").srcObject=liveCameraStream;$("live-video-box").classList.add("active");$("live-camera-toggle").textContent="📷 Disable camera";$("live-camera-toggle").setAttribute("aria-pressed","true")}catch(e){$("live-status").textContent="Camera permission or device unavailable: "+e.message}};
 $("reference-practice").onchange=()=>{const allowed=$("reference-practice").checked;show("reference-allowed",allowed);show("reference-locked",!allowed)};
@@ -512,6 +535,7 @@ async function liveCurveball(){if(mappedAttempt){
  const attempt=mappedAttempt;
  if(mappedCurveBusy||liveCurveDelivered||!liveOn||livePhase!=="encounter")return;
  mappedCurveBusy=true;
+ clearTimeout(liveSilence);if(liveRec)liveRec.stop();
  try{
   const data=await withMappedClockPaused(attempt,"SI is preparing the timed update.",()=>mappedOperation("curve",{},attempt));
   if(mappedAttempt!==attempt||!liveOn||!data.line)return;
@@ -521,7 +545,7 @@ async function liveCurveball(){if(mappedAttempt){
  }catch{
   attempt.curveRetryAt=performance.now()+2500;
   if(mappedAttempt===attempt&&liveOn)$("live-status").textContent="The timed update is temporarily unavailable. You can continue.";
- }finally{mappedCurveBusy=false}
+ }finally{mappedCurveBusy=false;if(liveOn&&liveMicEnabled&&$("live-audio").paused&&!window.speechSynthesis?.speaking&&!liveBusy)liveListen()}
  return;
  }if(liveCurveDelivered||!liveOn||livePhase!=="encounter")return;liveCurveDelivered=true;const curveText={otc:"One more thing — I take methotrexate. My friend mentioned a nasal flu vaccine. Can I use that instead?",hcp:"The patient's kidney function has recently worsened. Would that change your recommendation?",counsel:"I often forget my medicine. What if I miss a dose?",refer:"I'm having chest pressure right now and I'm short of breath."}[$("live-case").value];$("live-status").textContent="Five-minute curveball introduced.";if(liveRec){clearTimeout(liveSilence);liveRec.stop()}$("live-audio").pause();liveHistory.push({role:"patient",text:curveText});await liveSpeak(curveText)}
 verify();
