@@ -16,7 +16,7 @@
 <main class="wrap">
 <div id="notice" class="status warn" role="status" aria-live="polite">Sign in to check your access and available enrolment options.</div>
 <section class="panel" id="account" style="scroll-margin-top:6rem"><h2>Your account</h2><p id="mcq-account-selection" class="muted" hidden></p><a id="mcq-account-continue" href="#mcq-plans" hidden>Continue to your selected plan</a><p id="auth-status" class="muted">Checking configuration…</p>
-<form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button></div></form>
+<form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button><button class="btn secondary" type="button" id="resend-signup">Resend confirmation email</button></div></form>
 <div id="password-recovery" hidden>
 <h3>Choose a new password</h3>
 <p id="recovery-intro">Choose and confirm a new password for your account.</p>
@@ -222,13 +222,42 @@ $("auth-form").addEventListener("submit",async e=>{
  notice(error?error.message:"Signed in successfully.",error?"error":"");
  if(!error)$("password").value="";
 });
-$("signup").addEventListener("click",async()=>{
- if(!client)return;
- const email=$("email").value.trim(),password=$("password").value;
- if(!email||!password){notice("Enter an email and password.");return}
- const {error}=await client.auth.signUp({email,password,options:{emailRedirectTo:location.origin+"/learning.html"}});
- notice(error?error.message:"Account request submitted. Check your email for confirmation.",error?"error":"");
-});
+const accountConfirmationRedirect=location.origin+"/learning.html";
+let signupEmailBusy=false;
+function validSignupEmail(){
+ const field=$("email");
+ if(!field.reportValidity())return "";
+ return field.value.trim();
+}
+async function requestSignupEmail(resend){
+ if(!client||session||recoveryPhase!=="normal"||signupEmailBusy)return;
+ const email=validSignupEmail();
+ if(!email)return;
+ const password=$("password").value;
+ if(!resend&&password.length<6){notice("Enter a password with at least 6 characters.","error");$("password").focus();return}
+ const options={emailRedirectTo:accountConfirmationRedirect};
+ signupEmailBusy=true;
+ $("signup").disabled=$("resend-signup").disabled=true;
+ notice(resend?"Requesting another confirmation email…":"Creating your account…");
+ try{
+  const {data,error}=resend
+   ?await client.auth.resend({type:"signup",email,options})
+   :await client.auth.signUp({email,password,options});
+  if(error)throw error;
+  if(!resend)$("password").value="";
+  if(!resend&&data?.session){notice("Your account is ready. No payment was made.","");return;}
+  notice("If your email needs verification, a confirmation link is sent right away. Check your inbox or spam folder. No payment is needed to confirm your account.","");
+ }catch(error){
+  const limited=error?.status===429||error?.code==="over_email_send_rate_limit"||error?.code==="over_request_rate_limit";
+  const feedback=["weak_password","email_address_invalid"].includes(error?.code)?error.message:null;
+  notice(limited?"Please wait a minute before requesting another confirmation email.":feedback||"This request could not be completed. Check the email address and try again in a moment, or contact support.","error");
+ }finally{
+  signupEmailBusy=false;
+  $("signup").disabled=$("resend-signup").disabled=false;
+ }
+}
+$("signup").addEventListener("click",()=>requestSignupEmail(false));
+$("resend-signup").addEventListener("click",()=>requestSignupEmail(true));
 $("reset").addEventListener("click",async()=>{
  if(!client)return;const email=$("email").value.trim();
  if(!email){notice("Enter your email address.");return}
