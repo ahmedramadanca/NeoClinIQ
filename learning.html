@@ -27,7 +27,16 @@
 <p id="recovery-message" class="muted" role="status" aria-live="polite"></p>
 </form>
 </div>
-<div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p><button class="btn secondary" type="button" id="signout">Sign out</button></div>
+<div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p>
+<div class="buttons"><button class="btn secondary" type="button" id="change-password" aria-controls="change-password-form" aria-expanded="false">Change password</button><button class="btn secondary" type="button" id="signed-in-reset">Send a password reset email</button><button class="btn secondary" type="button" id="signout">Sign out</button></div>
+<p id="signed-in-reset-status" class="muted" role="status" aria-live="polite"></p>
+<form id="change-password-form" class="fields" hidden>
+<label>Current password<input id="change-current" type="password" autocomplete="current-password" required></label>
+<label>New password<input id="change-new" type="password" autocomplete="new-password" minlength="6" required></label>
+<label>Confirm new password<input id="change-confirm" type="password" autocomplete="new-password" minlength="6" required></label>
+<div class="buttons"><button class="btn" id="change-save" type="submit">Save new password</button><button class="btn secondary" id="change-cancel" type="button">Cancel</button></div>
+<p id="change-password-status" class="muted" role="status" aria-live="polite"></p>
+</form></div>
 </section>
 <section class="panel mcq-plans-panel" id="mcq-plans" aria-labelledby="mcq-plans-heading">
 <h2 id="mcq-plans-heading">PEBC MCQ website plans</h2><p>Four calendar months each. Simulator and Ultimate include <strong>5,000 practice questions across the question bank and mocks</strong>. <a href="/mcq-plans/#feature-comparison">Compare all three plans side by side</a>.</p>
@@ -78,6 +87,7 @@ let recoveryPhase=recoveryRequested&&!authCallbackError?"checking":"normal",reco
 const client=ready?createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY):null;
 let session=null,entitlements=null,mockCheck=0,bankCheck=0,generatedCheck=0,accessCheck=0,checkoutPending=false;
 const pickedTier=tierForQuery();
+let changingFor=null,changeBusy=false,emailResetBusy=false;
 const mcqButtons=[...document.querySelectorAll("[data-mcq-checkout]")];
 const money=value=>new Intl.NumberFormat("en-CA").format(value);
 for(const button of mcqButtons)button.closest(".mcq-plan").dataset.selected=String(button.dataset.mcqCheckout===pickedTier);
@@ -95,6 +105,12 @@ function render(){
  $("recovery-submit").disabled=recoveryBusy||recoveryPhase!=="ready";
  $("auth-form").classList.toggle("hidden",recovering||!ready||!!session);
  $("signed-in").classList.toggle("hidden",recovering||!session);
+ if(changingFor&&(recovering||changingFor!==session?.user?.id)){changingFor=null;$("change-password-form").reset();$("change-password-status").textContent="";}
+ $("change-password-form").hidden=!changingFor;
+ $("change-password").setAttribute("aria-expanded",String(!!changingFor));
+ $("change-save").disabled=changeBusy;
+ $("change-cancel").disabled=changeBusy;
+ $("signed-in-reset").disabled=emailResetBusy;
  $("user-email").textContent=session?.user?.email||"";
  const selection=$("mcq-account-selection");
  selection.hidden=recovering||!pickedTier;
@@ -245,6 +261,54 @@ $("password-recovery-form").addEventListener("submit",async e=>{
  }catch{status.textContent="Could not save your password. Please try again."}
  finally{recoveryBusy=false;render()}
 });
+$("change-password").addEventListener("click",()=>{
+ if(!client||!session?.user?.id||recoveryPhase!=="normal"||changeBusy)return;
+ changingFor=session.user.id;render();$("change-current").focus();
+});
+$("change-cancel").addEventListener("click",()=>{
+ if(changeBusy)return;
+ changingFor=null;$("change-password-form").reset();$("change-password-status").textContent="";
+ render();$("change-password").focus();
+});
+$("signed-in-reset").addEventListener("click",async()=>{
+ const active=session?.user,status=$("signed-in-reset-status");
+ if(!client||!active?.email||recoveryPhase!=="normal"||emailResetBusy)return;
+ emailResetBusy=true;status.textContent="Requesting a reset email…";render();
+ try{
+  const checked=await client.auth.getUser();
+  if(checked.error||checked.data?.user?.id!==active.id||session?.user?.id!==active.id)throw Error();
+  const {error}=await client.auth.resetPasswordForEmail(checked.data.user.email,{redirectTo:location.origin+"/learning.html"});
+  status.textContent=error?"Could not send a reset email. Wait a moment and try again.":"Check your inbox and open the newest reset email.";
+ }catch{status.textContent="Could not send a reset email. Please sign in again and retry."}
+ finally{emailResetBusy=false;render()}
+});
+$("change-password-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const active=session?.user,status=$("change-password-status");
+ if(!client||!active?.email||changingFor!==active.id||recoveryPhase!=="normal"||changeBusy)return;
+ const current=$("change-current").value,password=$("change-new").value,confirm=$("change-confirm").value;
+ if(!current){status.textContent="Enter your current password.";return}
+ if(password.length<6){status.textContent="Use at least 6 characters.";return}
+ if(password!==confirm){status.textContent="The new passwords don’t match.";return}
+ if(password===current){status.textContent="Choose a password different from your current one.";return}
+ changeBusy=true;status.textContent="Verifying your current password…";render();
+ // Keep the password verification session separate from the regular portal session.
+ let verifier;
+ try{
+  verifier=createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"neo-password-change"}});
+  const checked=await verifier.auth.signInWithPassword({email:active.email,password:current});
+  $("change-current").value="";
+  if(checked.error||checked.data?.user?.id!==active.id||!checked.data?.session||session?.user?.id!==active.id||changingFor!==active.id||recoveryPhase!=="normal"){
+   status.textContent="Couldn’t verify your current password. Try again or send a reset email.";return;
+  }
+  const {error}=await verifier.auth.updateUser({password});
+  if(error){status.textContent=error.message||"Couldn’t change your password. Try again.";return}
+  $("change-password-form").reset();changingFor=null;status.textContent="";render();
+  if(session?.user?.id===active.id)await client.auth.signOut({scope:"local"});
+  notice("Password changed. Sign in with your new password.");
+ }catch{status.textContent="Couldn’t change your password. Try again."}
+ finally{try{await verifier?.auth.signOut({scope:"local"})}catch{}changeBusy=false;render()}
+});
 $("signout").addEventListener("click",async()=>{if(client)await client.auth.signOut()});
 $("connect-drive").addEventListener("click",async()=>{
  if(!session)return;
@@ -291,7 +355,7 @@ for(const button of mcqButtons)button.addEventListener("click",()=>checkout("mcq
 if(client){
  client.auth.onAuthStateChange((event,next)=>{
   const check=++accessCheck;session=next;entitlements=null;
-  if(event==="PASSWORD_RECOVERY"&&recoveryRequested&&!authCallbackError&&next?.user?.id){
+  if(event==="PASSWORD_RECOVERY"&&!authCallbackError&&next?.user?.id){
    recoveryPhase="ready";recoveryUserId=next.user.id;clearAuthCallback();
    notice("Set and confirm a new password for your account.");
   }else if(recoveryPhase==="ready"&&next?.user?.id!==recoveryUserId){
