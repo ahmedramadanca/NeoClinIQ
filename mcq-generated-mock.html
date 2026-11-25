@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#082e50">
+<title>PEBC MCQ Timed Practice Mocks | NeoClinIQ</title>
+<link rel="icon" href="/NeoClinIQ_Logo_Extracted.png">
+<link rel="stylesheet" href="/mcq-mock.css">
+<script type="module" src="/mcq-generated-mock.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to exam</a>
+<header class="site-header"><div class="wrap top"><a href="/" aria-label="NeoClinIQ home"><img src="/NeoClinIQ_Logo_Extracted.png" alt="NeoClinIQ" width="156"></a><a href="/learning.html">Learning Portal</a></div></header>
+<main id="main" tabindex="-1">
+  <header class="hero"><div class="wrap"><div class="eyebrow">Subscriber practice</div><h1>PEBC MCQ timed practice mocks</h1><p>200 questions · 4 hours 20 minutes · one continuous section</p><p>20 additional practice forms using PEBC domain weights and preliminary competency tags. Clinical Care questions do not repeat across forms. Questions in smaller domains can recur across forms. Not for patient care.</p></div></header>
+  <div class="wrap body-wrap">
+    <p id="notice" role="status" aria-live="polite">Checking your access…</p>
+    <section class="panel" id="catalog" hidden aria-labelledby="catalog-title">
+      <h2 id="catalog-title" tabindex="-1">Choose a practice mock</h2>
+      <p>Every form includes 200 different questions and a 4-hour 20-minute timer. The original owner-reviewed mock stays separate.</p>
+      <div class="actions"><button class="btn" id="random-form" type="button">Pick an unstarted form at random</button><a class="btn secondary" href="/mcq-mock.html">Open the original mock</a></div>
+      <ul id="form-list"></ul>
+    </section>
+    <section class="panel" id="entry" hidden aria-labelledby="entry-title">
+      <h2 id="entry-title" tabindex="-1">Start your timed practice mock</h2>
+      <p>Each question has four options and one best answer. You can flag questions, go back, or change your answers before submitting. The timer keeps running if you close the page or reload. There is no pause.</p>
+      <p>After you submit or time expires, you can review your score and explanations, with related source names where available. All 200 questions count in this practice score. NeoClinIQ is not affiliated with PEBC, and this score does not predict an official exam result.</p>
+      <div class="actions"><button class="btn" id="start" type="button">Start 4h 20m timer</button><a class="btn secondary" href="/mcq-generated-mock.html">Choose a different form</a></div>
+    </section>
+    <section class="panel" id="blocked" hidden aria-labelledby="blocked-title">
+      <h2 id="blocked-title" tabindex="-1">Mock exam unavailable</h2>
+      <p id="blocked-text"></p>
+      <div class="actions"><a class="btn" href="/learning.html">Go to the Learning Portal</a><a class="btn secondary" href="/mcq-generated-mock.html">See practice mocks</a><button class="btn secondary" type="button" id="retry-access">Check access again</button></div>
+    </section>
+    <section id="active" hidden aria-label="Mock exam in progress">
+      <div class="exam-bar panel">
+        <div><div class="eyebrow">Time remaining</div><span class="clock" id="timer" role="timer" aria-live="off">4:20:00</span></div>
+        <div><strong id="form-progress"></strong><div id="progress"></div><div id="save-status" role="status" aria-live="polite"></div></div>
+        <button class="btn secondary" type="button" id="retry-save" hidden>Retry saving</button>
+      </div>
+      <div class="exam-layout">
+        <article class="panel question" aria-labelledby="question-title">
+          <h2 id="question-title" tabindex="-1"></h2>
+          <p id="stem"></p>
+          <fieldset id="field"><legend class="sr-only">Choose one best answer</legend><div id="options"></div></fieldset>
+          <div class="actions secondary-actions">
+            <button class="btn secondary" type="button" id="clear">Clear answer</button>
+            <button class="btn secondary" type="button" id="flag" aria-pressed="false">Flag for review</button>
+          </div>
+          <div class="actions question-nav">
+            <button class="btn secondary" type="button" id="prev">Previous</button>
+            <button class="btn" type="button" id="next">Next</button>
+          </div>
+        </article>
+        <details open class="panel navigator">
+          <summary>Question navigator</summary>
+          <label for="filter">Show questions</label>
+          <select id="filter"><option value="all">All questions</option><option value="flagged">Flagged</option><option value="unanswered">Unanswered</option></select>
+          <p id="nav-empty" hidden>No questions match this filter.</p>
+          <div id="jump" class="jump" aria-label="Question buttons"></div>
+          <button type="button" id="finish" class="btn">Review and submit</button>
+        </details>
+      </div>
+    </section>
+    <section class="panel" id="results" hidden aria-labelledby="results-title">
+      <h2 id="results-title" tabindex="-1">Practice results</h2>
+      <p id="completion"></p><a href="/mcq-generated-mock.html">See all practice mocks</a>
+      <div id="score" class="score"></div>
+      <p>This is a NeoClinIQ learning score, not an official PEBC result or a passing prediction.</p>
+      <div class="result-controls"><label for="result-filter">Review</label>
+        <select id="result-filter"><option value="all">All questions</option><option value="correct">Correct</option><option value="wrong">Incorrect</option><option value="unanswered">Unanswered</option></select>
+      </div>
+      <div id="review"></div>
+    </section>
+    <dialog id="confirmation" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Submit your mock exam?</h2>
+      <p id="confirm-summary"></p>
+      <p>Submitting ends the attempt. You will not be able to change your answers after you see the results.</p>
+      <div class="actions"><button class="btn secondary" type="button" id="cancel-submit" autofocus>Keep working</button><button class="btn" type="button" id="confirm-submit">Submit exam</button></div>
+    </dialog>
+  </div>
+</main>
+<footer class="wrap"><a href="/learning.html">Return to the Learning Portal</a></footer>
+</body>
+</html>
