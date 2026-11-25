@@ -70,7 +70,7 @@ function setRemaining(data){
 function accept(data){
   if(data?.form_id!==formId)throw Error('Form did not match your selection');
   if(data?.state==='available'){
-    retire();status();$('entry-title').textContent=Number.isInteger(data.number)?'Start Practice Mock '+data.number:'Start your timed practice mock';$('start').disabled=false;show('entry','entry-title');return;
+    retire();status();$('entry-title').textContent=Number.isInteger(data.number)?'Start Mock '+(data.number+1):'Start your timed practice mock';$('start').disabled=false;show('entry','entry-title');return;
   }
   if(data?.state==='submitted'||data?.state==='expired'){
     if(!data.result)throw Error('missing closed result');
@@ -84,7 +84,7 @@ function accept(data){
   for(const id of data.flags||[])if(byId.has(id))flags.add(id);
   const first=questions.findIndex(q=>!answers.has(q.id));
   idx=first===-1?0:first;
-  status();$('form-progress').textContent=Number.isInteger(data.number)?'Practice Mock '+data.number:'Timed practice mock';show('active');drawQuestion(true);
+  status();$('form-progress').textContent=Number.isInteger(data.number)?'Mock '+(data.number+1):'Timed practice mock';show('active');drawQuestion(true);
   timer=setInterval(tick,250);tick();
 }
 function catalog(data){
@@ -97,11 +97,13 @@ function catalog(data){
   unstarted=data.active_form_id?[]:list.filter(x=>x.state==='available');
   $('random-form').disabled=unstarted.length===0;
   const entries=list.slice().sort((a,b)=>a.number-b.number).map(f=>{
-    const item=el('li'),link=el('a',f.title+' · '+statesText[f.state]);
+    const item=el('li'),link=el('a','Mock '+(f.number+1)+' · '+statesText[f.state]);
     link.href='/mcq-generated-mock.html?form='+encodeURIComponent(f.form_id);
     item.append(link);return item;
   });
-  $('form-list').replaceChildren(...entries);
+  const first=el('li'), firstLink=el('a','Mock 1');
+  firstLink.href='/mcq-mock.html';first.append(firstLink);
+  $('form-list').replaceChildren(first,...entries);
   status(data.active_form_id?'A practice mock is already running. Select the form marked In progress to resume.':'');
   show('catalog','catalog-title');
 }
@@ -123,7 +125,7 @@ async function checkAccess(action='status'){
     accept(data);
   }catch(error){
     if(token!==epoch||denied(error))return;
-    if(error.code===409){block('A different generated practice form is already running. Go back to the practice mock list and resume that form.',{retry:false});return}
+    if(error.code===409){block('A different timed mock is already running. Go back to the practice mock list and resume that form.',{retry:false});return}
     if(error.code===404){block('This practice form is unavailable. Go back to the practice mock list.',{retry:false});return}
     block('The mock exam could not load. Check your connection and try again. If you already started, the timer continues.');
   }
@@ -271,7 +273,7 @@ function renderResults(data){
   epoch++;retire();result=r;
   $('completion').textContent=data.state==='expired'?'Time expired. These results reflect the answers saved before the deadline.':'Your exam was submitted.';
   $('score').replaceChildren(...[r.correct+' / '+r.total+' correct',r.wrong+' incorrect',r.unanswered+' unanswered'].map(t=>el('span',t)));
-  status();$('results-title').textContent=Number.isInteger(data.number)?'Practice Mock '+data.number+' results':'Practice results';show('results','results-title');drawResults();
+  status();$('results-title').textContent=Number.isInteger(data.number)?'Mock '+(data.number+1)+' results':'Practice results';show('results','results-title');drawResults();
 }
 // Exact catalogue labels only. Fail closed on malformed metadata; never turn a title into a link.
 const nonTitle=/(?:[<>\/\\\p{Cc}\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]|www\.|(?:mailto|doi|javascript|vbscript|data|file|tel|sms):|%2f|%5c)/iu;
