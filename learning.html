@@ -8,29 +8,48 @@
 :root{--navy:#082e50;--teal:#078d92;--ink:#24445b;--line:#dce9ef;--pale:#f5fafc}
 *{box-sizing:border-box}body{margin:0;background:var(--pale);color:var(--ink);font:16px/1.6 Arial,sans-serif}a{color:var(--teal)}header{background:white;border-bottom:1px solid var(--line)}.wrap{max-width:1080px;margin:auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.logo{width:160px}.hero{background:linear-gradient(110deg,#082e50,#117e8b);color:white;padding:34px 0}.hero h1{font-size:clamp(30px,4vw,46px);margin:0}.hero p{margin:5px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:20px;box-shadow:0 8px 24px #082e500c}h2{color:var(--navy);margin:0 0 10px}.price{font-size:30px;font-weight:800;color:var(--navy)}.price small{font-size:14px;font-weight:400}.muted{color:#61798b}.status{border-left:4px solid var(--teal);background:#eaf7f4;padding:13px 17px;border-radius:6px;margin:18px 0}.warn{border-left-color:#ba812a;background:#fff6e6}.error{border-left-color:#b74444;background:#fff0f0}.btn{border:0;border-radius:9px;padding:12px 17px;background:var(--teal);color:white;font:700 14px Arial;cursor:pointer}.btn:disabled{background:#dce7eb;color:#5c7180;cursor:not-allowed}.secondary{background:#e9f4f7;color:var(--navy)}.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.fields{display:grid;gap:12px}.fields label{font-weight:700}.fields input{display:block;width:100%;margin-top:5px;padding:12px;border:1px solid #bdcfd9;border-radius:8px;font-size:16px}.hidden{display:none!important}.detail{border-top:1px solid var(--line);padding:12px 0}footer{text-align:center;padding:30px;color:#61798b}@media(max-width:700px){.grid{grid-template-columns:1fr}.panel{padding:20px}}
 </style>
-<link rel="stylesheet" href="/neocliniq-theme.css?v=20261124-inner2"><link rel="stylesheet" href="/neocliniq-inner-header.css"><script src="/neocliniq-inner-nav.js" defer></script><style id="nc-global-nav-style">.nc-global-nav{display:flex!important;align-items:center!important;gap:clamp(5px,1vw,14px)!important;flex-wrap:wrap!important;line-height:1.4!important}.nc-global-nav a,.nc-global-nav summary{font:600 13px/1.4 system-ui,sans-serif!important;text-decoration:none!important;cursor:pointer!important;color:inherit!important;white-space:nowrap!important}.nc-global-nav details{position:relative!important}.nc-global-nav summary{list-style:none!important;padding:8px 4px!important}.nc-global-nav summary::-webkit-details-marker{display:none}.nc-global-submenu{position:absolute!important;z-index:999999!important;top:100%!important;left:0!important;min-width:235px!important;max-height:65vh!important;overflow-y:auto!important;padding:8px!important;border:1px solid #a2d9d4!important;border-radius:12px!important;background:#08283e!important;box-shadow:0 12px 35px #001b2c55!important;display:flex!important;flex-direction:column!important;gap:0!important}.nc-global-nav details:not([open]) .nc-global-submenu{display:none!important}.nc-global-submenu a{display:block!important;color:#e8fcfa!important;padding:10px 12px!important;white-space:normal!important;border-radius:6px!important}.nc-global-submenu a:hover,.nc-global-submenu a:focus-visible{background:#146270!important}.nc-global-enrol{background:#087f7c!important;color:#fff!important;padding:10px 13px!important;border-radius:9px!important}.nc-global-account{font-weight:750!important}@media(max-width:900px){.nc-global-nav{gap:5px!important}.nc-global-nav a,.nc-global-nav summary{font-size:12px!important}}@media(max-width:760px){.nc-global-nav{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important}.nc-global-nav details{width:100%!important}.nc-global-submenu{position:static!important;max-height:none!important;box-shadow:none!important;min-width:0!important}.nc-global-nav>a{padding:9px 4px!important}.nc-global-enrol{text-align:center!important}}</style></head>
+<link rel="stylesheet" href="/neocliniq-theme.css?v=20261124-inner2"><link rel="stylesheet" href="/neocliniq-inner-header.css"><script src="/neocliniq-inner-nav.js" defer></script><style id="nc-global-nav-style">.nc-global-nav{display:flex!important;align-items:center!important;gap:clamp(5px,1vw,14px)!important;flex-wrap:wrap!important;line-height:1.4!important}.nc-global-nav a,.nc-global-nav summary{font:600 13px/1.4 system-ui,sans-serif!important;text-decoration:none!important;cursor:pointer!important;color:inherit!important;white-space:nowrap!important}.nc-global-nav details{position:relative!important}.nc-global-nav summary{list-style:none!important;padding:8px 4px!important}.nc-global-nav summary::-webkit-details-marker{display:none}.nc-global-submenu{position:absolute!important;z-index:999999!important;top:100%!important;left:0!important;min-width:235px!important;max-height:65vh!important;overflow-y:auto!important;padding:8px!important;border:1px solid #a2d9d4!important;border-radius:12px!important;background:#08283e!important;box-shadow:0 12px 35px #001b2c55!important;display:flex!important;flex-direction:column!important;gap:0!important}.nc-global-nav details:not([open]) .nc-global-submenu{display:none!important}.nc-global-submenu a{display:block!important;color:#e8fcfa!important;padding:10px 12px!important;white-space:normal!important;border-radius:6px!important}.nc-global-submenu a:hover,.nc-global-submenu a:focus-visible{background:#146270!important}.nc-global-enrol{background:#087f7c!important;color:#fff!important;padding:10px 13px!important;border-radius:9px!important}.nc-global-account{font-weight:750!important}@media(max-width:900px){.nc-global-nav{gap:5px!important}.nc-global-nav a,.nc-global-nav summary{font-size:12px!important}}@media(max-width:760px){.nc-global-nav{display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important}.nc-global-nav details{width:100%!important}.nc-global-submenu{position:static!important;max-height:none!important;box-shadow:none!important;min-width:0!important}.nc-global-nav>a{padding:9px 4px!important}.nc-global-enrol{text-align:center!important}}</style><link rel="stylesheet" href="/mcq-plans.css"></head>
 <body class="nc-inner-theme">
 <header class="nc-site-header"><div class="nc-head-inner"><a class="nc-brand" href="/" aria-label="NeoClinIQ homepage"><img src="/NeoClinIQ_Logo_Extracted.png" alt="NeoClinIQ official logo — Think Like a Pharmacist"></a><nav class="nc-links nc-global-nav" aria-label="NeoClinIQ navigation"><a class="nc-global-home" href="/">Home</a><details class="nc-global-group"><summary>PEBC MCQ</summary><div class="nc-global-submenu"><a href="/pebc-mcq.html">MCQ Course & Pricing</a><a href="/mcq-library.html">MCQ Library</a><a href="/pebc-mcq-question-bank/">Question Bank</a><a href="/pebc-mcq-mock-exam/">MCQ Mock Exam</a><a href="/study-planner.html">96-Day MCQ Mastery Plan</a><a href="/free-pebc-masterclass-hiv-ckd-stis.html">Free Masterclass</a></div></details><details class="nc-global-group"><summary>PEBC OSCE</summary><div class="nc-global-submenu"><a href="/pebc-osce.html">OSCE Course & Pricing</a><a href="/pebc-osce-tutor.html">About SI OSCE Tutor</a><a href="/osce-library.html">OSCE Library</a><a href="/osce-study-planner.html">96-Day OSCE Planner</a><a href="/pebc-osce-preparation/">OSCE Preparation</a></div></details><details class="nc-global-group"><summary>SI</summary><div class="nc-global-submenu"><a href="/reference-ai.html">SI Super Intelligence</a><a href="/features.html">Platform Features</a></div></details><details class="nc-global-group"><summary>Resources</summary><div class="nc-global-submenu"><a href="/free-pebc-masterclass-hiv-ckd-stis.html">Free Masterclass</a><a href="/pebc-mcq-study-materials/">MCQ Study Materials</a><a href="/pebc-mcq-online-classes/">MCQ Online Classes</a><a href="/#books">12-Volume Books</a></div></details><details class="nc-global-group"><summary>About</summary><div class="nc-global-submenu"><a href="/#about">About NeoClinIQ</a><a href="/#founder">Founder</a><a href="/#learner-testimonials">Testimonials</a><a href="mailto:neocliniq@maplecanadaramadan.ca">Contact</a><a href="https://www.youtube.com/@neocliniq">YouTube</a><a href="https://www.linkedin.com/company/neocliniq/">NeoClinIQ on LinkedIn</a></div></details><a class="nc-global-account" href="/learning.html">My Account</a><a class="nc-global-enrol" href="/learning.html">Enrol Now</a></nav></div></header>
 <section class="hero"><div class="wrap"><h1>NeoClinIQ Learning Portal</h1><p>MCQ and OSCE learning access, in one secure account.</p></div></section>
 <main class="wrap">
-<div id="notice" class="status warn" role="status" aria-live="polite">MCQ and OSCE enrollment are open. Sign in to choose your program.</div>
+<div id="notice" class="status warn" role="status" aria-live="polite">Sign in to check your access and available enrolment options.</div>
 <section class="panel"><h2>Your account</h2><p id="auth-status" class="muted">Checking configuration…</p>
 <form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button></div></form>
 <div id="signed-in" class="hidden"><p>Signed in as <strong id="user-email"></strong></p><button class="btn secondary" type="button" id="signout">Sign out</button></div>
 </section>
+<section class="panel mcq-plans-panel" id="mcq-plans" aria-labelledby="mcq-plans-heading">
+<h2 id="mcq-plans-heading">PEBC MCQ website plans</h2><p>Four calendar months each. Simulator and Ultimate include <strong>5,000 practice questions across the question bank and mocks</strong>. <a href="/mcq-plans/#feature-comparison">Compare all three plans side by side</a>.</p>
+<div id="mcq-access" class="status warn" aria-live="polite">Sign in to review access.</div>
+<p id="mcq-checkout-status" class="muted mcq-plan-context" role="status">Sign in to check available enrolment options.</p>
+<div class="mcq-plans-grid" aria-label="MCQ plan selection">
+<article class="mcq-plan"><p class="mcq-plan-card-label">Exam practice</p><h3>MCQ Simulator</h3><p class="price">C$700 <small>CAD · 4 months</small></p><p class="mcq-plan-context">One optional four-month extension: <strong>C$350</strong>.</p><ul><li>MCQ Question Bank</li><li>21 timed practice mocks</li><li>Review flagged and incorrect answers</li></ul><button type="button" class="btn" data-mcq-checkout="simulator" hidden disabled>Continue with Simulator</button></article>
+<article class="mcq-plan"><p class="mcq-plan-card-label">Clinical study</p><h3>MCQ SI Super Intelligence Ultra</h3><p class="price">C$1,300 <small>CAD · 4 months</small></p><p class="mcq-plan-context">One optional four-month extension: <strong>C$650</strong>.</p><ul><li>SI Super Intelligence</li><li>14-module MCQ Library</li><li>96-Day MCQ Mastery Plan</li></ul><button type="button" class="btn" data-mcq-checkout="ultra" hidden disabled>Continue with Ultra</button></article>
+<article class="mcq-plan mcq-plan-best"><p class="mcq-plan-card-label">Best Value · Study and exam practice</p><h3>MCQ SI Super Intelligence Ultimate</h3><p class="price">C$1,800 <small>CAD · 4 months</small></p><p class="mcq-plan-context">One optional four-month extension: <strong>C$900</strong>.</p><ul><li>SI Super Intelligence and 14-module MCQ Library</li><li>96-Day MCQ Mastery Plan</li><li>MCQ Question Bank and 21 timed practice mocks</li></ul><p class="mcq-plan-context"><strong>C$200 less</strong> than the listed Simulator and Ultra prices combined.</p><button type="button" class="btn" data-mcq-checkout="ultimate" hidden disabled>Continue with Ultimate</button></article>
+</div>
+<section id="mcq-tier-extension" class="mcq-detail-row" hidden aria-labelledby="mcq-tier-extension-heading">
+<h3 id="mcq-tier-extension-heading">Your same-plan extension</h3>
+<p id="mcq-tier-extension-copy" class="muted"></p>
+<button type="button" id="mcq-tier-extension-button" class="btn secondary" disabled>Extend your MCQ plan</button>
+</section>
+</section>
 <div class="grid">
-<section class="panel"><h2>PEBC MCQ</h2><div class="price">C$1,500 <small>initial / 4 months</small></div><p>One optional 4-month extension: C$750. You may extend before expiry or within 42 days afterward; the grace period does not include free access.</p><div id="mcq-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="mcq-initial" class="btn" disabled>Purchase MCQ</button><button id="mcq-extension" class="btn secondary" disabled>Extend MCQ</button></div></section>
 <section class="panel"><h2>PEBC OSCE</h2><div class="price">C$1,800 <small>initial / 16 weeks</small></div><p>One optional 4-month extension: C$900. Extend before expiry or within 42 days afterward. The grace period does not provide learning access.</p><div id="osce-access" class="status warn">Sign in to review access.</div><div class="buttons"><button id="osce-initial" class="btn" disabled>Purchase OSCE</button><button id="osce-extension" class="btn secondary" disabled>Extend OSCE</button></div></section>
 </div>
-<section class="panel"><h2>SI OSCE Tutor</h2><p>Use your active OSCE subscription to open the Practice Case Library for timed AI roleplay, a fictional pharmacy profile where available, and formative feedback. The separate scripted sample is self-assessed.</p><a class="btn secondary" href="/osce-simulator.html">Open SI OSCE Tutor</a></section><section class="panel"><h2>OSCE learning resources</h2><p>Access protected OSCE stations, counselling materials, videos and PDFs with an active OSCE enrolment.</p><a class="btn secondary" href="/osce-library.html">Open OSCE resource library</a><p class="muted">The library only displays published materials and checks OSCE access on every request.</p></section><section class="panel"><h2>MCQ learning resources</h2><p>Students with verified active MCQ access can use the dedicated library for videos, PDFs and infographics when the private resource service is configured.</p><a class="btn secondary" href="/mcq-library.html">Open MCQ resource library</a><p class="muted">Resource access requires an active MCQ entitlement. The library does not enable checkout or bypass payment validation.</p></section>
+<section class="panel"><h2>SI OSCE Tutor</h2><p>Use your active OSCE subscription to open the Practice Case Library for timed AI roleplay, a fictional pharmacy profile where available, and formative feedback. The separate scripted sample is self-assessed.</p><a class="btn secondary" href="/osce-simulator.html">Open SI OSCE Tutor</a></section><section class="panel"><h2>OSCE learning resources</h2><p>Access protected OSCE stations, counselling materials, videos and PDFs with an active OSCE enrolment.</p><a class="btn secondary" href="/osce-library.html">Open OSCE resource library</a><p class="muted">The library only displays published materials and checks OSCE access on every request.</p></section><section class="panel hidden" id="mcq-study-card"><h2>MCQ clinical study</h2><p>Open the learning tools included in your active website plan.</p><div class="buttons">
+<a class="btn secondary" id="mcq-library-link" data-mcq-capability="library" href="/mcq-library.html" hidden>Open the 14-module MCQ Library</a>
+<a class="btn secondary" id="mcq-si-link" data-mcq-capability="si" href="/reference-ai.html" hidden>Open SI Super Intelligence</a>
+<a class="btn secondary" id="mcq-mastery-link" data-mcq-capability="mastery" href="/study-planner.html" hidden>Open the 96-Day MCQ Mastery Plan</a>
+</div></section>
 <section id="mcq-bank-card" class="panel hidden"><h2>MCQ Question Bank</h2><p>Practise by module, chapter or PEBC competency. Review the reasoning for every option and the quiz reference filenames.</p><a class="btn" href="/mcq-question-bank.html">Open the MCQ Question Bank</a></section>
 <section id="mcq-mock-card" class="panel hidden"><h2>PEBC MCQ Mock 1</h2><p>200 questions · 4 hours 20 minutes. Owner-reviewed practice for active paid website MCQ subscribers.</p><a class="btn" href="/mcq-mock.html">Open Mock 1</a></section>
 <section id="mcq-generated-card" class="panel hidden"><h2>PEBC MCQ Mocks 1–21</h2><p>Choose a form or pick one at random. Each has 200 questions at PEBC domain weights and a 4-hour 20-minute timer. </p><a class="btn" href="/mcq-generated-mock.html">Browse Mocks 1–21</a></section>
 <section id="admin-drive" class="panel hidden" aria-label="Administrator Google Drive connection"><h2>Administrator · Google Drive</h2><p>Reconnect the private Google Drive source used to securely stream NeoClinIQ learning resources. This action requires website administrator authorization.</p><div class="buttons"><button id="connect-drive" class="btn" type="button">Connect Google Drive</button></div><p id="drive-status" class="muted" role="status" aria-live="polite"></p></section>
-<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> MCQ: four calendar months. OSCE: 16 weeks.</div><div class="detail"><strong>Extensions:</strong> One discounted extension per enrollment, purchasable before expiry or within 42 days afterward. Both MCQ and OSCE add four calendar months. Access stops at expiry during the grace period. An extension purchased after expiry starts a new extension period on payment.</div><div class="detail"><strong>New cycle:</strong> Once access expires, a new full-price initial purchase is permitted and extension eligibility resets. After the 42-day grace period, a discounted extension is no longer available.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
+<section class="panel"><h2>Access and renewal policy</h2><div class="detail"><strong>Initial purchase:</strong> Each MCQ plan includes four calendar months of access to the features shown. OSCE remains 16 weeks.</div><div class="detail"><strong>New MCQ plan extensions:</strong> Eligible learners can buy one additional four-calendar-month term at 50% of the same plan’s initial price: Simulator C$350, Ultra C$650, or Ultimate C$900. Buy before expiry or within 42 days afterward. The grace period does not provide free access. There is no automatic renewal.</div><div class="detail"><strong>OSCE:</strong> Existing OSCE terms are unchanged. Eligible OSCE learners may purchase one four-month extension for C$900 before expiry or within 42 days afterward.</div><div class="detail"><strong>Existing MCQ subscribers:</strong> You keep the access you already paid for until it expires. Then you can choose from the three current MCQ plans.</div><div class="detail"><strong>Independent access:</strong> MCQ and OSCE are separate. Website access does not grant mobile-app subscriptions.</div><p class="muted">NeoClinIQ is independent and is not affiliated with or endorsed by the Pharmacy Examining Board of Canada.</p></section>
 </main><footer>© <span id="year"></span> NeoClinIQ · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></footer>
 <script type="module">
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2";
+import {MCQ_TIERS,isWebsiteActive,isWebsiteMcqActive,isLegacyMcq,canUseMcq,canUseWebsiteSI,tierCanCheckout,tierCanExtend,extensionGraceEnd,tierForQuery,isStripeCheckoutUrl} from "/mcq-plans-access.js";
 const CONFIG=Object.freeze({
  SUPABASE_URL:"https://uxnqoglkqptnslsdowxn.supabase.co",
  SUPABASE_PUBLISHABLE_KEY:"sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA",
@@ -41,11 +60,16 @@ const CONFIG=Object.freeze({
 const $=id=>document.getElementById(id);
 const ready=CONFIG.SUPABASE_PUBLISHABLE_KEY!=="REPLACE_WITH_PUBLIC_SUPABASE_KEY";
 const client=ready?createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY):null;
-let session=null,entitlements=null,mockCheck=0,bankCheck=0,generatedCheck=0;
+let session=null,entitlements=null,mockCheck=0,bankCheck=0,generatedCheck=0,accessCheck=0,checkoutPending=false;
+const pickedTier=tierForQuery();
+const mcqButtons=[...document.querySelectorAll("[data-mcq-checkout]")];
+const money=value=>new Intl.NumberFormat("en-CA").format(value);
+for(const button of mcqButtons)button.closest(".mcq-plan").dataset.selected=String(button.dataset.mcqCheckout===pickedTier);
+
 $("year").textContent=new Date().getFullYear();
 function notice(s,type="warn"){$("notice").textContent=s;$("notice").className="status "+type}
-function isActive(e){return !!(e?.active&&e.expires_at&&new Date(e.expires_at).getTime()>Date.now())}
-function canExtend(program,e){if(!e?.active||e.extension_used!==false||!e.expires_at)return false;const expiry=new Date(e.expires_at).getTime();return Number.isFinite(expiry)&&(isActive(e)||(Date.now()<=expiry+42*86400000))}
+const isActive=isWebsiteActive;
+function canExtendOSCE(e){if(!e?.active||e.extension_used!==false||!e.expires_at)return false;const expiry=new Date(e.expires_at).getTime();return Number.isFinite(expiry)&&(isActive(e)||(Date.now()<=expiry+42*86400000))}
 function date(s){return new Intl.DateTimeFormat("en-CA",{dateStyle:"long",timeZone:"America/Toronto"}).format(new Date(s))}
 function render(){
  $("auth-form").classList.toggle("hidden",!ready||!!session);
@@ -55,18 +79,56 @@ function render(){
  $("auth-status").textContent=!ready?"Authentication awaits the public Supabase publishable key.":session?"Signed in securely.":"Sign in or create an account.";
  for(const p of ["mcq","osce"]){
   const e=entitlements?.[p],el=$(p+"-access");
-  if(!entitlements){el.textContent="Checking your program access…";el.className="status warn"}
-  else if(isActive(e)){el.textContent="Active until "+date(e.expires_at)+(e.extension_used?" · Extension used":" · Extension available");el.className="status"}
-  else{const grace=canExtend(p,e);el.textContent="No active access"+(e?.expires_at?" · Expired "+date(e.expires_at):"")+(grace?" · Discounted extension available until "+date(new Date(new Date(e.expires_at).getTime()+42*86400000).toISOString()):"");el.className="status warn"}
-  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements);
-  $(p+"-initial").disabled=!(canBuy&&!isActive(e));
-  $(p+"-extension").disabled=!(canBuy&&canExtend(p,e));
+  const extension=p==="osce"?canExtendOSCE(e):tierCanExtend(entitlements,e?.tier);
+  const active=p==="mcq"?isWebsiteMcqActive(e):isActive(e);
+  if(!entitlements){el.textContent=session?"Checking your program access…":"Sign in to review access.";el.className="status warn"}
+  else if(active){
+   const plan=p==="mcq"?(MCQ_TIERS[e.tier]?.label||(isLegacyMcq(e)?"Existing MCQ plan":"Website MCQ")):null;
+   const renew=e.extension_used===true&&(p==="osce"||!isLegacyMcq(e))?" · Extension used":extension?" · Extension available":"";
+   el.textContent=(plan?plan+" · ":"")+(e.expires_at?"Active until "+date(e.expires_at):"Active access")+renew;el.className="status";
+  }else{
+   const expiry=Date.parse(e?.expires_at);
+   el.textContent="No active access"+(Number.isFinite(expiry)?" · Expired "+date(e.expires_at):"")+
+     (extension?" · Discounted extension available until "+date(new Date(expiry+42*86400000).toISOString()):"");el.className="status warn";
+  }
+  const canBuy=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements&&!checkoutPending);
+  if(p==="osce"){
+   $("osce-initial").disabled=!(canBuy&&!isActive(e));
+   $("osce-extension").disabled=!(canBuy&&extension);
+  }
  }
+ const entitled=entitlements?.mcq;
+ const links=[...$("mcq-study-card").querySelectorAll("[data-mcq-capability]")];
+ for(const link of links)link.hidden=link.dataset.mcqCapability==="si"?!canUseWebsiteSI(entitlements):!canUseMcq(entitled,link.dataset.mcqCapability);
+ $("mcq-study-card").classList.toggle("hidden",!links.some(link=>!link.hidden));
+ const tier=entitled?.tier,offer=CONFIG.LIVE_CHECKOUT_ENABLED&&session&&tierCanExtend(entitlements,tier);
+ const extensionButton=$("mcq-tier-extension-button");
+ $("mcq-tier-extension").hidden=!offer;
+ extensionButton.disabled=!offer||checkoutPending;
+ extensionButton.dataset.tier=offer?tier:"";
+ if(offer){
+  const plan=MCQ_TIERS[tier],cutoff=date(new Date(extensionGraceEnd(entitled)).toISOString());
+  extensionButton.textContent="Extend for C$"+money(plan.extensionCad);
+  $("mcq-tier-extension-copy").textContent=plan.label+" · One additional four-month term. Eligible until "+cutoff+". "+
+    (isActive(entitled)?"Extending now adds four months to your current term.":"Your access has expired. The grace period does not grant access; your new term starts when payment is confirmed.");
+ }else{
+  extensionButton.textContent="Extend your MCQ plan";$("mcq-tier-extension-copy").textContent="";
+ }
+ for(const button of mcqButtons){
+  const allowed=!!(CONFIG.LIVE_CHECKOUT_ENABLED&&session&&entitlements&&tierCanCheckout(entitlements,button.dataset.mcqCheckout));
+  button.hidden=!allowed;button.disabled=!allowed||checkoutPending;
+ }
+ const message=$("mcq-checkout-status");
+ if(!session)message.textContent="Sign in to check available enrolment options.";
+ else if(!entitlements)message.textContent="Checking checkout availability…";
+ else if(isWebsiteMcqActive(entitled))message.textContent="Your current MCQ access is active.";
+ else if(mcqButtons.some(button=>!button.hidden))message.textContent="Choose an available plan. Payment takes place through Stripe.";
+ else message.textContent="New MCQ checkout is not available for this account right now.";
 }
 function checkMockAccess(){
  const active=session, check=++mockCheck, card=$("mcq-mock-card");
  card.classList.add("hidden");
- if(!active||!isActive(entitlements?.mcq))return;
+ if(!active||!canUseMcq(entitlements?.mcq,"mock_exams"))return;
  fetch(CONFIG.SUPABASE_URL+"/functions/v1/website-mcq-mock",{method:"POST",cache:"no-store",headers:{Authorization:"Bearer "+active.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status",compact:true})})
  .then(async r=>{if(!r.ok)return;const {state}=await r.json();if(session?.user?.id===active.user.id&&check===mockCheck&&["available","in_progress","submitted","expired"].includes(state))card.classList.remove("hidden")})
  .catch(()=>{});
@@ -74,7 +136,7 @@ function checkMockAccess(){
 function checkGeneratedAccess(){
  const active=session, check=++generatedCheck, card=$("mcq-generated-card");
  card.classList.add("hidden");
- if(!active||!isActive(entitlements?.mcq))return;
+ if(!active||!canUseMcq(entitlements?.mcq,"mock_exams"))return;
  fetch(CONFIG.SUPABASE_URL+"/functions/v1/website-generated-mcq-mock",{method:"POST",cache:"no-store",headers:{Authorization:"Bearer "+active.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"catalog"})})
  .then(async r=>{if(!r.ok)return;const {forms}=await r.json();if(session?.user?.id===active.user.id&&check===generatedCheck&&Array.isArray(forms)&&forms.length===20)card.classList.remove("hidden")})
  .catch(()=>{});
@@ -82,21 +144,23 @@ function checkGeneratedAccess(){
 function checkBankAccess(){
  const active=session, check=++bankCheck, card=$("mcq-bank-card");
  card.classList.add("hidden");
- if(!active||!isActive(entitlements?.mcq))return;
+ if(!active||!canUseMcq(entitlements?.mcq,"question_bank"))return;
  fetch(CONFIG.SUPABASE_URL+"/functions/v1/website-mcq-bank",{method:"POST",cache:"no-store",headers:{Authorization:"Bearer "+active.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json"},body:JSON.stringify({action:"status"})})
  .then(async r=>{if(!r.ok)return;const {state}=await r.json();if(session?.user?.id===active.user.id&&check===bankCheck&&state==="available")card.classList.remove("hidden")})
  .catch(()=>{});
 }
 async function loadAccess(){
+ const active=session,check=++accessCheck;
  entitlements=null;render();checkMockAccess();checkBankAccess();checkGeneratedAccess();
- if(!session||!CONFIG.ENTITLEMENTS_ENDPOINT)return;
+ if(!active||!CONFIG.ENTITLEMENTS_ENDPOINT)return;
  try{
-  const res=await fetch(CONFIG.ENTITLEMENTS_ENDPOINT,{headers:{Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},cache:"no-store"});
+  const res=await fetch(CONFIG.ENTITLEMENTS_ENDPOINT,{headers:{Authorization:"Bearer "+active.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},cache:"no-store"});
   if(!res.ok)throw Error("Unable to load access");
   const data=await res.json();
+  if(check!==accessCheck||session?.user?.id!==active.user.id)return;
   if(!data||typeof data!=="object"||!("mcq" in data)||!("osce" in data))throw Error("Invalid access response");
   entitlements=data;render();checkMockAccess();checkBankAccess();checkGeneratedAccess();
- }catch(e){console.error(e);notice("Unable to verify access. Please contact support.","error")}
+ }catch(e){if(check===accessCheck&&session?.user?.id===active.user.id){notice("Unable to verify access. Please try signing in again or contact support.","error");$("mcq-checkout-status").textContent="Checkout is unavailable until your account can be verified.";}}
 }
 $("auth-form").addEventListener("submit",async e=>{
  e.preventDefault();if(!client)return;
@@ -130,21 +194,40 @@ $("connect-drive").addEventListener("click",async()=>{
   location.assign(url.href);
  }catch(error){status.textContent=error.message||"Authorization could not start";button.disabled=false}
 });
-async function checkout(program,purchase_type){
- if(!CONFIG.LIVE_CHECKOUT_ENABLED||!session||!entitlements)return;
+async function checkout(program,purchase_type,tier){
+ if(!CONFIG.LIVE_CHECKOUT_ENABLED||!session||!entitlements||checkoutPending)return;
+ if(!["mcq","osce"].includes(program)||!["initial","extension"].includes(purchase_type))return;
+ const e=entitlements?.[program];
+ if(program==="mcq"&&purchase_type==="initial"&&!tierCanCheckout(entitlements,tier))return;
+ if(purchase_type==="extension"){
+  const allowedExtension=program==="mcq"?tierCanExtend(entitlements,tier):canExtendOSCE(e);
+  if(!allowedExtension)return;
+ }
+ if(program==="osce"&&purchase_type==="initial"&&isActive(e))return;
+ const active=session,check=accessCheck;
+ checkoutPending=true;render();
  try{
-  const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({program,purchaseType:purchase_type})});
+  const selection={program,purchaseType:purchase_type};
+  if(program==="mcq")selection.tier=tier;
+  const r=await fetch(CONFIG.CHECKOUT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+active.access_token,apikey:CONFIG.SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(selection),cache:"no-store"});
   const data=await r.json();if(!r.ok)throw Error(data.error||"Checkout unavailable");
+  if(check!==accessCheck||session?.user?.id!==active.user.id)return;
   const url=data.url||data.checkout_url;
-  if(typeof url!=="string"||!url.startsWith("https://checkout.stripe.com/"))throw Error("Invalid checkout destination");
+  if(!isStripeCheckoutUrl(url))throw Error("Invalid checkout destination");
   location.assign(url);
- }catch(e){notice(String(e.message||e),"error")}
+ }catch(e){if(check===accessCheck&&session?.user?.id===active.user.id)notice(String(e.message||e),"error")}
+ finally{checkoutPending=false;render()}
 }
-for(const p of ["mcq","osce"])for(const t of ["initial","extension"])$(p+"-"+t).addEventListener("click",()=>checkout(p,t));
+$("mcq-tier-extension-button").addEventListener("click",e=>{
+ const tier=e.currentTarget.dataset.tier;
+ if(tier)checkout("mcq","extension",tier);
+});
+for(const t of ["initial","extension"])$("osce-"+t).addEventListener("click",()=>checkout("osce",t));
+for(const button of mcqButtons)button.addEventListener("click",()=>checkout("mcq","initial",button.dataset.mcqCheckout));
 if(client){
- client.auth.onAuthStateChange((_event,next)=>{session=next;entitlements=null;render();checkMockAccess();checkBankAccess();checkGeneratedAccess();setTimeout(()=>{if(next)loadAccess()},0)});
+ client.auth.onAuthStateChange((_event,next)=>{const check=++accessCheck;session=next;entitlements=null;render();checkMockAccess();checkBankAccess();checkGeneratedAccess();setTimeout(()=>{if(next&&check===accessCheck)loadAccess()},0)});
  const {data,error}=await client.auth.getSession();if(error)notice("Could not restore session.","error");
  session=data?.session||null;render();if(session)await loadAccess();
 }else{notice("Portal preview is available; authentication and live purchases are not yet enabled.");render()}
-if(new URLSearchParams(location.search).has("session_id")){notice("Checkout returned. Access is confirmed only after server-side payment verification.");history.replaceState(null,"",location.pathname)}
+if(new URLSearchParams(location.search).has("session_id")){notice("Checkout returned. Access is confirmed only after server-side payment verification.");const returned=new URL(location.href);returned.searchParams.delete("session_id");history.replaceState(null,"",returned.pathname+returned.search+returned.hash)}
 </script><script id="nc-global-nav-js">(function(){document.querySelectorAll(".nc-global-nav").forEach(nav=>{nav.addEventListener("click",e=>{if(e.target.closest("a"))nav.querySelectorAll("details[open]").forEach(d=>d.open=false)});nav.querySelectorAll("details").forEach(d=>d.addEventListener("toggle",()=>{if(d.open)nav.querySelectorAll("details[open]").forEach(other=>{if(other!==d)other.open=false})}))});document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".nc-global-nav details[open]").forEach(d=>d.open=false)})})();</script></body></html>

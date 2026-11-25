@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {canUseMcq} from '/mcq-plans-access.js';
 
 const BASE='https://uxnqoglkqptnslsdowxn.supabase.co';
 const KEY='sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA';
@@ -31,6 +32,7 @@ function wipe(){
   generation++; action++; request?.abort(); request=null;
   chapters=[];byChapter.clear();rows=[];selectedIndex=0;nextCursor=null;total=0;activeFilters=null;
   answers.clear();choices.clear();written.clear();flagRequests.clear();
+  for(const link of document.querySelectorAll("[data-mcq-capability]"))link.hidden=true;
   for(const id of ['options','references','explanations','module','chapter'])$(id).replaceChildren();
   for(const id of ['question-title','question-meta','stem','feedback-title'])$(id).textContent='';
   $('written').value='';$('flag-question').setAttribute('aria-pressed','false');$('flag-question').disabled=true;$('feedback').hidden=true;$('practice').hidden=true;$('empty').hidden=true;
@@ -41,7 +43,7 @@ function block(message,retry=false){
 }
 function denied(error){
   if(error.code===401){block('Sign in to the Learning Portal to use your MCQ Question Bank.');return true}
-  if(error.code===403){block('An active paid NeoClinIQ website MCQ subscription is required.');return true}
+  if(error.code===403){block('An active website plan that includes the MCQ Question Bank is required.');return true}
   if(error.code===503&&!activeFilters){block('The subscriber question bank is not available yet. You can continue from the Learning Portal.',true);return true}
   return false;
 }
@@ -109,7 +111,15 @@ async function boot(next){
     if(token!==generation)return;
     if(!Array.isArray(data?.chapters)||!data.chapters.length||!data.chapters.every(validCatalog))throw Error('Missing chapter catalog');
     chapters=data.chapters;byChapter=new Map(chapters.map(c=>[c.code,c]));
-    drawFilters(true);bstate('bank');await loadPage();
+    drawFilters(true);bstate('bank');
+    const active=session;
+    void fetch(BASE+'/functions/v1/website-get-entitlements',{headers:{Authorization:'Bearer '+active.access_token,apikey:KEY},cache:'no-store'})
+      .then(async r=>{
+        if(!r.ok)return;const ent=await r.json();
+        if(token!==generation||session?.user?.id!==active.user.id)return;
+        for(const link of document.querySelectorAll('[data-mcq-capability]'))link.hidden=!canUseMcq(ent.mcq,link.dataset.mcqCapability);
+      }).catch(()=>{});
+    await loadPage();
   }catch(error){
     if(token!==generation||denied(error))return;
     block('The question bank could not load. Check your connection, then try again.',true);

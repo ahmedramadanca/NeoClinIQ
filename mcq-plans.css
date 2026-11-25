@@ -13,3 +13,5 @@
 .mcq-plan-card-label {margin:0; font-size:.75rem; font-weight:750; color:#086b73; text-transform:uppercase; letter-spacing:.07em}
 @media(max-width:1050px){ .mcq-plan .btn {white-space:normal} }
 @media(max-width:760px){ .mcq-plans-grid { grid-template-columns:1fr } }
+
+.mcq-plan.mcq-plan-best {border:2px solid #078d92;background:#f2fcfb}

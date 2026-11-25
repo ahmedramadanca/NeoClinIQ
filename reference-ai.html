@@ -32,10 +32,11 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173
 <div class="si-brand"><img src="/neocliniq-si-icon.png" alt="NeoClinIQ SI icon" width="90" height="90"><div><h1>NeoClinIQ SI — Super Intelligence</h1><div class="si-brand-sub">Think Like a Pharmacist · Canada</div></div></div>
 <p class="muted">NeoClinIQ SI is the private, source-grounded clinical learning assistant for authorized members. Answers use indexed clinical reference text, without providing access to original PDFs. Educational use only; verify clinical decisions independently.</p>
 <section class="card" id="login">
-<h2>Sign in</h2><p class="muted">Use your NeoClinIQ <strong>website</strong> account with an active website subscription or administrator access. Mobile-app accounts and App Store purchases are separate and cannot sign in here.</p>
+<h2>Sign in</h2><p class="muted">Use your NeoClinIQ <strong>website</strong> account with SI access or administrator access. Mobile-app accounts and App Store purchases are separate and cannot sign in here.</p>
 <form id="login-form"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required>
 <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
 <button id="login-button" type="submit">Sign in</button></form></section>
+<section class="card" id="si-plan-lock" hidden><h2>SI access required</h2><p>SI Super Intelligence is included with Ultra and Ultimate. Existing eligible subscribers retain access.</p><p><a href="/mcq-plans/">Compare MCQ plans</a> or <a href="/learning.html">review your Learning Portal account</a>.</p></section>
 <section class="card" id="research" hidden>
 <h2>Ask NeoClinIQ SI</h2><p class="muted">Your clinical questions are answered using indexed reference passages with source citations.</p>
 <section class="voice-panel" aria-label="SI Voice conversation"><h3>🎙 SI Voice — Clinical Learning Companion</h3><p>Speak a question, hear SI explain the answer, and continue the conversation. Voice input depends on browser support. Clinical responses remain grounded in NeoClinIQ references.</p><div class="voice-controls"><button type="button" id="voice-mic" aria-pressed="false">🎙 Start speaking</button><button type="button" id="voice-play" class="secondary">🔊 Read last answer</button><button type="button" id="voice-stop" class="secondary">■ Stop voice</button><label for="voice-language" style="margin:0;color:#fff">Language</label><select id="voice-language"><option value="en-CA">English (Canada)</option><option value="ar-EG">العربية (مصر)</option></select><label for="voice-voice" style="margin:0;color:#fff">Speaking style</label><select id="voice-voice" aria-label="Speaking style"><option value="warm">Warm &amp; natural</option><option value="calm">Calm &amp; gentle</option><option value="clear">Clear &amp; professional</option></select><label style="display:flex;align-items:center;gap:8px;margin:0;color:#fff"><input id="voice-autoplay" type="checkbox" checked style="width:auto"> Read answers aloud</label></div><p id="voice-status" role="status" aria-live="polite">Voice is off.</p></section><form id="question-form"><label for="question">Clinical education question</label><textarea id="question" minlength="8" maxlength="3000" placeholder="Explain clinical considerations in chronic kidney disease using the indexed sources" required></textarea>
@@ -47,10 +48,38 @@ button:disabled{opacity:.55;cursor:wait}.secondary{background:#e4edf0;color:#173
 </main>
 <script type="module">
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2.49.8";
+import {canUseWebsiteSI} from "/mcq-plans-access.js";
 const sb=createClient("https://uxnqoglkqptnslsdowxn.supabase.co","sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA",{auth:{persistSession:true,autoRefreshToken:true}});
 const el=id=>document.getElementById(id);
 const setMessage=(text)=>{el("message").textContent=text;};
-async function refresh(){const {data:{session}}=await sb.auth.getSession();el("login").hidden=!!session;el("research").hidden=!session;el("signout").hidden=!session;return session;}
+let siEpoch=0,siUser=null;
+async function refresh(){
+ const epoch=++siEpoch;siUser=null;el("research").hidden=true;el("si-plan-lock").hidden=true;
+ const {data:{session}}=await sb.auth.getSession();
+ if(epoch!==siEpoch)return;
+ el("login").hidden=!!session;el("signout").hidden=!session;
+ if(!session)return;
+ try{
+  const request=await fetch("https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/website-get-entitlements",{headers:{Authorization:"Bearer "+session.access_token,apikey:"sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA"},cache:"no-store"}).catch(()=>null);
+  const ent=request?.ok?await request.json().catch(()=>null):null;
+  if(epoch!==siEpoch)return;
+  let allowed=canUseWebsiteSI(ent);
+  if(!allowed){
+   // Preserve existing SI administrator access only after verifying the Auth
+   // user with Supabase. A local session's metadata is not trusted.
+   const {data:verified,error}=await sb.auth.getUser(session.access_token);
+   const user=verified?.user;
+   allowed=!error&&user?.id===session.user?.id&&
+     (user?.app_metadata?.role==="admin"||user?.app_metadata?.neocliniq_admin===true);
+  }
+  if(epoch!==siEpoch)return;
+  if(!allowed){
+   if(!ent)throw Error("Access verification unavailable. Please try signing in again.");
+   el("si-plan-lock").hidden=false;return;
+  }
+  siUser=session.user?.id||null;el("research").hidden=!siUser;
+ }catch(err){if(epoch===siEpoch)setMessage(err.message||"Unable to verify SI access.")}
+}
 el("login-form").addEventListener("submit",async e=>{e.preventDefault();el("login-button").disabled=true;setMessage("");
 try{const {error}=await sb.auth.signInWithPassword({email:el("email").value,password:el("password").value});if(error)throw error;el("password").value="";await refresh();}
 catch(err){setMessage(err.message||"Unable to sign in.");}finally{el("login-button").disabled=false;}});
@@ -139,14 +168,17 @@ if(!SpeechRecognition){voiceMic.disabled=true;voiceStatus.textContent="Speech re
 }
 voiceStop.addEventListener("click",stopVoice);
 el("signout").addEventListener("click",stopVoice);
-el("question-form").addEventListener("submit",async e=>{e.preventDefault();const question=el("question").value.trim();if(question.length<8)return;
+el("question-form").addEventListener("submit",async e=>{e.preventDefault();const question=el("question").value.trim();if(question.length<8||!siUser)return;const epoch=siEpoch;
 el("ask-button").disabled=true;el("status").textContent="NeoClinIQ SI is searching your private reference library…";el("answer").textContent="";el("citations").replaceChildren();
-try{const {data:{session}}=await sb.auth.getSession();if(!session)throw new Error("Session expired; sign in again.");
+try{const {data:{session}}=await sb.auth.getSession();if(!session||session.user?.id!==siUser||epoch!==siEpoch)throw new Error("SI access expired; sign in again.");
 const r=await fetch("https://uxnqoglkqptnslsdowxn.supabase.co/functions/v1/original-reference-assistant",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+session.access_token,apikey:"sb_publishable_v0uOpwZ-BBas2E7jyDkMXQ_TzNOHdAA"},body:JSON.stringify({question})});
-const data=await r.json();if(!r.ok)throw new Error(data.error||"Search unavailable");
+const data=await r.json();if(epoch!==siEpoch)return;if(!r.ok)throw new Error(data.error||"Search unavailable");
 renderMarkdown(data.answer||"No answer returned.");
 for(const c of data.citations||[]){const item=document.createElement("div");item.className="source";item.textContent="["+c.ref+"] "+c.title+" — "+(c.collection||"Original reference")+" — indexed passage "+c.passageNumber;el("citations").append(item);}
 el("status").textContent=data.insufficient_evidence?"Insufficient source evidence":"Answer generated from indexed references";lastSpokenAnswer=String(data.answer||"");if(!data.insufficient_evidence)speakAnswer(lastSpokenAnswer);
-}catch(err){el("status").textContent="";setMessage(err.message||"Unable to search references");}finally{el("ask-button").disabled=false;voiceSubmitting=false;}});
-sb.auth.onAuthStateChange(()=>{void refresh();});void refresh();
+}catch(err){if(epoch===siEpoch){el("status").textContent="";setMessage(err.message||"Unable to search references");}}finally{if(epoch===siEpoch){el("ask-button").disabled=false;voiceSubmitting=false;}}});
+sb.auth.onAuthStateChange(()=>{
+ ++siEpoch;siUser=null;el("research").hidden=true;el("answer").textContent="";el("citations").replaceChildren();
+ el("question").value="";el("ask-button").disabled=false;voiceSubmitting=false;lastSpokenAnswer="";stopVoice();stopPlayback();setTimeout(()=>void refresh(),0);
+});void refresh();
 </script></body></html>
