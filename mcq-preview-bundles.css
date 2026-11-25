@@ -24,3 +24,7 @@
 .nc-mcq-bundle-summary a{color:#06666d!important;text-decoration:underline;text-underline-offset:.2em;font-weight:750}
 .nc-mcq-bundle-summary p{margin:.6rem 0}
 @media(max-width:760px){.nc-mcq-preview-grid,.nc-mcq-bundle-summary ul{grid-template-columns:1fr}.nc-mcq-preview-card a{min-height:44px}}
+
+.nc-mcq-preview-card .nc-mcq-extension{color:#d6edf1;margin:.1rem 0 1rem;font-size:.9rem}
+.nc-mcq-preview-card a.nc-mcq-signup{color:#082e50!important;background:#a8f3e9;padding:.62rem 1rem;min-height:44px;text-decoration:none;border:1px solid transparent;border-radius:.55rem;font-weight:800}
+.nc-mcq-preview-card a.nc-mcq-signup:hover{background:#d9fff9}
