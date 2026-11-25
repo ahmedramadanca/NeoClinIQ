@@ -19,7 +19,7 @@
 <form id="auth-form" class="fields hidden"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttons"><button class="btn" type="submit">Sign in</button><button class="btn secondary" type="button" id="signup">Create account</button><button class="btn secondary" type="button" id="reset">Reset password</button></div></form>
 <div id="password-recovery" hidden>
 <h3>Choose a new password</h3>
-<p>Resetting the password for <strong id="recovery-account"></strong>.</p>
+<p id="recovery-intro">Choose and confirm a new password for your account.</p>
 <form id="password-recovery-form" class="fields">
 <label>New password<input id="recovery-password" type="password" autocomplete="new-password" minlength="6" required></label>
 <label>Confirm new password<input id="recovery-confirm" type="password" autocomplete="new-password" minlength="6" required></label>
@@ -83,7 +83,13 @@ const ready=CONFIG.SUPABASE_PUBLISHABLE_KEY!=="REPLACE_WITH_PUBLIC_SUPABASE_KEY"
 const initialQuery=new URLSearchParams(location.search),initialFragment=new URLSearchParams(location.hash.slice(1));
 const recoveryRequested=initialFragment.get("type")==="recovery"||initialQuery.get("type")==="recovery";
 const authCallbackError=[initialQuery,initialFragment].some(p=>p.has("error")||p.has("error_code")||p.has("error_description"));
-let recoveryPhase=recoveryRequested&&!authCallbackError?"checking":"normal",recoveryUserId=null,recoveryBusy=false;
+let directToken=initialFragment.get("token_hash")||"";
+const directRecovery=recoveryRequested&&!authCallbackError&&/^[A-Za-z0-9_-]{20,240}$/.test(directToken);
+initialFragment.delete("token_hash");
+if(directRecovery)history.replaceState(null,"",location.pathname+location.search);
+else directToken="";
+let directRecoveryClient=null,directRecoveryUserId=null;
+let recoveryPhase=directRecovery?"direct":recoveryRequested&&!authCallbackError?"checking":"normal",recoveryUserId=null,recoveryBusy=false;
 const client=ready?createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY):null;
 let session=null,entitlements=null,mockCheck=0,bankCheck=0,generatedCheck=0,accessCheck=0,checkoutPending=false;
 const pickedTier=tierForQuery();
@@ -100,9 +106,10 @@ function date(s){return new Intl.DateTimeFormat("en-CA",{dateStyle:"long",timeZo
 function render(){
  const recovering=recoveryPhase!=="normal";
  $("account").parentElement.classList.toggle("recovery-active",recovering);
- $("password-recovery").hidden=recoveryPhase!=="ready";
- $("recovery-account").textContent=recoveryPhase==="ready"?session?.user?.email||"your verified account":"";
- $("recovery-submit").disabled=recoveryBusy||recoveryPhase!=="ready";
+ const showReset=recoveryPhase==="ready"||recoveryPhase==="direct";
+ $("password-recovery").hidden=!showReset;
+ $("recovery-intro").textContent=recoveryPhase==="ready"&&session?.user?.email?"Resetting the password for "+session.user.email+".":"Choose and confirm a new password for the account that requested this email.";
+ $("recovery-submit").disabled=recoveryBusy||!showReset;
  $("auth-form").classList.toggle("hidden",recovering||!ready||!!session);
  $("signed-in").classList.toggle("hidden",recovering||!session);
  if(changingFor&&(recovering||changingFor!==session?.user?.id)){changingFor=null;$("change-password-form").reset();$("change-password-status").textContent="";}
@@ -123,7 +130,7 @@ function render(){
   $("auth-form").querySelector('button[type="submit"]').classList.add("secondary");
  }
  $("admin-drive").classList.toggle("hidden",!session||session.user.email?.toLowerCase()!=="ahmed.ramadan.ca@gmail.com");
- $("auth-status").textContent=!ready?"Authentication awaits the public Supabase publishable key.":recovering?(recoveryPhase==="checking"?"Verifying your reset link…":"Your password-reset link is verified."):session?"Signed in securely.":"Sign in or create an account.";
+ $("auth-status").textContent=!ready?"Authentication awaits the public Supabase publishable key.":recovering?(recoveryPhase==="checking"?"Verifying your reset link…":recoveryPhase==="direct"?"Set a new password. Your reset link is checked when you save.":"Your password-reset link is verified."):session?"Signed in securely.":"Sign in or create an account.";
  for(const p of ["mcq","osce"]){
   const e=entitlements?.[p],el=$(p+"-access");
   const extension=p==="osce"?canExtendOSCE(e):tierCanExtend(entitlements,e?.tier);
@@ -235,12 +242,15 @@ function clearAuthCallback(){
  history.replaceState(null,"",url.pathname+url.search+url.hash);
 }
 function invalidReset(){
- recoveryPhase="normal";recoveryUserId=null;clearAuthCallback();render();
+ recoveryPhase="normal";recoveryUserId=null;directToken="";
+ if(directRecoveryClient){void directRecoveryClient.auth.signOut({scope:"local"}).catch(()=>{});directRecoveryClient=null;directRecoveryUserId=null;}
+ clearAuthCallback();render();
  notice("This password reset link is no longer valid. Request a new link using Reset password. If you’re already signed in, sign out first.","error");
 }
 $("password-recovery-form").addEventListener("submit",async e=>{
  e.preventDefault();
- if(recoveryPhase!=="ready"||!client||recoveryBusy||!recoveryUserId||session?.user?.id!==recoveryUserId)return;
+ const direct=recoveryPhase==="direct";
+ if(!client||recoveryBusy||(!direct&&(recoveryPhase!=="ready"||!recoveryUserId||session?.user?.id!==recoveryUserId)))return;
  const password=$("recovery-password").value,confirm=$("recovery-confirm").value;
  const status=$("recovery-message");
  if(password.length<6){status.textContent="Use at least 6 characters.";return}
@@ -248,15 +258,38 @@ $("password-recovery-form").addEventListener("submit",async e=>{
  const target=recoveryUserId;
  recoveryBusy=true;status.textContent="Saving your new password…";render();
  try{
-  const checked=await client.auth.getUser();
-  if(checked.error||checked.data?.user?.id!==target||session?.user?.id!==target||recoveryUserId!==target||recoveryPhase!=="ready"){
-   invalidReset();return;
+  if(direct){
+   if(!directRecoveryClient){
+    if(!directToken){invalidReset();return}
+    const verifier=createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"neo-password-recovery"}});
+    const {data,error}=await verifier.auth.verifyOtp({token_hash:directToken,type:"recovery"});
+    if(error||!data?.user?.id||!data.session){
+     if(error?.status>=500){status.textContent="Could not check your reset link right now. Try again.";return}
+     invalidReset();return;
+    }
+    directToken="";
+    directRecoveryClient=verifier;directRecoveryUserId=data.user.id;
+   }
+   if(recoveryPhase!=="direct"||(session?.user?.id&&session.user.id!==directRecoveryUserId)){
+    invalidReset();return;
+   }
+   const {error}=await directRecoveryClient.auth.updateUser({password});
+   if(error){status.textContent=error.message||"Could not save your password. Please try again.";return}
+   const resetAccount=directRecoveryUserId;
+   try{await directRecoveryClient.auth.signOut({scope:"local"})}catch{}
+   directRecoveryClient=null;directRecoveryUserId=null;
+   if(session?.user?.id===resetAccount)try{await client.auth.signOut({scope:"local"})}catch{}
+  }else{
+   const checked=await client.auth.getUser();
+   if(checked.error||checked.data?.user?.id!==target||session?.user?.id!==target||recoveryUserId!==target||recoveryPhase!=="ready"){
+    invalidReset();return;
+   }
+   const {error}=await client.auth.updateUser({password});
+   if(error){status.textContent=error.message||"Could not save your password. Please try again.";return}
   }
-  const {error}=await client.auth.updateUser({password});
-  if(error){status.textContent=error.message||"Could not save your password. Please try again.";return}
   $("recovery-password").value="";$("recovery-confirm").value="";status.textContent="";
   recoveryPhase="normal";recoveryUserId=null;clearAuthCallback();render();
-  notice("Password updated. You’re signed in.");
+  notice(direct?"Password updated. Sign in with your new password.":"Password updated. You’re signed in.");
   if(session)void loadAccess();
  }catch{status.textContent="Could not save your password. Please try again."}
  finally{recoveryBusy=false;render()}
@@ -355,7 +388,7 @@ for(const button of mcqButtons)button.addEventListener("click",()=>checkout("mcq
 if(client){
  client.auth.onAuthStateChange((event,next)=>{
   const check=++accessCheck;session=next;entitlements=null;
-  if(event==="PASSWORD_RECOVERY"&&!authCallbackError&&next?.user?.id){
+  if(event==="PASSWORD_RECOVERY"&&!directRecovery&&!authCallbackError&&next?.user?.id){
    recoveryPhase="ready";recoveryUserId=next.user.id;clearAuthCallback();
    notice("Set and confirm a new password for your account.");
   }else if(recoveryPhase==="ready"&&next?.user?.id!==recoveryUserId){
@@ -370,6 +403,7 @@ if(client){
  if(authCallbackError)invalidReset();
  else if(recoveryPhase==="checking")setTimeout(()=>{if(recoveryPhase==="checking")invalidReset()},2500);
  else if(error)notice("Could not restore session.","error");
+ if(recoveryPhase==="direct")$("recovery-password").focus();
  if(session&&recoveryPhase==="normal")await loadAccess();
 }else{notice("Portal preview is available; authentication and live purchases are not yet enabled.");render()}
 if(new URLSearchParams(location.search).has("session_id")){notice("Checkout returned. Access is confirmed only after server-side payment verification.");const returned=new URL(location.href);returned.searchParams.delete("session_id");history.replaceState(null,"",returned.pathname+returned.search+returned.hash)}
