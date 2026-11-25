@@ -1,0 +1,15 @@
+.mcq-plans-grid {display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1rem 0}
+.mcq-plan {display:flex; flex-direction:column; min-width:0; padding:1rem; border:1px solid #c6dae1; border-radius:1rem; background:#fff; color:#183a52}
+.mcq-plan h2,.mcq-plan h3 {font-size:1.125rem; line-height:1.3; margin:.35rem 0}
+.mcq-plan .price {margin:.45rem 0 .2rem; font-size:clamp(1.55rem,3vw,2.1rem); font-weight:750; color:#082e50}
+.mcq-plan .price small {display:block; color:#426276; font-size:.875rem; font-weight:600}
+.mcq-plan ul {padding-left:1.25rem; margin:.8rem 0 1rem}
+.mcq-plan li+li {margin-top:.35rem}
+.mcq-plan .btn,.mcq-plan .plan-link {align-self:flex-start; margin-top:auto; display:inline-flex; align-items:center; min-height:44px}
+.mcq-plan[data-selected="true"] {outline:2px solid #078d92; outline-offset:3px}
+.mcq-plan [hidden],.mcq-plans-panel [hidden],[data-mcq-capability][hidden] {display:none !important}
+.mcq-detail-row {margin:.7rem 0}
+.mcq-plan-context {font-size:.9rem; color:#426276}
+.mcq-plan-card-label {margin:0; font-size:.75rem; font-weight:750; color:#086b73; text-transform:uppercase; letter-spacing:.07em}
+@media(max-width:1050px){ .mcq-plan .btn {white-space:normal} }
+@media(max-width:760px){ .mcq-plans-grid { grid-template-columns:1fr } }
