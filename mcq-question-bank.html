@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#082e50">
+<title>Subscriber MCQ Question Bank | NeoClinIQ</title>
+<link rel="icon" href="/NeoClinIQ_Logo_Extracted.png">
+<link rel="stylesheet" href="/mcq-mock.css">
+<link rel="stylesheet" href="/mcq-question-bank.css">
+<script type="module" src="/mcq-question-bank.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to question bank</a>
+<header class="site-header"><div class="wrap top bank-header">
+<a href="/" aria-label="NeoClinIQ home"><img src="/NeoClinIQ_Logo_Extracted.png" alt="NeoClinIQ" width="156"></a>
+<nav aria-label="MCQ learning"><a href="/learning.html">Learning Portal</a><a href="/study-planner.html">96-Day MCQ Mastery Plan</a><a href="/mcq-library.html">MCQ Library</a></nav>
+</div></header>
+<main id="main" tabindex="-1">
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">Subscriber practice · PEBC Part I</div>
+    <h1>MCQ Question Bank</h1>
+    <p>Find questions by module, chapter or competency. Check your answer to see why each option is right or wrong.</p>
+  </div></header>
+  <div class="wrap body-wrap bank-flow">
+    <p id="notice" role="status" aria-live="polite">Checking your access…</p>
+    <section class="panel" id="blocked" hidden aria-labelledby="blocked-title">
+      <h2 id="blocked-title" tabindex="-1">Question bank unavailable</h2>
+      <p id="blocked-text"></p>
+      <div class="actions"><a class="btn" href="/learning.html">Go to the Learning Portal</a><button class="btn secondary" type="button" id="retry">Check access again</button></div>
+    </section>
+    <section id="bank" hidden aria-label="Question bank practice">
+      <form class="panel bank-filters" id="filters">
+        <h2>Find questions</h2>
+        <div id="plan-scope" class="bank-scope" hidden>
+          <span id="plan-label">Showing topics assigned to the selected study day.</span>
+          <button id="clear-plan" class="btn secondary" type="button">Browse the full bank</button>
+        </div>
+        <div class="bank-controls">
+          <div><label for="track">Practice type</label><select id="track"><option value="single">Single-answer MCQs</option><option value="additional">Additional practice: multiple-answer and written</option></select></div>
+          <div><label for="module">Module</label><select id="module"></select></div>
+          <div><label for="chapter">Chapter</label><select id="chapter"></select></div>
+          <div><label for="competency">PEBC competency</label><select id="competency"></select></div>
+        </div>
+        <p class="bank-note">Tags marked preliminary are not independently verified. Questions with no assigned tag are under Unclassified. See the <a href="https://pebc.ca/pharmacists/qualifying-examination/preparing-for-the-examination/examination-blueprint/">official PEBC blueprint</a>.</p>
+        <button class="btn" type="submit">Apply filters</button>
+      </form>
+      <section class="panel bank-practice" id="practice" aria-labelledby="question-title" hidden>
+        <p id="question-meta" class="bank-note"></p>
+        <h2 id="question-title" tabindex="-1"></h2>
+        <p id="stem"></p>
+        <form id="answer-form">
+          <fieldset id="options-field"><legend id="question-instruction"></legend><div id="options"></div></fieldset>
+          <div id="written-field" hidden><label for="written">Your answer (optional, stays on this page)</label><textarea id="written" rows="4" maxlength="2500"></textarea></div>
+          <button id="check" class="btn" type="submit">Check answer</button>
+        </form>
+        <section id="feedback" class="bank-feedback" hidden aria-labelledby="feedback-title">
+          <h3 id="feedback-title" tabindex="-1"></h3>
+          <div id="explanations"></div>
+          <div id="references"></div>
+        </section>
+        <div class="actions bank-question-controls">
+          <button class="btn secondary" type="button" id="prev">Previous question</button>
+          <button class="btn secondary" type="button" id="next">Next question</button>
+        </div>
+      </section>
+      <p class="panel" id="empty" hidden>No released questions match these filters. Try another chapter or remove the PEBC competency filter.</p>
+      <p class="bank-note">For learning, not patient care or official PEBC assessment. The <a href="/mcq-mock.html">timed mock exam</a> is separate.</p>
+    </section>
+  </div>
+</main>
+<footer class="wrap body-wrap"><a href="/study-planner.html">Return to the 96-Day MCQ Mastery Plan</a></footer>
+</body>
+</html>
