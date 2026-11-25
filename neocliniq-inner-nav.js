@@ -16,6 +16,16 @@
       add(resources, 'https://pebc.ca/general-informations/examination-dates-and-fees/', 'Official PEBC Exam Dates');
     }
     add(findGroup('About'), '/faq.html', 'FAQ');
+    const mcq = findGroup('PEBC MCQ')?.querySelector('.nc-global-submenu');
+    if (mcq) {
+      const course = mcq.querySelector('a[href="/pebc-mcq.html"]');
+      if (course && /pricing/i.test(course.textContent)) course.textContent = 'MCQ Course';
+      if (!mcq.querySelector('a[href="/mcq-plans/"]')) {
+        const link = document.createElement('a');
+        link.href = '/mcq-plans/'; link.textContent = 'MCQ Plans & Pricing';
+        if (course) course.after(link); else mcq.prepend(link);
+      }
+    }
     add(findGroup('PEBC OSCE'), '/osce-simulator.html', 'Open SI OSCE Tutor');
     if (!nav.querySelector('a[href="/mentorship.html"]')) {
       const a = document.createElement('a'); a.href = '/mentorship.html'; a.textContent = 'Mentorship';
