@@ -25,10 +25,14 @@ def private_pdf_url(id):
 def save(id,number,text,words):
  db.table("osce_ocr_pages").upsert({"drive_file_id":id,"page_number":number,"page_text":text[:100000],"ocr_words":words[:10000]}).execute()
 
+class SharedStreamUnavailable(RuntimeError):
+ pass
+
 def process(item):
  id=item["drive_file_id"]
  existing=db.table("osce_ocr_pages").select("page_number,page_text").eq("drive_file_id",id).execute().data
  done={p["page_number"] for p in existing if len((p.get("page_text") or "").strip())>=20}
+ stream_503s=0
  for attempt in range(4):
   try:
    r=session.get(private_pdf_url(id),timeout=180)
@@ -78,9 +82,13 @@ def process(item):
    print("INDEXED",id,len(doc),"pages","UNRESOLVED",unresolved,flush=True)
    return not unresolved
   except Exception as e:
-   print("RETRY",id,attempt,str(e),flush=True)
-   if "401 Client Error" in str(e) or "403 Client Error" in str(e): raise RuntimeError("Private PDF authentication failed; stopping instead of retrying all 471 PDFs") from e
-   if attempt==3:return False
+   status=e.response.status_code if isinstance(e,requests.HTTPError) and e.response is not None else None
+   print("RETRY",id,attempt,("HTTP "+str(status)) if status is not None else type(e).__name__,flush=True)
+   if status in (401,403): raise RuntimeError("Private PDF authentication failed; stopping the scan") from None
+   stream_503s=stream_503s+1 if status==503 else 0
+   if attempt==3:
+    if stream_503s==4: raise SharedStreamUnavailable("Repeated HTTP 503 from private PDF service") from None
+    return False
    time.sleep(2**attempt)
  return False
 
@@ -106,9 +114,21 @@ while True:
 items.sort(key=lambda item:(item["drive_file_id"] not in priority,item["drive_file_id"]))
 print("SOURCE_PDFS",len(items),flush=True)
 print("PRIORITY_IDS",sorted(priority),flush=True)
-failed=[]
-for i,item in enumerate(items,1):
- if not process(item):failed.append(item["drive_file_id"])
- print("PROGRESS",i,"/",len(items),"FAILED",len(failed),flush=True)
-print("FAILED_IDS",failed,flush=True)
-if failed:sys.exit(1)
+def run(items):
+ failed=[]
+ consecutive_stream_failures=0
+ for i,item in enumerate(items,1):
+  try:
+   if not process(item):failed.append(item["drive_file_id"])
+   consecutive_stream_failures=0
+  except SharedStreamUnavailable:
+   failed.append(item["drive_file_id"])
+   consecutive_stream_failures+=1
+  print("PROGRESS",i,"/",len(items),"FAILED",len(failed),flush=True)
+  if consecutive_stream_failures>=3:
+   print("STOPPED: private PDF service returned HTTP 503 on three consecutive PDFs; check the Drive connection before retrying.",flush=True)
+   break
+ print("FAILED_IDS",failed,flush=True)
+ return not failed
+
+if not run(items):sys.exit(1)
